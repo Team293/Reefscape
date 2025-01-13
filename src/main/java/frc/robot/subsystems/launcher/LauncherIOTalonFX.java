@@ -9,14 +9,17 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+
 public class LauncherIOTalonFX implements LauncherIO {
   public final TalonFX motor;
 
-  private final StatusSignal<Double> motorVelocity;
+  private final StatusSignal<AngularVelocity> motorVelocity;
   // private final StatusSignal<Double> motorAppliedVolts;
   // private final StatusSignal<Double> motorCurrent;
   private final StatusSignal<Double> setPointError;
-  private final StatusSignal<Double> rollerPosition;
+  private final StatusSignal<Angle> rollerPosition;
 
   private double setPoint = 0.0d;
   private final double gearRatio = (11.0d / 10.0d);

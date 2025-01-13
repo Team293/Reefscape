@@ -23,11 +23,12 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import frc.lib.constants.SDSMK4L1Constants;
 
 /**
@@ -47,16 +48,16 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final TalonFX turnTalon;
   private final CANcoder cancoder;
 
-  private final StatusSignal<Double> drivePosition;
+  private final StatusSignal<Angle> drivePosition;
   // private final Queue<Double> drivePositionQueue;
-  private final StatusSignal<Double> driveVelocity;
+  private final StatusSignal<AngularVelocity> driveVelocity;
   // private final StatusSignal<Double> driveAppliedVolts;
   // private final StatusSignal<Double> driveCurrent;
 
-  private final StatusSignal<Double> turnAbsolutePosition;
-  private final StatusSignal<Double> turnPosition;
+  private final StatusSignal<Angle> turnAbsolutePosition;
+  private final StatusSignal<Angle> turnPosition;
   // private final Queue<Double> turnPositionQueue;
-  private final StatusSignal<Double> turnVelocity;
+  private final StatusSignal<AngularVelocity> turnVelocity;
   // private final StatusSignal<Double> turnAppliedVolts;
   // private final StatusSignal<Double> turnCurrent;
 
@@ -77,28 +78,28 @@ public class ModuleIOTalonFX implements ModuleIO {
   public ModuleIOTalonFX(int index) {
     switch (index) {
       case 0: // Front Left
-        driveTalon = new TalonFX(0);
-        turnTalon = new TalonFX(1);
-        cancoder = new CANcoder(2);
-        absoluteEncoderOffset = -0.829; // CANCoder rotations
+        driveTalon = new TalonFX(20);
+        turnTalon = new TalonFX(21);
+        cancoder = new CANcoder(22);
+        absoluteEncoderOffset = 0.3d; // CANCoder rotations
         break;
       case 1: // Front Right
-        driveTalon = new TalonFX(3);
-        turnTalon = new TalonFX(4);
-        cancoder = new CANcoder(5);
-        absoluteEncoderOffset = -0.451d; // CANcoder rotations
+        driveTalon = new TalonFX(23);
+        turnTalon = new TalonFX(24);
+        cancoder = new CANcoder(25);
+        absoluteEncoderOffset = 0.80d; // CANcoder rotations
         break;
       case 2: // Back Left
-        driveTalon = new TalonFX(6);
-        turnTalon = new TalonFX(7);
-        cancoder = new CANcoder(8);
-        absoluteEncoderOffset = -0.719d; // CANcoder rotations
+        driveTalon = new TalonFX(26);
+        turnTalon = new TalonFX(27);
+        cancoder = new CANcoder(28);
+        absoluteEncoderOffset = 0.28d; // CANcoder rotations
         break;
       case 3: // Back Right
-        driveTalon = new TalonFX(9);
-        turnTalon = new TalonFX(10);
-        cancoder = new CANcoder(11);
-        absoluteEncoderOffset = -0.95d; // CANcoder rotations
+        driveTalon = new TalonFX(29);
+        turnTalon = new TalonFX(30);
+        cancoder = new CANcoder(31);
+        absoluteEncoderOffset = -0.354d; // CANcoder rotations
         break;
       default:
         throw new RuntimeException("Invalid module index");
@@ -108,7 +109,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     var canCoderConfig = new CANcoderConfiguration();
     canCoderConfig.MagnetSensor.SensorDirection = SDSMK4L1Constants.canCoderSensorDirection;
     canCoderConfig.MagnetSensor.MagnetOffset = absoluteEncoderOffset + 0.5;
-    canCoderConfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
+    canCoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1.0;
     cancoder.getConfigurator().apply(canCoderConfig);
 
     // Drive motor config
@@ -165,7 +166,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         // turnCurrent
         );
 
-    inputs.canCoderRotations = cancoder.getAbsolutePosition().getValue();
+    inputs.canCoderRotations = cancoder.getAbsolutePosition().getValueAsDouble();
     inputs.canCoderAngle = Units.rotationsToDegrees(inputs.canCoderRotations);
 
     inputs.drivePositionRotations = drivePosition.getValueAsDouble();

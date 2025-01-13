@@ -21,6 +21,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.units.measure.AngularVelocity;
+
 /**
  * This drive implementation is for Talon FXs driving brushless motors like the Falon 500 or Kraken
  * X60.
@@ -29,7 +31,7 @@ public class IntakeIOTalonFX implements IntakeIO {
   public final TalonFX motor;
   private double robotSpeed; // Robot speed from the drivetrain
 
-  private final StatusSignal<Double> motorVelocity;
+  private final StatusSignal<AngularVelocity> motorVelocity;
   // private final StatusSignal<Double> motorAppliedVolts;
   // private final StatusSignal<Double> motorCurrent;
   private final StatusSignal<Double> setPointError;

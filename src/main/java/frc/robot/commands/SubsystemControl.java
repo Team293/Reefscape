@@ -45,8 +45,13 @@ public class SubsystemControl {
         () -> {
           // Apply deadband
           double linearMagnitude = Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble());
-          Rotation2d linearDirection =
-              new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+          Rotation2d linearDirection;
+          if (linearMagnitude < 0.01) {
+            linearDirection = Rotation2d.fromDegrees(0);
+          } else {
+            linearDirection = new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+          }
+          
           double omega = omegaSupplier.getAsDouble();
 
           // Square values
