@@ -81,25 +81,25 @@ public class ModuleIOTalonFX implements ModuleIO {
         driveTalon = new TalonFX(20);
         turnTalon = new TalonFX(21);
         cancoder = new CANcoder(22);
-        absoluteEncoderOffset = 0.3d; // CANCoder rotations
+        absoluteEncoderOffset = -0.959d + 0.5d; // CANCoder rotations
         break;
       case 1: // Front Right
         driveTalon = new TalonFX(23);
         turnTalon = new TalonFX(24);
         cancoder = new CANcoder(25);
-        absoluteEncoderOffset = 0.80d; // CANcoder rotations
+        absoluteEncoderOffset = -0.445d + 0.5d; // CANcoder rotations
         break;
       case 2: // Back Left
         driveTalon = new TalonFX(26);
         turnTalon = new TalonFX(27);
         cancoder = new CANcoder(28);
-        absoluteEncoderOffset = 0.28d; // CANcoder rotations
+        absoluteEncoderOffset = -0.467d; // CANcoder rotations
         break;
       case 3: // Back Right
         driveTalon = new TalonFX(29);
         turnTalon = new TalonFX(30);
         cancoder = new CANcoder(31);
-        absoluteEncoderOffset = -0.354d; // CANcoder rotations
+        absoluteEncoderOffset = -0.094d; // CANcoder rotations
         break;
       default:
         throw new RuntimeException("Invalid module index");
@@ -108,7 +108,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     // CANcoder config
     var canCoderConfig = new CANcoderConfiguration();
     canCoderConfig.MagnetSensor.SensorDirection = SDSMK4L1Constants.canCoderSensorDirection;
-    canCoderConfig.MagnetSensor.MagnetOffset = absoluteEncoderOffset + 0.5;
+    canCoderConfig.MagnetSensor.MagnetOffset = absoluteEncoderOffset + 0.25d;
     canCoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1.0;
     cancoder.getConfigurator().apply(canCoderConfig);
 
