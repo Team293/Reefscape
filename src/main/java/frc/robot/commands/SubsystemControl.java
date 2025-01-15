@@ -108,6 +108,57 @@ public class SubsystemControl {
         drive);
   }
 
+  public static Command joystickDrive(
+    Drive drive,
+    DoubleSupplier xSupplier,
+    DoubleSupplier ySupplier,
+    DoubleSupplier omegaSupplier,
+    DoubleSupplier strafeLeft,
+    DoubleSupplier strafeRight) {
+  return Commands.run(
+      () -> {
+        double strafe = strafeLeft.getAsDouble() - strafeRight.getAsDouble();
+
+        double xTranslation = xSupplier.getAsDouble();
+        double yTranslation = ySupplier.getAsDouble();
+
+        if (Math.abs(strafe) > 0.05) {
+          xTranslation = Math.sin(-drive.getRotation().getRadians()) * strafe;
+          yTranslation = Math.cos(-drive.getRotation().getRadians()) * strafe;
+        }
+
+        // Apply deadband
+        double linearMagnitude = Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+        Rotation2d linearDirection;
+        if (linearMagnitude < 0.01) {
+          linearDirection = Rotation2d.fromDegrees(0);
+        } else {
+          linearDirection = new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+        }
+        
+        double omega = omegaSupplier.getAsDouble();
+
+        // Square values
+        linearMagnitude = linearMagnitude * linearMagnitude;
+        omega = Math.copySign(omega * omega, omega);
+
+        // Calcaulate new linear velocity
+        Translation2d linearVelocity =
+            new Pose2d(new Translation2d(), linearDirection)
+                .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
+                .getTranslation();
+
+        // Convert to field relative speeds & send command
+        drive.runVelocity(
+            ChassisSpeeds.fromFieldRelativeSpeeds(
+                xTranslation * drive.getMaxLinearSpeedMetersPerSec(),
+                yTranslation * drive.getMaxLinearSpeedMetersPerSec(),
+                omega * drive.getMaxAngularSpeedRadPerSec(),
+                drive.getRotation()));
+      },
+      drive);
+  }
+
   public static Command limelightDrive(
       Drive drive,
       Vision vision,
