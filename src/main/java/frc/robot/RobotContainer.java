@@ -22,13 +22,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.SpikeController;
-import frc.robot.commands.FeedForwardCharacterization;
-import frc.robot.commands.SubsystemControl;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.GyroIO;
-// import frc.robot.subsystems.drive.GyroIONavX;
-import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
+import frc.robot.subsystems.algaepickup.AlgaePickup;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.intake.Intake;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -39,10 +36,15 @@ import frc.robot.subsystems.drive.ModuleIOTalonFX;
 public class RobotContainer {
   // Subsystems
   // private final Drive drive;
+  private final Intake intake;
+  private final AlgaePickup algaePickup;
+  private final AlgaeKnocker algaeKnocker;
+  private final Elevator elevator;
 
   // Controller
   private static final double DEADBAND = 0.05;
   private final SpikeController driverController = new SpikeController(0, DEADBAND);
+  private final SpikeController operatorController = new SpikeController(1, DEADBAND);
 
   // Dashboard inputs
   private final SendableChooser<Command> autoChooser;
@@ -52,6 +54,11 @@ public class RobotContainer {
     /* Print the log directory */
     String logDir = DataLogManager.getLogDir();
     System.out.print(logDir);
+
+    intake = new Intake();
+    algaePickup = new AlgaePickup();
+    algaeKnocker = new AlgaeKnocker();
+    elevator = new Elevator();
 
     // Initialize the intake subsystem
 
@@ -127,6 +134,17 @@ public class RobotContainer {
     //         () -> -driverController.getLeftY(),
     //         () -> -driverController.getLeftX(),
     //         () -> -driverController.getRightX()));
+    operatorController.x().whileTrue(Commands.runOnce(intake::enableIntake, intake));
+    operatorController.x().onFalse(Commands.runOnce(intake::disableIntake, intake));
+
+    operatorController.y().whileTrue(Commands.runOnce(algaePickup::enableAlgaePickup, algaePickup));
+    operatorController.y().onFalse(Commands.runOnce(algaePickup::diableAlgaePickup, algaePickup));
+
+    operatorController.a().whileTrue(Commands.runOnce(algaeKnocker::enableAlgaeKnocker, algaeKnocker));
+    operatorController.a().onFalse(Commands.runOnce(algaeKnocker::disableAlgaeKnocker, algaeKnocker));
+
+    operatorController.b().whileTrue(Commands.runOnce(elevator::enableElevator, elevator));
+    operatorController.b().onFalse(Commands.runOnce(elevator::disableElevator, elevator));
     /*
      * SubsystemControl.fieldOrientedRotation(
      * drive,

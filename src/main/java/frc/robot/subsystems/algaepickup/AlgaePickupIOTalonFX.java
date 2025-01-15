@@ -1,4 +1,4 @@
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.algaepickup;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -7,14 +7,14 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 
-public class IntakeIOTalonFX implements IntakeIO {
-    private TalonFX intakeMotor;
+public class AlgaePickupIOTalonFX implements AlgaePickupIO {
+    private TalonFX algaePickupMotor;
     private double m_gearRatio = 1.0; // change to the actual later
 
     private static VelocityVoltage velocityVoltageCommand = new VelocityVoltage(0.0).withSlot(0);
 
-    public IntakeIOTalonFX(int canID) {
-        this.intakeMotor = new TalonFX(canID);
+    public AlgaePickupIOTalonFX(int canID) {
+        this.algaePickupMotor = new TalonFX(canID);
         var config = new TalonFXConfiguration();
         config.CurrentLimits.StatorCurrentLimit = 40.0;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
@@ -28,19 +28,19 @@ public class IntakeIOTalonFX implements IntakeIO {
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 0.462;
         config.Slot0.kS = 0.05;
-        intakeMotor.getConfigurator().apply(config);
+        algaePickupMotor.getConfigurator().apply(config);
 
-        intakeMotor.optimizeBusUtilization();
+        algaePickupMotor.optimizeBusUtilization();
     }
 
     @Override
-    public void updateInputs(IntakeIOInputs inputs) {
-        IntakeIO.super.updateInputs(inputs);
+    public void updateInputs(AlgaePickupIOInputs inputs) {
+        AlgaePickupIO.super.updateInputs(inputs);
     }
 
     @Override
     public void setSpeed(double speed) {
         velocityVoltageCommand.withVelocity(speed).withSlot(0); // Convert to motor rotations per second
-        intakeMotor.setControl(velocityVoltageCommand);
+        algaePickupMotor.setControl(velocityVoltageCommand);
     }
 }

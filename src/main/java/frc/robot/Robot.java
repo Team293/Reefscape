@@ -15,6 +15,8 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.util.LocalADStarAK;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -52,6 +54,7 @@ public class Robot extends LoggedRobot {
   public void robotInit() {
     // Setup log directory and free up space if needed
     SetupLog();
+    //Pathfinding.setPathfinder(new LocalADStarAK());
 
     // Record metadata
     Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);

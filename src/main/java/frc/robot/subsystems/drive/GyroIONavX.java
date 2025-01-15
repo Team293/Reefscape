@@ -13,14 +13,13 @@
 
 package frc.robot.subsystems.drive;
 
-import com.kauailabs.navx.frc.AHRS;
+import com.studica.frc.AHRS;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.SerialPort;
 
 /** IO implementation for NavX */
 public class GyroIONavX implements GyroIO {
-  public final AHRS gyro = new AHRS(SerialPort.Port.kMXP);
+  public final AHRS gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
   public static final boolean INVERTED = true;
 
   public GyroIONavX() {

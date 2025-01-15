@@ -23,8 +23,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.launcher.Launcher;
-import frc.robot.subsystems.vision.Vision;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -45,8 +43,13 @@ public class SubsystemControl {
         () -> {
           // Apply deadband
           double linearMagnitude = Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble());
-          Rotation2d linearDirection =
-              new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+          Rotation2d linearDirection;
+          if (linearMagnitude < 0.01) {
+            linearDirection = Rotation2d.fromDegrees(0);
+          } else {
+            linearDirection = new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+          }
+          
           double omega = omegaSupplier.getAsDouble();
 
           // Square values
@@ -103,90 +106,4 @@ public class SubsystemControl {
         drive);
   }
 
-  public static Command limelightDrive(
-      Drive drive,
-      Vision vision,
-      DoubleSupplier xSupplier,
-      DoubleSupplier ySupplier,
-      DoubleSupplier omegaSupplier) {
-
-    return Commands.run(
-        () -> {
-          // Apply deadband
-          double linearMagnitude =
-              MathUtil.applyDeadband(
-                  Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble()), DEADBAND);
-          Rotation2d linearDirection =
-              new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
-          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
-
-          // Square values
-          linearMagnitude = linearMagnitude * linearMagnitude;
-          omega = Math.copySign(omega * omega, omega);
-
-          // Calcaulate new linear velocity
-          Translation2d linearVelocity =
-              new Pose2d(new Translation2d(), linearDirection)
-                  .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
-                  .getTranslation();
-
-          if (omega != 0.0d) { // Check if the driver isnt trying to turn
-            vision.resetError();
-          } else if ((omega == 0.0) && (vision.seesTarget())) {
-            // Get tX from the vision subsystem. tX is "demand"
-            omega = -vision.getDesiredAngle();
-          }
-
-          drive.runVelocity(
-              // Convert to field relative speeds & send command
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                  linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                  omega * drive.getMaxAngularSpeedRadPerSec(),
-                  drive.getRotation()));
-        },
-        drive);
-  }
-
-  public static Command intakeWithColorSensor(
-      Intake intake,
-      Launcher launcher,
-      DoubleSupplier reverseIntake,
-      DoubleSupplier forwardIntake,
-      BooleanSupplier runLauncher) {
-    return Commands.run(
-        () -> {
-          // manual control
-          if (reverseIntake.getAsDouble() > 0.1) {
-            intake.setVelocity(-10.0 * reverseIntake.getAsDouble());
-            launcher.setVelocity(-5.0 * reverseIntake.getAsDouble());
-            return;
-          }
-
-          if (forwardIntake.getAsDouble() > 0.1) {
-            intake.setVelocity(10.0 * forwardIntake.getAsDouble());
-            launcher.setVelocity(5.0 * forwardIntake.getAsDouble());
-            return;
-          }
-
-          // If the color sensor senses a note, disable the intake
-          if (launcher.isNoteDetected()) {
-            if (launcher.detectedNoteForSeconds() < 0.3) {
-              intake.setVelocity(-0.5);
-            } else {
-              intake.disableIntake();
-              if (runLauncher.getAsBoolean()) {
-                launcher.enableLauncher();
-              } else {
-                launcher.disableLauncher();
-              }
-            }
-          } else {
-            intake.enableIntake();
-            launcher.disableLauncher();
-          }
-        },
-        intake,
-        launcher);
-  }
 }
