@@ -128,23 +128,15 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     /* Drive command */
-    // drive.setDefaultCommand(
-    //     SubsystemControl.joystickDrive(
-    //         drive,
-    //         () -> -driverController.getLeftY(),
-    //         () -> -driverController.getLeftX(),
-    //         () -> -driverController.getRightX()));
-    operatorController.x().whileTrue(Commands.runOnce(intake::enableIntake, intake));
-    operatorController.x().onFalse(Commands.runOnce(intake::disableIntake, intake));
-
-    operatorController.y().whileTrue(Commands.runOnce(algaePickup::enableAlgaePickup, algaePickup));
-    operatorController.y().onFalse(Commands.runOnce(algaePickup::diableAlgaePickup, algaePickup));
-
-    operatorController.a().whileTrue(Commands.runOnce(algaeKnocker::enableAlgaeKnocker, algaeKnocker));
-    operatorController.a().onFalse(Commands.runOnce(algaeKnocker::disableAlgaeKnocker, algaeKnocker));
-
-    operatorController.b().whileTrue(Commands.runOnce(elevator::enableElevator, elevator));
-    operatorController.b().onFalse(Commands.runOnce(elevator::disableElevator, elevator));
+  drivetrain-tuning
+    drive.setDefaultCommand(
+        SubsystemControl.joystickDrive(
+            drive,
+            () -> -driverController.getLeftY(),
+            () -> -driverController.getLeftX(),
+            () -> -driverController.getRightX(),
+            () -> driverController.getLeftTriggerAxis(),
+            () -> driverController.getRightTriggerAxis()));
     /*
      * SubsystemControl.fieldOrientedRotation(
      * drive,
