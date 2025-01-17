@@ -1,7 +1,6 @@
 package frc.robot.subsystems.algaeknocker;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.drive.Drive;
 
 public class AlgaeKnocker extends SubsystemBase {
     private final AlgaeKnockerIOTalonFX algaeKnockerMotor;

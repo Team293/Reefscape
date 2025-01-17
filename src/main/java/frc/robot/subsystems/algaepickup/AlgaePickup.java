@@ -1,7 +1,6 @@
 package frc.robot.subsystems.algaepickup;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.drive.Drive;
 
 public class AlgaePickup extends SubsystemBase {
     private final AlgaePickupIOTalonFX algaePickupMotor;
