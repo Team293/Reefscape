@@ -1,47 +1,57 @@
 package frc.robot.subsystems.vision;
 
-import edu.wpi.first.math.VecBuilder;
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.LimelightHelpers;
 
 public class Vision extends SubsystemBase {
     private final String NAME = "limelight";
-    private final Drive drive;
 
-    public Vision(Drive drive) {
-        this.drive = drive;
-
+    public Vision() {
         LimelightHelpers.setCameraPose_RobotSpace(NAME,
             0.2, // forward
             0.0, // side
-            0.2, // up
+            0.19, // up
             0.0, // roll
             0.0, // pitch
             0.0 // yaw
         );
     }
 
-    public void init(SwerveDrivePoseEstimator estimator) {
-        estimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
-    }
+    public void updateRobotPose(SwerveDrivePoseEstimator estimator, double gyroRate) {
+        boolean rejectOdometry = false;
 
-    public void updatePose(SwerveDrivePoseEstimator estimator, Pose2d robotPose) {
-        int tags = LimelightHelpers.getRawFiducials("limelight").length;
+        LimelightHelpers.SetRobotOrientation(
+            NAME, 
+            estimator.getEstimatedPosition().getRotation().getDegrees(),
+            gyroRate,
+            0,
+            0,
+            0,
+            0
+        );
 
-        if (tags > 0) {
-            estimator.addVisionMeasurement(getVisionPose(), Timer.getFPGATimestamp());
+        LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(NAME);
+
+        if (Math.abs(gyroRate) > 720) {
+            rejectOdometry = true;
+        }
+
+        if (poseEstimate.tagCount == 0) {
+            rejectOdometry = true;  
+        }
+
+        if (!rejectOdometry) {
+            Pose2d visionPose = poseEstimate.pose;
+
+            Logger.recordOutput("Limelight/EstimatedPose", visionPose);
+
+            estimator.addVisionMeasurement(visionPose, poseEstimate.timestampSeconds);
         }
     }
-
-    public Pose2d getVisionPose() {
-        return LimelightHelpers.getBotPose2d_wpiBlue("limelight");
-    }
-
-    public double distanceToFirstTarget(Pose2d robotPose) {
-        return getVisionPose().getTranslation().getDistance(robotPose.getTranslation());
-    }
+    
 }

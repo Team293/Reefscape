@@ -61,6 +61,8 @@ public class ModuleIOTalonFX implements ModuleIO {
   // private final StatusSignal<Double> turnAppliedVolts;
   // private final StatusSignal<Double> turnCurrent;
 
+  private static final double DECELERATION_PER_SECOND = 1.0;
+
   // Gear ratios for SDS MK4i L2, adjust as necessary
   private static final double DRIVE_GEAR_RATIO = SDSMK4L1Constants.driveGearRatio;
   // private static final double TURN_GEAR_RATIO = SDSMK4L1Constants.angleGearRatio;
@@ -190,7 +192,16 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void setDriveVelocityRPS(double velocityRPS) {
-    velocityVoltageCommand.withVelocity(velocityRPS).withSlot(0);
+    // get 
+    double currentVelocity = driveTalon.getVelocity().getValueAsDouble();
+
+    double newVelocity = velocityRPS;
+    // if setting velocity to zero, limit deceleration to 
+    if (velocityRPS == 0 && Math.abs(velocityRPS - currentVelocity) > 0.3) {
+      newVelocity = currentVelocity - Math.signum(currentVelocity) * (DECELERATION_PER_SECOND / 50.0);
+    }
+
+    velocityVoltageCommand.withVelocity(newVelocity).withSlot(0);
     driveTalon.setControl(velocityVoltageCommand);
   }
 
