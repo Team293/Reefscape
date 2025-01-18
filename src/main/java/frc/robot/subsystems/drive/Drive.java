@@ -19,6 +19,8 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.pathfinding.Pathfinding;
+
+import edu.wpi.first.math.VecBuilder;
 // import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 // import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.controller.PIDController;
@@ -41,9 +43,9 @@ import frc.robot.util.LimelightHelpers;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
   private static final double MAX_LINEAR_SPEED = Units.feetToMeters(14.5);
@@ -59,7 +61,7 @@ public class Drive extends SubsystemBase {
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
-  private Pose2d pose = new Pose2d();
+  private Pose2d pose = new Pose2d(9.45, 4.11, new Rotation2d());
   private Rotation2d lastGyroRotation = new Rotation2d();
 
   private SwerveDrivePoseEstimator poseEstimator;
@@ -118,6 +120,7 @@ public class Drive extends SubsystemBase {
     //     });
 
     poseEstimator = new SwerveDrivePoseEstimator(kinematics, getRotation(), getWheelPositions(), pose);
+    
   }
 
   public void periodic() {
@@ -181,7 +184,7 @@ public class Drive extends SubsystemBase {
     updateRobotPosition();
   }
 
-  private SwerveModulePosition[] getWheelPositions() {
+  public SwerveModulePosition[] getWheelPositions() {
     SwerveModulePosition[] wheelPositions = new SwerveModulePosition[4];
     for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
       wheelPositions[moduleIndex] = modules[moduleIndex].getPosition();
@@ -301,9 +304,10 @@ public class Drive extends SubsystemBase {
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
     this.pose = pose;
+    poseEstimator.resetPosition(getRotation(), getWheelPositions(), pose);
   }
 
-  @AutoLogOutput(key = "Odometry/EstimatedPose")
+  // @AutoLogOutput(key = "Odometry/EstimatedPose")
   public Pose2d getEstimatedPose() {
     return poseEstimator.getEstimatedPosition();
   }
@@ -329,13 +333,25 @@ public class Drive extends SubsystemBase {
   }
 
   public void updateRobotPosition() {
+    Pose2d kinematicPose = getPose();
+
     poseEstimator.update(getRotation(), getWheelPositions());
 
     Pose2d visionPose = LimelightHelpers.getBotPose2d_wpiBlue("limelight");
     int tags = LimelightHelpers.getRawFiducials("limelight").length;
+    double distanceBetweenPoses = kinematicPose.getTranslation().getDistance(visionPose.getTranslation());
 
+    
     if (tags > 0) {
-      poseEstimator.addVisionMeasurement(visionPose, Timer.getFPGATimestamp());
+      if (distanceBetweenPoses <= 0.5) {
+        poseEstimator.addVisionMeasurement(visionPose, Timer.getFPGATimestamp());
+      }
     }
+    
+    setPose(getEstimatedPose());
+    
+    Logger.recordOutput("Limelight/RobotPose", visionPose);
+    Logger.recordOutput("Odometry/EstimatedPose", poseEstimator.getEstimatedPosition());
   }
+
 }
