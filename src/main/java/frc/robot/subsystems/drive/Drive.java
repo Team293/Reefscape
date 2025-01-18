@@ -22,6 +22,7 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 // import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 // import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -33,11 +34,14 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.LimelightHelpers;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 
@@ -57,6 +61,8 @@ public class Drive extends SubsystemBase {
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
   private Pose2d pose = new Pose2d();
   private Rotation2d lastGyroRotation = new Rotation2d();
+
+  private SwerveDrivePoseEstimator poseEstimator;
 
   // Field oriented direction in degrees
   private PIDController fieldOrientedDirectionController = new PIDController(0.05, 0.0, 0.0);
@@ -110,6 +116,8 @@ public class Drive extends SubsystemBase {
     //     (targetPose) -> {
     //       Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
     //     });
+
+    poseEstimator = new SwerveDrivePoseEstimator(kinematics, getRotation(), getWheelPositions(), pose);
   }
 
   public void periodic() {
@@ -169,6 +177,17 @@ public class Drive extends SubsystemBase {
       pose = pose.exp(twist);
     }
     lastGyroRotation = gyroInputs.yawPosition;
+    
+    updateRobotPosition();
+  }
+
+  private SwerveModulePosition[] getWheelPositions() {
+    SwerveModulePosition[] wheelPositions = new SwerveModulePosition[4];
+    for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
+      wheelPositions[moduleIndex] = modules[moduleIndex].getPosition();
+    }
+
+    return wheelPositions;
   }
 
   public void resetRotation(double resetDirection) {
@@ -176,6 +195,7 @@ public class Drive extends SubsystemBase {
     var currentPose = getPose();
     setTargetDirection(resetDirection);
     setPose(new Pose2d(currentPose.getTranslation(), Rotation2d.fromDegrees(resetDirection)));
+    poseEstimator.update(Rotation2d.fromDegrees(resetDirection), getWheelPositions());
   }
 
   /**
@@ -283,6 +303,11 @@ public class Drive extends SubsystemBase {
     this.pose = pose;
   }
 
+  @AutoLogOutput(key = "Odometry/EstimatedPose")
+  public Pose2d getEstimatedPose() {
+    return poseEstimator.getEstimatedPosition();
+  }
+
   /** Returns the maximum linear speed in meters per sec. */
   public double getMaxLinearSpeedMetersPerSec() {
     return MAX_LINEAR_SPEED;
@@ -301,5 +326,16 @@ public class Drive extends SubsystemBase {
       new Translation2d(-TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0),
       new Translation2d(-TRACK_WIDTH_X / 2.0, -TRACK_WIDTH_Y / 2.0)
     };
+  }
+
+  public void updateRobotPosition() {
+    poseEstimator.update(getRotation(), getWheelPositions());
+
+    Pose2d visionPose = LimelightHelpers.getBotPose2d_wpiBlue("limelight");
+    int tags = LimelightHelpers.getRawFiducials("limelight").length;
+
+    if (tags > 0) {
+      poseEstimator.addVisionMeasurement(visionPose, Timer.getFPGATimestamp());
+    }
   }
 }

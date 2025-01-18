@@ -32,6 +32,7 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.vision.Vision;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -42,6 +43,7 @@ import frc.robot.subsystems.intake.Intake;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final Vision vision;
   // private final Intake intake;
   // private final AlgaePickup algaePickup;
   // private final AlgaeKnocker algaeKnocker;
@@ -92,7 +94,7 @@ public class RobotContainer {
         break;
     }
     // Initalize subsystems
-    // vision = new Vision();
+    vision = new Vision(drive);
     // launcher = new Launcher();
     // intake = new Intake(drive);
     // led = new Led(1, launcher);
