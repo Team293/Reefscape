@@ -36,7 +36,7 @@ public class GyroIONavX implements GyroIO {
     gyro.setAngleAdjustment(0);
     Rotation2d realYaw = getRealYaw();
 
-    Rotation2d offset = realYaw.minus(yaw);
+    Rotation2d offset = yaw.minus(realYaw);
     
     gyro.setAngleAdjustment(offset.getDegrees());
   }

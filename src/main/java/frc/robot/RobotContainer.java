@@ -136,14 +136,26 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     /* Drive command */
+
+    // drive.setDefaultCommand(
+    //     SubsystemControl.joystickDrive(
+    //         drive,
+    //         () -> -driverController.getLeftY(),
+    //         () -> -driverController.getLeftX(),
+    //         () -> -driverController.getRightX(),
+    //         () -> driverController.getLeftTriggerAxis(),
+    //         () -> driverController.getRightTriggerAxis()));
+
     drive.setDefaultCommand(
-        SubsystemControl.joystickDrive(
-            drive,
-            () -> -driverController.getLeftY(),
-            () -> -driverController.getLeftX(),
-            () -> -driverController.getRightX(),
-            () -> driverController.getLeftTriggerAxis(),
-            () -> driverController.getRightTriggerAxis()));
+      SubsystemControl.targetPosePositioning(drive, 
+        () -> -driverController.getLeftY(),
+        () -> -driverController.getLeftX(),
+        () -> driverController.getRightX(),
+        () -> -driverController.getRightY(),
+        () -> driverController.leftBumper().getAsBoolean()
+      )
+    );
+
     /*
      * SubsystemControl.fieldOrientedRotation(
      * drive,

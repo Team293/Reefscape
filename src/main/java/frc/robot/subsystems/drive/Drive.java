@@ -39,6 +39,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.LimelightHelpers;
@@ -64,12 +65,17 @@ public class Drive extends SubsystemBase {
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
   private Pose2d defaultPose = new Pose2d(9.45, 4.11, new Rotation2d());
-  private Rotation2d lastGyroRotation = new Rotation2d();
+
+  private Pose2d targetPose = new Pose2d();
 
   private SwerveDrivePoseEstimator poseEstimator;
 
   // Field oriented direction in degrees
-  private PIDController fieldOrientedDirectionController = new PIDController(0.05, 0.0, 0.0);
+  private PIDController fieldOrientedDirectionController = new PIDController(3.0, 0.0, 0.0);
+  private PIDController targetPoseXController = new PIDController(5.0, 0.0, 0.0);
+  private PIDController targetPoseYController = new PIDController(5.0, 0.0, 0.0);
+
+  private final double TARGET_POSE_GOAL_THRESHOLD = 0.1;
 
   private final Vision vision;
 
@@ -87,7 +93,11 @@ public class Drive extends SubsystemBase {
     modules[2] = new Module(blModuleIO, 2);
     modules[3] = new Module(brModuleIO, 3);
 
-    fieldOrientedDirectionController.enableContinuousInput(0, 360.0);
+    fieldOrientedDirectionController.enableContinuousInput(-Math.PI, Math.PI);
+    fieldOrientedDirectionController.setTolerance(0);
+    
+    targetPoseXController.setTolerance(0);
+    targetPoseYController.setTolerance(0);
 
 
     RobotConfig config;
@@ -137,6 +147,9 @@ public class Drive extends SubsystemBase {
     );
     
     poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+    setPose(defaultPose);
+
+    targetPose = poseEstimator.getEstimatedPosition();
   }
 
   public void periodic() {
@@ -158,7 +171,8 @@ public class Drive extends SubsystemBase {
         module.stop();
       }
 
-      setTargetDirection(getRotation().getDegrees());
+      // setTargetDirection(getRotation().getDegrees());
+      setTargetPose(getPose());
     }
     // Log empty setpoint states when disabled
     // if (DriverStation.isDisabled()) {
@@ -228,6 +242,29 @@ public class Drive extends SubsystemBase {
             translation.getX(), translation.getY(), omegaOutput, getRotation()));
   }
 
+  public void runTargetPosePositioning() {
+    double omegaOutput = fieldOrientedDirectionController.calculate(getPose().getRotation().getRadians(), targetPose.getRotation().getRadians());
+
+    double outputX = Math.min(targetPoseXController.calculate(getPose().getX(), targetPose.getX()), MAX_LINEAR_SPEED);
+    double outputY = Math.min(targetPoseYController.calculate(getPose().getY(), targetPose.getY()), MAX_LINEAR_SPEED);
+
+    if (Math.abs(outputX) < TARGET_POSE_GOAL_THRESHOLD) {
+      outputX = 0;
+    }
+
+    if (Math.abs(outputY) < TARGET_POSE_GOAL_THRESHOLD) {
+      outputY = 0;
+    }
+
+    Logger.recordOutput("Odometry/AutoXOut", outputX);
+    Logger.recordOutput("Odometry/AutoYOut", outputY);
+    Logger.recordOutput("Odometry/AutoRotationOut", omegaOutput);
+    
+    runVelocity(
+        ChassisSpeeds.fromFieldRelativeSpeeds(
+          outputX, outputY, omegaOutput, getRotation()));
+  }
+
   /** Stops the drive. */
   public void stop() {
     runVelocity(new ChassisSpeeds());
@@ -288,12 +325,20 @@ public class Drive extends SubsystemBase {
     return gyroInputs.yawPosition;
   }
 
+  @AutoLogOutput(key = "Odometry/TargetPose")
+  public Pose2d getTargetPose() {
+    return targetPose;
+  }
+
+  public void setTargetPose(Pose2d pose) {
+    targetPose = pose;
+  }
+
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
     poseEstimator.resetPosition(getRotation(), getWheelPositions(), pose);
     gyroIO.setYaw(pose.getRotation());
-    gyroIO.setYaw(pose.getRotation());
-    gyroIO.setYaw(pose.getRotation());
+    targetPose = poseEstimator.getEstimatedPosition();
   }
 
   @AutoLogOutput(key = "Odometry/Robot")

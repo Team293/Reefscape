@@ -17,9 +17,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
+
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 public class SubsystemControl {
@@ -36,6 +40,7 @@ public class SubsystemControl {
       DoubleSupplier omegaSupplier) {
     return Commands.run(
         () -> {
+
           // Apply deadband
           double linearMagnitude = Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble());
           Rotation2d linearDirection;
@@ -66,6 +71,87 @@ public class SubsystemControl {
                   drive.getRotation()));
         },
         drive);
+  }
+
+  /*
+   * Field pose based positioning
+   */
+  public static Command targetPosePositioning(
+    Drive drive,
+    DoubleSupplier xSupplier,
+    DoubleSupplier ySupplier,
+    DoubleSupplier rotationXSupplier,
+    DoubleSupplier rotationYSupplier,
+    BooleanSupplier positioningToggle
+  ) {
+    final double angleOffset = Math.PI/2.0;
+    return Commands.run(() -> {
+      if (positioningToggle.getAsBoolean() == true) {
+        // Apply deadband
+        double linearMagnitude = Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+        Rotation2d linearDirection;
+        if (linearMagnitude < 0.01) {
+          linearDirection = Rotation2d.fromDegrees(0);
+        } else {
+          linearDirection = new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+        }
+        
+        double omega = rotationXSupplier.getAsDouble();
+
+        // Square values
+        linearMagnitude = linearMagnitude * linearMagnitude;
+        omega = Math.copySign(omega * omega, omega);
+
+        // Calcaulate new linear velocity
+        Translation2d linearVelocity =
+            new Pose2d(new Translation2d(), linearDirection)
+                .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
+                .getTranslation();
+
+        // Convert to field relative speeds & send command
+        drive.runVelocity(
+            ChassisSpeeds.fromFieldRelativeSpeeds(
+                linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                omega * drive.getMaxAngularSpeedRadPerSec(),
+                drive.getRotation()));
+                
+        drive.setTargetPose(drive.getPose());
+        return;
+      }
+
+      Pose2d currentTargetPose = drive.getTargetPose();
+
+      double xTranslation = xSupplier.getAsDouble();
+      double yTranslation = ySupplier.getAsDouble();
+      double angle = Math.PI + angleOffset + Math.atan2(rotationYSupplier.getAsDouble(), rotationXSupplier.getAsDouble());
+      if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red) {
+        angle -= Math.PI;
+        xTranslation *= -1.0;
+        yTranslation *= -1.0;
+      }
+
+      Rotation2d targetRotation = currentTargetPose.getRotation();
+      double magnitude = Math.sqrt(Math.pow(rotationYSupplier.getAsDouble(), 2) + Math.pow(rotationXSupplier.getAsDouble(), 2));
+      if (magnitude > 0.5) {
+        targetRotation = Rotation2d.fromRadians(angle);
+      }
+
+      Translation2d translation =
+      new Translation2d(
+          currentTargetPose.getX() + xTranslation * drive.getMaxLinearSpeedMetersPerSec() / 50.0,
+          currentTargetPose.getY() + yTranslation * drive.getMaxLinearSpeedMetersPerSec() / 50.0);
+
+      Pose2d targetPose = new Pose2d(translation, targetRotation);
+      drive.setTargetPose(targetPose);
+
+      if (targetPose.getTranslation().getDistance(drive.getPose().getTranslation()) > 5.0) {
+        targetPose = drive.getPose();
+      }
+
+      drive.runTargetPosePositioning();
+    },
+    drive);
   }
 
   /*
