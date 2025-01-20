@@ -61,6 +61,8 @@ public class ModuleIOTalonFX implements ModuleIO {
   // private final StatusSignal<Double> turnAppliedVolts;
   // private final StatusSignal<Double> turnCurrent;
 
+  private static final double DECELERATION_PER_SECOND = 1.0;
+
   // Gear ratios for SDS MK4i L2, adjust as necessary
   private static final double DRIVE_GEAR_RATIO = SDSMK4L1Constants.driveGearRatio;
   // private static final double TURN_GEAR_RATIO = SDSMK4L1Constants.angleGearRatio;
