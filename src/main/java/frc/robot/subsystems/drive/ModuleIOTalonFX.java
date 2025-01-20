@@ -192,16 +192,7 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void setDriveVelocityRPS(double velocityRPS) {
-    // get 
-    double currentVelocity = driveTalon.getVelocity().getValueAsDouble();
-
-    double newVelocity = velocityRPS;
-    // if setting velocity to zero, limit deceleration to 
-    if (velocityRPS == 0 && Math.abs(velocityRPS - currentVelocity) > 0.3) {
-      newVelocity = currentVelocity - Math.signum(currentVelocity) * (DECELERATION_PER_SECOND / 50.0);
-    }
-
-    velocityVoltageCommand.withVelocity(newVelocity).withSlot(0);
+    velocityVoltageCommand.withVelocity(velocityRPS).withSlot(0);
     driveTalon.setControl(velocityVoltageCommand);
   }
 

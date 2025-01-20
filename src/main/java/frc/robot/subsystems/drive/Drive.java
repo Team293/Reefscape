@@ -181,11 +181,11 @@ public class Drive extends SubsystemBase {
   }
 
   public void resetRotation(double resetDirection) {
-    if (DriverStation.getAlliance().isPresent()) {
-      if (DriverStation.getAlliance().get() == Alliance.Red) {
-        resetDirection += 180.0;
-      }
-    } 
+    // if (DriverStation.getAlliance().isPresent()) {
+    //   if (DriverStation.getAlliance().get() == Alliance.Red) {
+    //     resetDirection += 180.0;
+    //   }
+    // } 
 
     var currentPose = getPose();
     setTargetDirection(resetDirection); // FOD
