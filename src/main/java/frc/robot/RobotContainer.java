@@ -23,15 +23,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.SpikeController;
 import frc.robot.commands.SubsystemControl;
-import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
-import frc.robot.subsystems.algaepickup.AlgaePickup;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIONavX;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.vision.Vision;
 
 /**
@@ -43,6 +40,7 @@ import frc.robot.subsystems.vision.Vision;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final Elevator elevator;
   // private final Intake intake;
   // private final AlgaePickup algaePickup;
   // private final AlgaeKnocker algaeKnocker;
@@ -51,7 +49,7 @@ public class RobotContainer {
   // Controller
   private static final double DEADBAND = 0.05;
   private final SpikeController driverController = new SpikeController(0, DEADBAND);
-  // private final SpikeController operatorController = new SpikeController(1, DEADBAND);
+  private final SpikeController operatorController = new SpikeController(1, DEADBAND);
 
   // Dashboard inputs
   private final SendableChooser<Command> autoChooser;
@@ -98,6 +96,7 @@ public class RobotContainer {
     // launcher = new Launcher();
     // intake = new Intake(drive);
     // led = new Led(1, launcher);
+    elevator = new Elevator();
 
     // NamedCommands.registerCommand("launchNote", new Launch(intake, launcher));
     // NamedCommands.registerCommand("colorSensorIntake", new ColorSensorIntake(intake, launcher));
@@ -177,6 +176,9 @@ public class RobotContainer {
     driverController
         .a()
         .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
+
+    operatorController
+        .rightStick().onChange(Commands.runOnce(() -> elevator.setPosition(operatorController.getRightY()), elevator));
   }
 
   /**

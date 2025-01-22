@@ -1,6 +1,7 @@
 package frc.robot.subsystems.elevator;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -10,8 +11,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 public class ElevatorIOTalonFX implements ElevatorIO {
     private TalonFX elevatorMotor;
     private double m_gearRatio = 1.0; // change to the actual later
-
-    private static VelocityVoltage velocityVoltageCommand = new VelocityVoltage(0.0).withSlot(0);
 
     public ElevatorIOTalonFX(int canID) {
         this.elevatorMotor = new TalonFX(canID);
@@ -38,9 +37,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         ElevatorIO.super.updateInputs(inputs);
     }
 
-    @Override
-    public void setSpeed(double speed) {
-        velocityVoltageCommand.withVelocity(speed).withSlot(0); // Convert to motor rotations per second
-        elevatorMotor.setControl(velocityVoltageCommand);
+    public void applyPosition(PositionVoltage request) {
+        elevatorMotor.setControl(request);
     }
 }
