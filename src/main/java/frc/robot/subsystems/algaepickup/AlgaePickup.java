@@ -6,7 +6,7 @@ public class AlgaePickup extends SubsystemBase {
     private final AlgaePickupIOTalonFX algaePickupMotor;
     private final AlgaePickupIOInputsAutoLogged inputs = new AlgaePickupIOInputsAutoLogged();
 
-    public static final double MAX_VELOCITY = 8.0;
+    public static final double MAX_VELOCITY = 20.0;
     
     public AlgaePickup() {
         algaePickupMotor = new AlgaePickupIOTalonFX(1);
