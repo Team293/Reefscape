@@ -124,6 +124,9 @@ public class RobotContainer {
     //         drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
 
     // Configure the button bindings
+
+    elevator.calculateOffset(); 
+
     configureButtonBindings();
   }
 
@@ -179,6 +182,10 @@ public class RobotContainer {
 
     operatorController
         .rightStick().onChange(Commands.runOnce(() -> elevator.setPosition(operatorController.getRightY()), elevator));
+
+    operatorController
+        .b()
+        .onTrue(Commands.runOnce(() -> elevator.calculateOffset(), elevator));
   }
 
   /**
