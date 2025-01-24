@@ -32,6 +32,7 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
 
+
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -45,10 +46,11 @@ public class RobotContainer {
   private final AlgaeKnocker algaeKnocker;
   private final Elevator elevator;
 
+
   // Controller
   private static final double DEADBAND = 0.05;
   private final SpikeController driverController = new SpikeController(0, DEADBAND);
-  private final SpikeController operatorController = new SpikeController(1, DEADBAND);
+  // private final SpikeController operatorController = new SpikeController(1, DEADBAND);
 
   // Dashboard inputs
   private final SendableChooser<Command> autoChooser;
@@ -64,6 +66,7 @@ public class RobotContainer {
     algaeKnocker = new AlgaeKnocker();
     elevator = new Elevator();
 
+
     // Initialize the intake subsystem
 
     switch (Constants.currentMode) {
@@ -78,6 +81,7 @@ public class RobotContainer {
                 new ModuleIOTalonFX(3));
         break;
 
+
        default:
         // Replayed robot, disable IO implementations
          drive =
@@ -90,7 +94,6 @@ public class RobotContainer {
          break;
      }
     // Initalize subsystems
-    // vision = new Vision();
     // launcher = new Launcher();
     // intake = new Intake(drive);
     // led = new Led(1, launcher);
@@ -145,25 +148,14 @@ public class RobotContainer {
      * () -> driverController.getLeftTriggerAxis(),
      * () -> driverController.getRightTriggerAxis()));
      */
+
     /* Brake command */
-    // driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     /* Reset heading command */
-    // driverController
-    //     .y()
-    //     .onTrue(Commands.runOnce(() -> drive.resetRotation(0.0), drive).ignoringDisable(true));
-
-    /* climb */
-    // operatorController.b().onTrue(Commands.runOnce(climber::climberUp));
-    // operatorController.b().onFalse(Commands.runOnce(climber::climberDown));
-
-    /* elbow */
-    // operatorController.x().onFalse(Commands.runOnce(amp::deactivateElbow));
-    // operatorController.x().onTrue(Commands.runOnce(amp::activateElbow));
-
-    /* wrist */
-    // operatorController.y().onTrue(Commands.runOnce(amp::closeWrist));
-    // operatorController.y().onFalse(Commands.runOnce(amp::openWrist));
+    driverController
+        .y()
+        .onTrue(Commands.runOnce(() -> drive.resetRotation(0.0), drive).ignoringDisable(true));
 
     /* Reset heading command */
     // driverController
@@ -189,6 +181,10 @@ public class RobotContainer {
     //     .onTrue(
     //         Commands.runOnce(
     //             () -> new AmpScore(intake, launcher, amp).schedule(), intake, launcher, amp));
+
+    driverController
+        .a()
+        .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
   }
 
   /**

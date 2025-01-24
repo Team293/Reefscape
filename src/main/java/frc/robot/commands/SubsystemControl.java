@@ -12,8 +12,6 @@
 // GNU General Public License for more details.
 
 package frc.robot.commands;
-
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -27,7 +25,6 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 public class SubsystemControl {
-  private static final double DEADBAND = 0.1;
 
   private SubsystemControl() {}
 
@@ -120,11 +117,6 @@ public class SubsystemControl {
         double xTranslation = xSupplier.getAsDouble();
         double yTranslation = ySupplier.getAsDouble();
 
-        if (Math.abs(strafe) > 0.05) {
-          xTranslation = Math.sin(-drive.getRotation().getRadians()) * strafe;
-          yTranslation = Math.cos(-drive.getRotation().getRadians()) * strafe;
-        }
-
         // Apply deadband
         double linearMagnitude = Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble());
         Rotation2d linearDirection;
@@ -145,6 +137,14 @@ public class SubsystemControl {
             new Pose2d(new Translation2d(), linearDirection)
                 .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
                 .getTranslation();
+
+        if (Math.abs(strafe) > 0.05) {
+          xTranslation = Math.sin(-drive.getRotation().getRadians()) * strafe;
+          yTranslation = Math.cos(-drive.getRotation().getRadians()) * strafe;
+        } else {
+          xTranslation = linearVelocity.getX();
+          yTranslation = linearVelocity.getY();
+        }
 
         // Convert to field relative speeds & send command
         drive.runVelocity(
@@ -203,4 +203,48 @@ public class SubsystemControl {
       algaePickup.setVelocity(speed.getAsDouble() * AlgaePickup.MAX_VELOCITY);
     }, algaePickup);
   }
+  // public static Command limelightDrive(
+  //     Drive drive,
+  //     Vision vision,
+  //     DoubleSupplier xSupplier,
+  //     DoubleSupplier ySupplier,
+  //     DoubleSupplier omegaSupplier) {
+
+  //   return Commands.run(
+  //       () -> {
+  //         // Apply deadband
+  //         double linearMagnitude =
+  //             MathUtil.applyDeadband(
+  //                 Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble()), DEADBAND);
+  //         Rotation2d linearDirection =
+  //             new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+  //         double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+
+  //         // Square values
+  //         linearMagnitude = linearMagnitude * linearMagnitude;
+  //         omega = Math.copySign(omega * omega, omega);
+
+  //         // Calcaulate new linear velocity
+  //         Translation2d linearVelocity =
+  //             new Pose2d(new Translation2d(), linearDirection)
+  //                 .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
+  //                 .getTranslation();
+
+  //         if (omega != 0.0d) { // Check if the driver isnt trying to turn
+  //           vision.resetError();
+  //         } else if ((omega == 0.0) && (vision.seesTarget())) {
+  //           // Get tX from the vision subsystem. tX is "demand"
+  //           omega = -vision.getDesiredAngle();
+  //         }
+
+  //         drive.runVelocity(
+  //             // Convert to field relative speeds & send command
+  //             ChassisSpeeds.fromFieldRelativeSpeeds(
+  //                 linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+  //                 linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+  //                 omega * drive.getMaxAngularSpeedRadPerSec(),
+  //                 drive.getRotation()));
+  //       },
+  //       drive);
+  // }
 }
