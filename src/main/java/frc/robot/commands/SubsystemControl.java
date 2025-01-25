@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.coralScorer.CoralScorer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
-
+import frc.robot.subsystems.algaepickup.AlgaePickup;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -187,6 +187,16 @@ public class SubsystemControl {
         coralScorer.disableIntake();
       }
     }, coralScorer);
+  }
+
+  public static Command alagaePickup(
+    AlgaePickup algaePickup,
+    DoubleSupplier speed
+  )
+  {
+    return Commands.run(() -> {
+      algaePickup.setVelocity(speed.getAsDouble() * AlgaePickup.MAX_VELOCITY);
+    }, algaePickup);
   }
 
   // public static Command limelightDrive(

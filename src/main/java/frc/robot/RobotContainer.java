@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.SpikeController;
 import frc.robot.commands.SubsystemControl;
+import frc.robot.subsystems.algaepickup.AlgaePickup;
 import frc.robot.subsystems.coralScorer.CoralScorer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -41,12 +42,11 @@ import frc.robot.subsystems.vision.Vision;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final Elevator elevator;
   private final CoralScorer coralScorer;
-  // private final Intake intake;
-  // private final AlgaePickup algaePickup;
+  private final AlgaePickup algaePickup;
+  private final Vision vision;
   // private final AlgaeKnocker algaeKnocker;
-  // private final Elevator elevator;
+  private final Elevator elevator;
 
   // Controller
   private static final double DEADBAND = 0.05;
@@ -62,19 +62,17 @@ public class RobotContainer {
     String logDir = DataLogManager.getLogDir();
     System.out.print(logDir);
 
-    // intake = new Intake();
-    // algaePickup = new AlgaePickup();
-    // algaeKnocker = new AlgaeKnocker();
-    // elevator = new Elevator();
-
-    // Initialize the intake subsystem
+    algaePickup = new AlgaePickup();
+    elevator = new Elevator();
+    coralScorer = new CoralScorer();
+    vision = new Vision();
 
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
         drive =
             new Drive(
-                new Vision(),
+                vision,
                 new GyroIONavX(),
                 new ModuleIOTalonFX(0),
                 new ModuleIOTalonFX(1),
@@ -82,39 +80,19 @@ public class RobotContainer {
                 new ModuleIOTalonFX(3));
         break;
 
-      default:
+
+       default:
         // Replayed robot, disable IO implementations
-        drive =
-            new Drive(
-                new Vision() {},
+         drive =
+             new Drive(
+                vision,
                 new GyroIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        break;
-    }
-    // Initalize subsystems
-    // launcher = new Launcher();
-    // intake = new Intake(drive);
-    // led = new Led(1, launcher);
-    elevator = new Elevator();
-    coralScorer = new CoralScorer();
-
-    // NamedCommands.registerCommand("launchNote", new Launch(intake, launcher));
-    // NamedCommands.registerCommand("colorSensorIntake", new ColorSensorIntake(intake, launcher));
-    // NamedCommands.registerCommand("launchNote2", new Launch(intake, launcher));
-    // NamedCommands.registerCommand("colorSensorIntake2", new ColorSensorIntake(intake, launcher));
-    // NamedCommands.registerCommand("launchNote3", new Launch(intake, launcher));
-    // NamedCommands.registerCommand("colorSensorIntake3", new ColorSensorIntake(intake, launcher));
-    // NamedCommands.registerCommand("launchNote4", new Launch(intake, launcher));
-    // NamedCommands.registerCommand("colorSensorIntake", new ColorSensorIntake(intake, launcher));
-
-    // Initalize climber
-    // climber = new Climb();
-
-    // Initialize amp
-    // amp = new Amp();
+         break;
+     }
 
     // Set up auto routines
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -176,6 +154,30 @@ public class RobotContainer {
         .onTrue(Commands.runOnce(() -> drive.resetRotation(0.0), drive).ignoringDisable(true));
 
     /* Reset heading command */
+    // driverController
+    //     .a()
+    //     .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
+
+    /* Intake auto-run command */
+    /* Reverse intake control as well */
+    algaePickup.setDefaultCommand(
+        SubsystemControl.alagaePickup(
+            algaePickup,
+            operatorController::getRightY));
+
+    /* Launcher control */
+    // operatorController
+    //     .rightBumper()
+    //     .onTrue(Commands.runOnce(() -> new Launch(intake, launcher).schedule(), intake,
+    // launcher));
+
+    /* Amp scoring control */
+    // operatorController
+    //     .a()
+    //     .onTrue(
+    //         Commands.runOnce(
+    //             () -> new AmpScore(intake, launcher, amp).schedule(), intake, launcher, amp));
+
     driverController
         .a()
         .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
