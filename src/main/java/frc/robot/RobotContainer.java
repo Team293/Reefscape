@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.SpikeController;
 import frc.robot.commands.SubsystemControl;
+import frc.robot.subsystems.coralScorer.CoralScorer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIONavX;
@@ -41,6 +42,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Elevator elevator;
+  private final CoralScorer coralScorer;
   // private final Intake intake;
   // private final AlgaePickup algaePickup;
   // private final AlgaeKnocker algaeKnocker;
@@ -97,6 +99,7 @@ public class RobotContainer {
     // intake = new Intake(drive);
     // led = new Led(1, launcher);
     elevator = new Elevator();
+    coralScorer = new CoralScorer();
 
     // NamedCommands.registerCommand("launchNote", new Launch(intake, launcher));
     // NamedCommands.registerCommand("colorSensorIntake", new ColorSensorIntake(intake, launcher));
@@ -124,9 +127,6 @@ public class RobotContainer {
     //         drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
 
     // Configure the button bindings
-
-    elevator.calculateOffset(); 
-
     configureButtonBindings();
   }
 
@@ -180,13 +180,18 @@ public class RobotContainer {
         .a()
         .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
 
-    operatorController
-        .rightStick().onChange(Commands.runOnce(() -> elevator.setPosition(operatorController.getRightY()), elevator));
+    elevator.setDefaultCommand(SubsystemControl.elevatorControl(
+      elevator,
+      operatorController::getRightY,
+      () -> operatorController.b().getAsBoolean()
+    ));
 
-    operatorController
-        .b()
-        .onTrue(Commands.runOnce(() -> elevator.calculateOffset(), elevator));
-  }
+    coralScorer.setDefaultCommand(SubsystemControl.coralControl(
+      coralScorer, 
+      () -> operatorController.y().getAsBoolean(), 
+      () -> operatorController.a().getAsBoolean()
+    ));
+  } 
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

@@ -37,20 +37,23 @@ public class Vision extends SubsystemBase {
 
         LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(NAME);
 
-        if (Math.abs(gyroRate) > 720) {
-            rejectOdometry = true;
-        }
-
-        if (poseEstimate.tagCount == 0) {
-            rejectOdometry = true;  
-        }
-
-        if (!rejectOdometry) {
-            Pose2d visionPose = poseEstimate.pose;
-
-            Logger.recordOutput("Limelight/EstimatedPose", visionPose);
-
-            estimator.addVisionMeasurement(visionPose, poseEstimate.timestampSeconds);
+        if (poseEstimate != null)
+        {
+            if (Math.abs(gyroRate) > 720) {
+                rejectOdometry = true;
+            }
+    
+            if (poseEstimate.tagCount == 0) {
+                rejectOdometry = true;  
+            }
+    
+            if (!rejectOdometry) {
+                Pose2d visionPose = poseEstimate.pose;
+    
+                Logger.recordOutput("Limelight/EstimatedPose", visionPose);
+    
+                estimator.addVisionMeasurement(visionPose, poseEstimate.timestampSeconds);
+            }
         }
     }
     

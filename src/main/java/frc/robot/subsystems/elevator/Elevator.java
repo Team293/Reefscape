@@ -1,57 +1,87 @@
 package frc.robot.subsystems.elevator;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.controls.PositionVoltage;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Elevator extends SubsystemBase {
-    private static final double MAX_POSITION = 2.87;
+    private static final double MAX_POSITION = 2.7;
     private static final double MIN_POSITION = 0.0;
-    private static final double DELTA_POSITION_DEADBAND = 0.005;
+    private static final double DELTA_POSITION_DEADBAND = 0.001;
+    private static final double MAX_SPEED = .5;
     
     private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
     private final ElevatorIOTalonFX elevatorMotor;
     private final PositionVoltage command;
     
-    private double encoderOffset = 0.0d; 
-
     // Encoder Offset Calculation Variables
     private boolean isCalculatingOffset = false; 
     private double lastPositionReading = 0.0d;
+    private double targetPosition = 0.0;
 
     public Elevator() {
-        elevatorMotor = new ElevatorIOTalonFX(0); // TODO: change to actual CAN ID
+        elevatorMotor = new ElevatorIOTalonFX(2);
         command = new PositionVoltage(0).withSlot(0);
+        elevatorMotor.setPosition(0);
+        isCalculatingOffset = false; 
     }
     
     @Override
     public void periodic() {
         elevatorMotor.updateInputs(inputs);
 
-        if (isCalculatingOffset = true) {
+        Logger.recordOutput("Elevator/Calibrating", isCalculatingOffset);
+        Logger.recordOutput("Elevator/Position", inputs.positionValue);
+        Logger.recordOutput("Elevator/TargetPosition", targetPosition);
+
+        if (DriverStation.isDisabled()) {
+            elevatorMotor.setPosition(0);
+            targetPosition = 0;
+        }
+
+        if (isCalculatingOffset == true) {
             // calculate the offsets of the encoders
             double positionDelta = lastPositionReading - inputs.positionValue;
-            if (MathUtil.applyDeadband(positionDelta, DELTA_POSITION_DEADBAND) == 0) { // check to see that elevator stopped moving
-                encoderOffset = inputs.positionValue;
+            lastPositionReading = inputs.positionValue;
+            elevatorMotor.setZeroVoltage();
+            if (Math.abs(positionDelta) < DELTA_POSITION_DEADBAND) { // check to see that elevator stopped moving
+                elevatorMotor.setPosition(0);
+                targetPosition = 0;
                 elevatorMotor.setBrakeMode(true);
                 isCalculatingOffset = false;
             }
         }
+        lastPositionReading = inputs.positionValue;
     }
 
     public void calculateOffset() {
         isCalculatingOffset = true;
         elevatorMotor.setBrakeMode(false); // switch to coast mode to make elevetor drop down to zero position
+        elevatorMotor.setZeroVoltage();
+        lastPositionReading = inputs.positionValue + DELTA_POSITION_DEADBAND * 2;
     }
 
     public void setPosition(double percentValue) {
         if (!isCalculatingOffset) { 
             // joystick is reversed
-            double newPosition = MathUtil.clamp(-percentValue * MAX_POSITION, MIN_POSITION, MAX_POSITION) + encoderOffset;
+            targetPosition = MathUtil.clamp(-percentValue * MAX_POSITION, MIN_POSITION, MAX_POSITION);
 
             // Clamp the position at the min and max values, then add the encoder offset 
-            elevatorMotor.applyPosition(command.withPosition(newPosition)); 
+            elevatorMotor.applyPosition(command.withPosition(targetPosition)); 
+        }
+    }
+
+    public void changePosition(double percentSpeed) {
+        if (!isCalculatingOffset) { 
+            // joystick is reversed
+            targetPosition = MathUtil.clamp(targetPosition + percentSpeed * MAX_SPEED,  MIN_POSITION, MAX_POSITION);
+
+            // Clamp the position at the min and max values, then add the encoder offset 
+            elevatorMotor.applyPosition(command.withPosition(targetPosition)); 
         }
     }
 }
