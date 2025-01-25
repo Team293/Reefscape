@@ -38,11 +38,6 @@ public class Elevator extends SubsystemBase {
         Logger.recordOutput("Elevator/Position", inputs.positionValue);
         Logger.recordOutput("Elevator/TargetPosition", targetPosition);
 
-        if (DriverStation.isDisabled()) {
-            elevatorMotor.setPosition(0);
-            targetPosition = 0;
-        }
-
         if (isCalculatingOffset == true) {
             // calculate the offsets of the encoders
             double positionDelta = lastPositionReading - inputs.positionValue;

@@ -165,26 +165,13 @@ public class RobotContainer {
             algaePickup,
             operatorController::getRightY));
 
-    /* Launcher control */
-    // operatorController
-    //     .rightBumper()
-    //     .onTrue(Commands.runOnce(() -> new Launch(intake, launcher).schedule(), intake,
-    // launcher));
-
-    /* Amp scoring control */
-    // operatorController
-    //     .a()
-    //     .onTrue(
-    //         Commands.runOnce(
-    //             () -> new AmpScore(intake, launcher, amp).schedule(), intake, launcher, amp));
-
     driverController
         .a()
         .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
 
     elevator.setDefaultCommand(SubsystemControl.elevatorControl(
       elevator,
-      operatorController::getRightY,
+      operatorController::getLeftY,
       () -> operatorController.b().getAsBoolean()
     ));
 
