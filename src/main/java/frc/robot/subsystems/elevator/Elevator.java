@@ -13,7 +13,12 @@ public class Elevator extends SubsystemBase {
     private static final double MIN_POSITION = 0.0;
     private static final double DELTA_POSITION_DEADBAND = 0.001;
     private static final double MAX_SPEED = .5;
-    
+
+    private static final double L1_POSITION = 0.0d;
+    private static final double L2_POSITION = 0.0d;
+    private static final double L3_POSITION = 0.0d;
+    private static final double L4_POSITION = 0.0d;
+
     private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
     private final ElevatorIOTalonFX elevatorMotor;
     private final PositionVoltage command;
@@ -68,6 +73,21 @@ public class Elevator extends SubsystemBase {
             // Clamp the position at the min and max values, then add the encoder offset 
             elevatorMotor.applyPosition(command.withPosition(targetPosition)); 
         }
+    }
+
+    public void setPresetPos(int pos) {
+        switch(pos) {
+            case 1:
+                elevatorMotor.applyPosition(command.withPosition(L1_POSITION));
+            case 2:
+                elevatorMotor.applyPosition(command.withPosition(L2_POSITION));
+            case 3:
+                elevatorMotor.applyPosition(command.withPosition(L3_POSITION));
+            case 4:
+                elevatorMotor.applyPosition(command.withPosition(L4_POSITION));
+
+        }
+        
     }
 
     public void changePosition(double percentSpeed) {
