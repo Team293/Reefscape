@@ -152,7 +152,15 @@ public class RobotContainer {
     driverController
         .y()
         .onTrue(Commands.runOnce(() -> drive.resetRotation(0.0), drive).ignoringDisable(true));
-
+    
+    /* Elevator preset commands */
+    GenericHID hid = driverController.getHID()
+    hid.pov().onTrue(
+      Commands.runOnce(() -> elevator.setPresetPos(
+        (hid.getPOV() - hid.getPOV() % 90) / 90
+      ))
+    );
+        
     /* Reset heading command */
     // driverController
     //     .a()
