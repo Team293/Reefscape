@@ -124,8 +124,13 @@ public class Drive extends SubsystemBase {
         (targetPose) -> {
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
-
-    gyroIO.setYaw(defaultPose.getRotation());
+    
+    if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red) {
+      gyroIO.setYaw(defaultPose.getRotation());
+    } else {
+      gyroIO.setYaw(defaultPose.getRotation().plus(Rotation2d.fromDegrees(180)));
+    }
+        
 
     poseEstimator = new SwerveDrivePoseEstimator(
       kinematics, 
@@ -181,11 +186,9 @@ public class Drive extends SubsystemBase {
   }
 
   public void resetRotation(double resetDirection) {
-    // if (DriverStation.getAlliance().isPresent()) {
-    //   if (DriverStation.getAlliance().get() == Alliance.Red) {
-    //     resetDirection += 180.0;
-    //   }
-    // } 
+    if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red) {
+        resetDirection += 180.0;
+    } 
 
     var currentPose = getPose();
     setTargetDirection(resetDirection); // FOD
@@ -323,6 +326,6 @@ public class Drive extends SubsystemBase {
 
   public void updateRobotPosition() {
     poseEstimator.update(getRotation(), getWheelPositions());
-    vision.updateRobotPose(poseEstimator, Units.radiansToDegrees(gyroInputs.yawVelocityRadPerSec));
+    vision.updateRobotPose(poseEstimator, Units.radiansToDegrees(gyroInputs.yawVelocityRadPerSec), gyroInputs);
   }
 }
