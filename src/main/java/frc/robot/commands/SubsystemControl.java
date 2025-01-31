@@ -170,6 +170,7 @@ public class SubsystemControl {
       }
 
       elevator.changePosition(-elevatorPercentage.getAsDouble());
+      // elevator.setPresetPos();
     }, elevator);
   }
 
