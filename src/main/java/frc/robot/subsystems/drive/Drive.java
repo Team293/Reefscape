@@ -37,11 +37,9 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.vision.Vision;
-import frc.robot.util.LimelightHelpers;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -63,7 +61,7 @@ public class Drive extends SubsystemBase {
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
-  private Pose2d defaultPose = new Pose2d(9.45, 4.11, new Rotation2d());
+  private Pose2d defaultPose = new Pose2d(7.45, 4.11, new Rotation2d());
   private Rotation2d lastGyroRotation = new Rotation2d();
 
   private SwerveDrivePoseEstimator poseEstimator;
@@ -112,7 +110,7 @@ public class Drive extends SubsystemBase {
         config,
         () ->
             DriverStation.getAlliance().isPresent()
-                && DriverStation.getAlliance().get() == Alliance.Red,
+                && DriverStation.getAlliance().get() == Alliance.Blue,
         this);
     Pathfinding.setPathfinder(new LocalADStarAK());
     PathPlannerLogging.setLogActivePathCallback(
@@ -125,7 +123,7 @@ public class Drive extends SubsystemBase {
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
 
-    gyroIO.setYaw(defaultPose.getRotation());
+    resetWheelPositions();
 
     poseEstimator = new SwerveDrivePoseEstimator(
       kinematics, 
@@ -135,6 +133,8 @@ public class Drive extends SubsystemBase {
       VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)), // std for encoder measurements (increase to reduce encoder trust)
       VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)) // std for vision measurements (increase to reduce vision trust)
     );
+
+    setPose(defaultPose);
     
     poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
   }
@@ -180,17 +180,19 @@ public class Drive extends SubsystemBase {
     return wheelPositions;
   }
 
-  public void resetRotation(double resetDirection) {
-    // if (DriverStation.getAlliance().isPresent()) {
-    //   if (DriverStation.getAlliance().get() == Alliance.Red) {
-    //     resetDirection += 180.0;
-    //   }
-    // } 
+  public void resetWheelPositions() {
+    for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
+      modules[moduleIndex].setDrivePosition(0);
+    }
+  }
 
-    var currentPose = getPose();
-    setTargetDirection(resetDirection); // FOD
-    setPose(new Pose2d(currentPose.getTranslation(), Rotation2d.fromDegrees(resetDirection)));
-    poseEstimator.update(Rotation2d.fromDegrees(resetDirection), getWheelPositions());
+  public void resetRotation(double resetDirection) {
+    // setTargetDirection(resetDirection); // FOD
+    gyroIO.setYaw(Rotation2d.fromDegrees(resetDirection), gyroInputs);
+
+    Pose2d pose = new Pose2d(getPose().getTranslation(), Rotation2d.fromDegrees(resetDirection));
+
+    poseEstimator.resetPosition(Rotation2d.fromDegrees(resetDirection), getWheelPositions(), pose);
   }
 
   /**
@@ -288,12 +290,21 @@ public class Drive extends SubsystemBase {
     return gyroInputs.yawPosition;
   }
 
+  @AutoLogOutput(key = "Odometry/FusedHeading")
+  public Rotation2d getFusedHeading() {
+    return gyroInputs.fusedHeading;
+  }
+
+  @AutoLogOutput (key = "Odometry/YawOffset")
+  public Rotation2d getYawOffset() {
+    return gyroInputs.yawOffset;
+  }
+
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
-    poseEstimator.resetPosition(getRotation(), getWheelPositions(), pose);
-    gyroIO.setYaw(pose.getRotation());
-    gyroIO.setYaw(pose.getRotation());
-    gyroIO.setYaw(pose.getRotation());
+    resetRotation(pose.getRotation().getDegrees());
+
+    poseEstimator.resetPosition(pose.getRotation(), getWheelPositions(), pose);
   }
 
   @AutoLogOutput(key = "Odometry/Robot")
@@ -323,6 +334,6 @@ public class Drive extends SubsystemBase {
 
   public void updateRobotPosition() {
     poseEstimator.update(getRotation(), getWheelPositions());
-    vision.updateRobotPose(poseEstimator, Units.radiansToDegrees(gyroInputs.yawVelocityRadPerSec));
+    vision.updateRobotPose(poseEstimator, Units.radiansToDegrees(gyroInputs.yawVelocityRadPerSec), gyroInputs);
   }
 }
