@@ -19,7 +19,7 @@ public class Elevator extends SubsystemBase {
     private static final double L3_POSITION = 2.7d;
     private static final double L4_POSITION = 0.0d;
 
-    private static final double heights[] = {L1_POSITION, L2_POSITION, L3_POSITION, L4_POSITION}
+    private static final double heights[] = {L1_POSITION, L2_POSITION, L3_POSITION, L4_POSITION};
 
     private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
     private final ElevatorIOTalonFX elevatorMotor;
@@ -77,8 +77,8 @@ public class Elevator extends SubsystemBase {
         }
     }
 
-    public void setPresetPos(double pos) {
-        if (pos < 0 || pos > heights.length) {
+    public void setPresetPos(int pos) {
+        if (pos < 0 || pos >= heights.length) {
             DriverStation.reportError("Invalid preset position", false);
         } else {
             elevatorMotor.applyPosition(command.withPosition(heights[pos]));

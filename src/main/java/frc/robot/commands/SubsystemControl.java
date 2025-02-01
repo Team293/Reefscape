@@ -17,11 +17,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.coralScorer.CoralScorer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.lib.SpikeController;
 import frc.robot.subsystems.algaepickup.AlgaePickup;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -162,15 +164,22 @@ public class SubsystemControl {
   public static Command elevatorControl(
     Elevator elevator,
     DoubleSupplier elevatorPercentage,
-    BooleanSupplier resetElevator
+    BooleanSupplier resetElevator,
+    SpikeController controller
   ) {
     return Commands.run(() -> {
       if (resetElevator.getAsBoolean()) {
         elevator.calculateOffset();
       }
 
-      elevator.changePosition(-elevatorPercentage.getAsDouble());
-      // elevator.setPresetPos();
+      if (Math.abs(elevatorPercentage.getAsDouble()) > 0.05) {
+        elevator.changePosition(-elevatorPercentage.getAsDouble());
+      } else {
+        if (controller.getHID().getPOV() % 90 == 0) {
+          elevator.setPresetPos((int) (Math.floor(controller.getHID().getPOV() / 90.0)));
+        }
+      }
+      
     }, elevator);
   }
 
