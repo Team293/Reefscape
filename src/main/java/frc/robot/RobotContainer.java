@@ -14,6 +14,8 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -22,6 +24,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.SpikeController;
+import frc.robot.commands.DropCoral;
+import frc.robot.commands.SetElevatorHeight;
 import frc.robot.commands.SubsystemControl;
 import frc.robot.subsystems.algaepickup.AlgaePickup;
 import frc.robot.subsystems.coralScorer.CoralScorer;
@@ -43,7 +47,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final CoralScorer coralScorer;
-  private final AlgaePickup algaePickup;
+  // private final AlgaePickup algaePickup;
   private final Vision vision;
   // private final AlgaeKnocker algaeKnocker;
   private final Elevator elevator;
@@ -62,7 +66,7 @@ public class RobotContainer {
     String logDir = DataLogManager.getLogDir();
     System.out.print(logDir);
 
-    algaePickup = new AlgaePickup();
+    // algaePickup = new AlgaePickup();
     elevator = new Elevator();
     coralScorer = new CoralScorer();
     vision = new Vision();
@@ -93,6 +97,10 @@ public class RobotContainer {
                 new ModuleIO() {});
          break;
      }
+
+    NamedCommands.registerCommand("pickupCoral", Commands.runOnce(() -> coralScorer.intakePiece(), coralScorer));
+    NamedCommands.registerCommand("dropCoral", new DropCoral(coralScorer));
+    NamedCommands.registerCommand("elevatorToL2", new SetElevatorHeight(elevator, 2, 20));
 
     // Set up auto routines
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -160,10 +168,10 @@ public class RobotContainer {
 
     /* Intake auto-run command */
     /* Reverse intake control as well */
-    algaePickup.setDefaultCommand(
-        SubsystemControl.alagaePickup(
-            algaePickup,
-            operatorController::getRightY));
+    // algaePickup.setDefaultCommand(
+    //     SubsystemControl.alagaePickup(
+    //         algaePickup,
+    //         operatorController::getRightY));
 
     driverController
         .a()
