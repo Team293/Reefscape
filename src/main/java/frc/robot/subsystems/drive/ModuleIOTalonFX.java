@@ -209,6 +209,11 @@ public class ModuleIOTalonFX implements ModuleIO {
   }
 
   @Override
+  public void setDrivePosition(double position) {
+    driveTalon.setPosition(position);
+  }
+
+  @Override
   public void setDriveBrakeMode(boolean enable) {
     var config = new MotorOutputConfigs();
     config.Inverted = SDSMK4L1Constants.driveMotorInvert;

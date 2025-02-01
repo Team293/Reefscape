@@ -13,6 +13,9 @@
 
 package frc.robot.subsystems.drive;
 
+import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.AutoLogOutput;
+
 import com.studica.frc.AHRS;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -21,24 +24,19 @@ import edu.wpi.first.math.util.Units;
 public class GyroIONavX implements GyroIO {
   public final AHRS gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
   public static final boolean INVERTED = true;
+  public Rotation2d angleOffset = new Rotation2d();
 
   public GyroIONavX() {
-    gyro.reset();
+    // gyro.reset();
   }
 
   public void resetYaw() {
-    gyro.setAngleAdjustment(0);
     gyro.reset();
   }
 
   @Override
-  public void setYaw(Rotation2d yaw) {
-    gyro.setAngleAdjustment(0);
-    Rotation2d realYaw = getRealYaw();
-
-    Rotation2d offset = realYaw.minus(yaw);
-    
-    gyro.setAngleAdjustment(offset.getDegrees());
+  public void setYaw(Rotation2d yaw, GyroIOInputs inputs) {
+    inputs.yawOffset = getRealYaw().minus(yaw);
   }
 
   public Rotation2d getRealYaw() {
@@ -49,7 +47,8 @@ public class GyroIONavX implements GyroIO {
   public void updateInputs(GyroIOInputs inputs) {
     inputs.connected = true;
     inputs.realYawPosition = getRealYaw();
-    inputs.yawPosition = Rotation2d.fromDegrees(-gyro.getAngle());
+    inputs.yawPosition = inputs.realYawPosition.minus(inputs.yawOffset);
+    inputs.fusedHeading = Rotation2d.fromDegrees(gyro.getFusedHeading());
     inputs.yawVelocityRadPerSec = Units.degreesToRadians(gyro.getRate());
     inputs.pose = gyro.getRotation3d();
   }
