@@ -19,7 +19,11 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.coralScorer.CoralScorer;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.algaepickup.AlgaePickup;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 public class SubsystemControl {
@@ -153,6 +157,46 @@ public class SubsystemControl {
                 drive.getRotation()));
       },
       drive);
+  }
+
+  public static Command elevatorControl(
+    Elevator elevator,
+    DoubleSupplier elevatorPercentage,
+    BooleanSupplier resetElevator
+  ) {
+    return Commands.run(() -> {
+      if (resetElevator.getAsBoolean()) {
+        elevator.calculateOffset();
+      }
+
+      elevator.changePosition(-elevatorPercentage.getAsDouble());
+    }, elevator);
+  }
+
+  public static Command coralControl(
+    CoralScorer coralScorer,
+    BooleanSupplier intake,
+    BooleanSupplier output
+  ) {
+    return Commands.run(() -> {
+      if (intake.getAsBoolean()) {
+        coralScorer.intakePiece();
+      } else if (output.getAsBoolean()) {
+        coralScorer.outtakePiece();
+      } else {
+        coralScorer.disableIntake();
+      }
+    }, coralScorer);
+  }
+
+  public static Command alagaePickup(
+    AlgaePickup algaePickup,
+    DoubleSupplier speed
+  )
+  {
+    return Commands.run(() -> {
+      algaePickup.setVelocity(speed.getAsDouble() * AlgaePickup.MAX_VELOCITY);
+    }, algaePickup);
   }
 
   // public static Command limelightDrive(
