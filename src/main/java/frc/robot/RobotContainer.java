@@ -152,14 +152,6 @@ public class RobotContainer {
     driverController
         .y()
         .onTrue(Commands.runOnce(() -> drive.resetRotation(0.0), drive).ignoringDisable(true));
-    
-    /* Elevator preset commands */
-    GenericHID hid = driverController.getHID()
-    hid.pov().onTrue(
-      Commands.runOnce(() -> elevator.setPresetPos(
-        (hid.getPOV() - hid.getPOV() % 90) / 90
-      ))
-    );
         
     /* Reset heading command */
     // driverController
@@ -180,13 +172,14 @@ public class RobotContainer {
     elevator.setDefaultCommand(SubsystemControl.elevatorControl(
       elevator,
       operatorController::getLeftY,
-      () -> operatorController.b().getAsBoolean()
+      () -> operatorController.leftStick().getAsBoolean(),
+      operatorController
     ));
 
     coralScorer.setDefaultCommand(SubsystemControl.coralControl(
       coralScorer, 
-      () -> operatorController.y().getAsBoolean(), 
-      () -> operatorController.a().getAsBoolean()
+      () -> operatorController.leftBumper().getAsBoolean(), 
+      () -> operatorController.rightBumper().getAsBoolean()
     ));
   } 
 

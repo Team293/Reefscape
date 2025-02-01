@@ -9,13 +9,13 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Elevator extends SubsystemBase {
-    private static final double MAX_POSITION = 2.7;
+    private static final double MAX_POSITION = 3.32;
     private static final double MIN_POSITION = 0.0;
     private static final double DELTA_POSITION_DEADBAND = 0.001;
     private static final double MAX_SPEED = .5;
 
     private static final double L1_POSITION = 0.0d;
-    private static final double L2_POSITION = 0.0d;
+    private static final double L2_POSITION = 1.0d;
     private static final double L3_POSITION = 2.7d;
     private static final double L4_POSITION = 0.0d;
 
@@ -41,9 +41,9 @@ public class Elevator extends SubsystemBase {
     public void periodic() {
         elevatorMotor.updateInputs(inputs);
 
-        Logger.recordOutput("Elevator/Calibrating", isCalculatingOffset);
-        Logger.recordOutput("Elevator/Position", inputs.positionValue);
-        Logger.recordOutput("Elevator/TargetPosition", targetPosition);
+        // Logger.recordOutput("Elevator/Calibrating", isCalculatingOffset);
+        // Logger.recordOutput("Elevator/Position", inputs.positionValue);
+        // Logger.recordOutput("Elevator/TargetPosition", targetPosition);
 
         if (isCalculatingOffset == true) {
             // calculate the offsets of the encoders

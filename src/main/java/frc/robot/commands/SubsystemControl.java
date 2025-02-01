@@ -174,10 +174,16 @@ public class SubsystemControl {
 
       if (Math.abs(elevatorPercentage.getAsDouble()) > 0.05) {
         elevator.changePosition(-elevatorPercentage.getAsDouble());
-      } else {
-        if (controller.getHID().getPOV() % 90 == 0) {
-          elevator.setPresetPos((int) (Math.floor(controller.getHID().getPOV() / 90.0)));
-        }
+      }
+
+      if (controller.a().getAsBoolean()) {
+        elevator.setPresetPos(0);
+      } else if (controller.b().getAsBoolean()) {
+        elevator.setPresetPos(1);
+      } else if (controller.y().getAsBoolean()) {
+        elevator.setPresetPos(2);
+      } else if (controller.x().getAsBoolean()) {
+        elevator.setPresetPos(3);
       }
       
     }, elevator);
