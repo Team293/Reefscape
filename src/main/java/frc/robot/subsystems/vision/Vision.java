@@ -4,17 +4,24 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOInputsAutoLogged;
+import frc.robot.subsystems.drive.GyroIO.GyroIOInputs;
 import frc.robot.util.LimelightHelpers;
 
 public class Vision extends SubsystemBase {
     private static final String[] LIMELIGHT_NAMES = {
         "limelight-front",
         "limelight-back"
+    };
+
+    private static final Rotation2d[] LIMELIGHT_YAW_OFFSETS = {
+        Rotation2d.fromDegrees(180.0),
+        Rotation2d.fromDegrees(180.0)
     };
 
     public Vision() {
@@ -24,17 +31,22 @@ public class Vision extends SubsystemBase {
             0.19, // up
             0.0, // roll
             0.0, // pitch
-            0.0 // yaw
+            180 // yaw
         );
 
         LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[1],
-            -0.27, // forward
+            0.34, // forward
             0.0, // side
             0.24, // up
             0.0, // roll
             0.0, // pitch
-            180.0 // yaw
+            0 // yaw
         );
+
+        // force limelights to use roboRIO for gyro
+        for (String name : LIMELIGHT_NAMES) {
+            LimelightHelpers.SetIMUMode(name, 0);
+        }
     }
 
     public void updateRobotPose(SwerveDrivePoseEstimator estimator, double gyroRate, GyroIOInputsAutoLogged gyroInputs) {
@@ -42,20 +54,20 @@ public class Vision extends SubsystemBase {
             return;
         }
         
+        int i = 0;
         for (String name : LIMELIGHT_NAMES) {
-            setVisionPoseEstimation(name, estimator, gyroInputs);
+            setVisionPoseEstimation(name, estimator, gyroInputs, LIMELIGHT_YAW_OFFSETS[i]);
+            i++;
         }
     }
 
-    private void setVisionPoseEstimation(String limelightName, SwerveDrivePoseEstimator estimator, GyroIOInputsAutoLogged gyroInputs) {
+    private void setVisionPoseEstimation(String limelightName, SwerveDrivePoseEstimator estimator, GyroIOInputs gyroInputs, Rotation2d yawOffset) {
         boolean rejectOdometry = false;
 
-        double heading = gyroInputs.yawPosition.getDegrees();
-        
         LimelightHelpers.SetRobotOrientation(
             limelightName, 
-            heading,
-            gyroInputs.yawVelocityRadPerSec * 180.0 / Math.PI,
+            gyroInputs.yawPosition.getDegrees(),
+            gyroInputs.yawVelocityRadPerSec / Math.PI * 180,
             0,
             0,
             0,
@@ -69,17 +81,16 @@ public class Vision extends SubsystemBase {
         }
 
         if (!rejectOdometry) {
-            Pose2d visionPose = poseEstimate.pose;
+            Pose2d visionPose = new Pose2d(poseEstimate.pose.getTranslation(), poseEstimate.pose.getRotation().plus(yawOffset));
             Pose2d currentPose = estimator.getEstimatedPosition();
             
             Logger.recordOutput("Limelight/EstimatedPose-" + limelightName, visionPose);
 
             // reject position greater than 1 meter apart from current
-            if (currentPose.getTranslation().getDistance(visionPose.getTranslation()) > 100) {
+            if (currentPose.getTranslation().getDistance(visionPose.getTranslation()) > 3) {
                 return;
             }
-
-
+            
             estimator.addVisionMeasurement(visionPose, poseEstimate.timestampSeconds);
         }
     }
