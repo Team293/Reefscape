@@ -5,14 +5,23 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class AlgaePickup extends SubsystemBase {
     private final AlgaePickupIOTalonFX algaePickupMotor;
     private final AlgaePickupIOInputsAutoLogged inputs = new AlgaePickupIOInputsAutoLogged();
+
+    public static final double MAX_VELOCITY = 20.0;
     
     public AlgaePickup() {
-        algaePickupMotor = new AlgaePickupIOTalonFX(0); // TODO: change to actual CAN ID
+        algaePickupMotor = new AlgaePickupIOTalonFX(1);
     }
 
     @Override
     public void periodic() {
         algaePickupMotor.updateInputs(inputs);
+    }
+
+    public void setVelocity(double targetVelocity) {
+        double cappedTargetVelocity = Math.min(MAX_VELOCITY, Math.abs(targetVelocity));
+        cappedTargetVelocity *= Math.signum(targetVelocity);
+
+        algaePickupMotor.setSpeed(cappedTargetVelocity);
     }
 
     public void enableAlgaePickup() {

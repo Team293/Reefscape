@@ -24,6 +24,7 @@ public interface GyroIO {
     public Rotation2d realYawPosition = new Rotation2d();
     public Rotation2d yawPosition = new Rotation2d();
     public Rotation2d yawOffset = new Rotation2d();
+    public Rotation2d fusedHeading = new Rotation2d();
     public Rotation2d[] odometryYawPositions = new Rotation2d[] {};
     public Rotation3d pose;
     public double yawVelocityRadPerSec = 0.0;
@@ -31,5 +32,5 @@ public interface GyroIO {
 
   public default void updateInputs(GyroIOInputs inputs) {}
 
-  public default void setYaw(Rotation2d targetRotation) {}
+  public default void setYaw(Rotation2d targetRotation, GyroIOInputs inputs) {}
 }

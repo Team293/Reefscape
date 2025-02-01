@@ -190,4 +190,6 @@ public class Module {
 
     return diff;
   }
+
+  public void setDrivePosition(double position) {}
 }

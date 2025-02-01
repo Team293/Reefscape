@@ -21,8 +21,11 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.coralScorer.CoralScorer;
 import frc.robot.subsystems.drive.Drive;
-
+import frc.robot.subsystems.elevator.Elevator;
+import frc.lib.SpikeController;
+import frc.robot.subsystems.algaepickup.AlgaePickup;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -239,6 +242,60 @@ public class SubsystemControl {
                 drive.getRotation()));
       },
       drive);
+  }
+
+  public static Command elevatorControl(
+    Elevator elevator,
+    DoubleSupplier elevatorPercentage,
+    BooleanSupplier resetElevator,
+    SpikeController controller
+  ) {
+    return Commands.run(() -> {
+      if (resetElevator.getAsBoolean()) {
+        elevator.calculateOffset();
+      }
+
+      if (Math.abs(elevatorPercentage.getAsDouble()) > 0.05) {
+        elevator.changePosition(-elevatorPercentage.getAsDouble());
+      }
+
+      if (controller.a().getAsBoolean()) {
+        elevator.setPresetPos(0);
+      } else if (controller.b().getAsBoolean()) {
+        elevator.setPresetPos(1);
+      } else if (controller.y().getAsBoolean()) {
+        elevator.setPresetPos(2);
+      } else if (controller.x().getAsBoolean()) {
+        elevator.setPresetPos(3);
+      }
+      
+    }, elevator);
+  }
+
+  public static Command coralControl(
+    CoralScorer coralScorer,
+    BooleanSupplier intake,
+    BooleanSupplier output
+  ) {
+    return Commands.run(() -> {
+      if (intake.getAsBoolean()) {
+        coralScorer.intakePiece();
+      } else if (output.getAsBoolean()) {
+        coralScorer.outtakePiece();
+      } else {
+        coralScorer.disableIntake();
+      }
+    }, coralScorer);
+  }
+
+  public static Command alagaePickup(
+    AlgaePickup algaePickup,
+    DoubleSupplier speed
+  )
+  {
+    return Commands.run(() -> {
+      algaePickup.setVelocity(speed.getAsDouble() * AlgaePickup.MAX_VELOCITY);
+    }, algaePickup);
   }
 
   // public static Command limelightDrive(
