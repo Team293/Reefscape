@@ -24,6 +24,7 @@ import frc.robot.subsystems.coralScorer.CoralScorer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.lib.SpikeController;
+import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
 import frc.robot.subsystems.algaepickup.AlgaePickup;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -166,7 +167,8 @@ public class SubsystemControl {
     DoubleSupplier elevatorPercentage,
     BooleanSupplier resetElevator,
     SpikeController controller
-  ) {
+    )
+    {
     return Commands.run(() -> {
       if (resetElevator.getAsBoolean()) {
         elevator.calculateOffset();
@@ -185,10 +187,10 @@ public class SubsystemControl {
       } else if (controller.x().getAsBoolean()) {
         elevator.setPresetPos(3);
       }
-      
     }, elevator);
   }
-/* public static Command coralControl(
+
+  public static Command coralControl(
     CoralScorer coralScorer,
     BooleanSupplier intake,
     BooleanSupplier output
@@ -198,14 +200,13 @@ public class SubsystemControl {
         coralScorer.intakePiece();
       } else if (output.getAsBoolean()) {
         coralScorer.outtakePiece();
-      }
-    } else {
-        coralScorer.disableIntake();
+      } else {
+        coralScorer.disableCoralScorer();
       }
     }, coralScorer);
   }
-*/
-  public static Command alagaePickup(
+
+  public static Command algaePickup(
     AlgaePickup algaePickup,
     DoubleSupplier speed
   )

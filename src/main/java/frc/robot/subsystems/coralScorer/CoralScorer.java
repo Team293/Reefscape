@@ -38,15 +38,18 @@ public class CoralScorer extends SubsystemBase {
     }
 
     public void intakePiece() {
-        coralSolenoid.set(DoubleSolenoid.Value.kForward);
+        coralSolenoid.set(DoubleSolenoid.Value.kReverse);
         CoralScorerMotor.setSpeed(-1.0); //TODO Change later
     }
 
     public void outtakePiece() {
-        coralSolenoid.set(DoubleSolenoid.Value.kReverse);
+        coralSolenoid.set(DoubleSolenoid.Value.kForward);
         CoralScorerMotor.setSpeed(1.0); //TODO: Change later
     }
 
+    public void disableCoralScorer() {
+        CoralScorerMotor.setSpeed(0.0);
+    }
 
     
 }
