@@ -161,7 +161,7 @@ public class SubsystemControl {
       drive);
   }
 
-  public static Command elevatorControl(
+    public static Command elevatorControl(
     Elevator elevator,
     DoubleSupplier elevatorPercentage,
     BooleanSupplier resetElevator,
@@ -188,8 +188,7 @@ public class SubsystemControl {
       
     }, elevator);
   }
-
-  public static Command coralControl(
+/* public static Command coralControl(
     CoralScorer coralScorer,
     BooleanSupplier intake,
     BooleanSupplier output
@@ -199,12 +198,13 @@ public class SubsystemControl {
         coralScorer.intakePiece();
       } else if (output.getAsBoolean()) {
         coralScorer.outtakePiece();
-      } else {
+      }
+    } else {
         coralScorer.disableIntake();
       }
     }, coralScorer);
   }
-
+*/
   public static Command alagaePickup(
     AlgaePickup algaePickup,
     DoubleSupplier speed

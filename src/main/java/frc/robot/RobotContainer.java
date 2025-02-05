@@ -164,25 +164,30 @@ public class RobotContainer {
         SubsystemControl.alagaePickup(
             algaePickup,
             operatorController::getRightY));
-
+    
+    
     driverController
         .a()
         .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
 
-    elevator.setDefaultCommand(SubsystemControl.elevatorControl(
+/*    elevator.setDefaultCommand(SubsystemControl.elevatorControl(
       elevator,
       operatorController::getLeftY,
       () -> operatorController.leftStick().getAsBoolean(),
       operatorController
     ));
+*/
+    operatorController.leftBumper().onTrue(Commands.runOnce(coralScorer::intakePiece));
+    operatorController.rightBumper().onTrue(Commands.runOnce(coralScorer::outtakePiece));
+  }
 
-    coralScorer.setDefaultCommand(SubsystemControl.coralControl(
+  /*   coralScorer.setDefaultCommand(SubsystemControl.coralControl(
       coralScorer, 
       () -> operatorController.leftBumper().getAsBoolean(), 
       () -> operatorController.rightBumper().getAsBoolean()
     ));
   } 
-
+*/
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
