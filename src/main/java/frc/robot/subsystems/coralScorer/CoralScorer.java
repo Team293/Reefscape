@@ -8,10 +8,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class CoralScorer extends SubsystemBase {
-    private final CoralScorerIOTalonFX CoralScorerMotor;
+    private final CoralScorerIOTalonFX coralScorerMotor;
     private final CoralScorerIOInputsAutoLogged inputs = new CoralScorerIOInputsAutoLogged();
   
-    private static final double PERCENT_OUTPUT = 0.5;
     private Compressor compressor;
     private PneumaticHub hub;
     private DoubleSolenoid coralSolenoid;
@@ -21,34 +20,35 @@ public class CoralScorer extends SubsystemBase {
         hub = new PneumaticHub(25);
         compressor = new Compressor(25, PneumaticsModuleType.REVPH);
         compressor.enableAnalog(110, 120);
-        CoralScorerMotor = new CoralScorerIOTalonFX(4); // TODO: Change ID later
+        coralScorerMotor = new CoralScorerIOTalonFX(3);
 
     }
 
     @Override
     public void periodic() {
-          SmartDashboard.putNumber("Compresser Pressure", compressor.getPressure());
+        SmartDashboard.putNumber("Compresser Pressure", compressor.getPressure());
+        coralScorerMotor.updateInputs(inputs);
     }
 
     public void setVelocity(double targetVelocity) {
         double cappedTargetVelocity = Math.min(MAX_VELOCITY, Math.abs(targetVelocity));
         cappedTargetVelocity *= Math.signum(targetVelocity);
 
-        CoralScorerMotor.setSpeed(cappedTargetVelocity);
+        coralScorerMotor.setSpeed(cappedTargetVelocity);
     }
 
     public void intakePiece() {
         coralSolenoid.set(DoubleSolenoid.Value.kReverse);
-        CoralScorerMotor.setSpeed(-1.0); //TODO Change later
+        coralScorerMotor.setSpeed(-1.0); //TODO Change later
     }
 
     public void outtakePiece() {
         coralSolenoid.set(DoubleSolenoid.Value.kForward);
-        CoralScorerMotor.setSpeed(1.0); //TODO: Change later
+        coralScorerMotor.setSpeed(1.0); //TODO: Change later
     }
 
     public void disableCoralScorer() {
-        CoralScorerMotor.setSpeed(0.0);
+        coralScorerMotor.setSpeed(0.0);
     }
 
     
