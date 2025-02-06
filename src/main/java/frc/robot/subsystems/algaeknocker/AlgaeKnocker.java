@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class AlgaeKnocker extends SubsystemBase {
     private final Spark spark;
     private static final double PERCENT_OUTPUT = 0.5;
-    private final AlgaeKnockerIOInputsAutoLogged inputs = new AlgaeKnockerIOInputsAutoLogged();
     
     public AlgaeKnocker() {
         spark = new Spark(0);
@@ -24,5 +23,4 @@ public class AlgaeKnocker extends SubsystemBase {
     public void disableAlgaeKnocker() {
         spark.set(0);
     }
-    
 }
