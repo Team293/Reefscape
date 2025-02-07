@@ -24,6 +24,7 @@ import frc.robot.subsystems.coralScorer.CoralScorer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.lib.SpikeController;
+import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
 import frc.robot.subsystems.algaepickup.AlgaePickup;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -161,51 +162,56 @@ public class SubsystemControl {
       drive);
   }
 
-  public static Command elevatorControl(
+    public static Command elevatorControl(
     Elevator elevator,
-    DoubleSupplier elevatorPercentage,
+    // DoubleSupplier elevatorPercentage,
     BooleanSupplier resetElevator,
     SpikeController controller
-  ) {
+    )
+    {
     return Commands.run(() -> {
       if (resetElevator.getAsBoolean()) {
         elevator.calculateOffset();
       }
 
-      if (Math.abs(elevatorPercentage.getAsDouble()) > 0.05) {
-        elevator.changePosition(-elevatorPercentage.getAsDouble());
-      }
+      // if (Math.abs(elevatorPercentage.getAsDouble()) > 0.05) {
+      //   elevator.changePosition(-elevatorPercentage.getAsDouble());
+      // }
 
       if (controller.a().getAsBoolean()) {
-        elevator.setPresetPos(0);
+        // elevator.setPresetPos(0);
       } else if (controller.b().getAsBoolean()) {
         elevator.setPresetPos(1);
       } else if (controller.y().getAsBoolean()) {
         elevator.setPresetPos(2);
       } else if (controller.x().getAsBoolean()) {
-        elevator.setPresetPos(3);
+        elevator.setPresetPos(4);
       }
-      
     }, elevator);
   }
 
   public static Command coralControl(
     CoralScorer coralScorer,
-    BooleanSupplier intake,
+    DoubleSupplier updown,
     BooleanSupplier output
   ) {
     return Commands.run(() -> {
-      if (intake.getAsBoolean()) {
-        coralScorer.intakePiece();
-      } else if (output.getAsBoolean()) {
-        coralScorer.outtakePiece();
+      if (updown.getAsDouble() > 0.5) {
+        coralScorer.pointDown();
+        
+        if (output.getAsBoolean()) {
+          coralScorer.forwardMotor();
+        } else {
+          coralScorer.reverseMotor();
+        }
       } else {
-        coralScorer.disableIntake();
+        coralScorer.pointUp();
+        coralScorer.reverseMotor();
       }
     }, coralScorer);
   }
 
-  public static Command alagaePickup(
+  public static Command algaePickup(
     AlgaePickup algaePickup,
     DoubleSupplier speed
   )

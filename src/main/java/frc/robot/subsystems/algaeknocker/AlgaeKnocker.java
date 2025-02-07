@@ -1,26 +1,26 @@
 package frc.robot.subsystems.algaeknocker;
 
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class AlgaeKnocker extends SubsystemBase {
-    private final AlgaeKnockerIOTalonFX algaeKnockerMotor;
-    private final AlgaeKnockerIOInputsAutoLogged inputs = new AlgaeKnockerIOInputsAutoLogged();
+    private final Spark spark;
+    private static final double PERCENT_OUTPUT = 1.0;
     
     public AlgaeKnocker() {
-        algaeKnockerMotor = new AlgaeKnockerIOTalonFX(0); // TODO: change to actual CAN ID
+        spark = new Spark(0);
     }
 
     @Override
     public void periodic() {
-        algaeKnockerMotor.updateInputs(inputs);
+
     }
 
     public void enableAlgaeKnocker() {
-        algaeKnockerMotor.setSpeed(1.0);
+        spark.set(-PERCENT_OUTPUT);
     }
 
     public void disableAlgaeKnocker() {
-        algaeKnockerMotor.setSpeed(0.0);
+        spark.set(PERCENT_OUTPUT);
     }
-    
 }

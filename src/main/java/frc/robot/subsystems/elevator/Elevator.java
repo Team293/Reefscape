@@ -15,11 +15,12 @@ public class Elevator extends SubsystemBase {
     private static final double MAX_SPEED = .5;
 
     private static final double L1_POSITION = 0.0d;
-    private static final double L2_POSITION = 1.0d;
+    private static final double L2_POSITION = 2.0d;
     private static final double L3_POSITION = 2.7d;
     private static final double L4_POSITION = 0.0d;
+    private static final double CORAL_STATION_POS = 0.719d;
 
-    private static final double heights[] = {L1_POSITION, L2_POSITION, L3_POSITION, L4_POSITION};
+    private static final double heights[] = {L1_POSITION, L2_POSITION, L3_POSITION, L4_POSITION, CORAL_STATION_POS};
 
     private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
     private final ElevatorIOTalonFX elevatorMotor;
