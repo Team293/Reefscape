@@ -164,7 +164,7 @@ public class SubsystemControl {
 
     public static Command elevatorControl(
     Elevator elevator,
-    DoubleSupplier elevatorPercentage,
+    // DoubleSupplier elevatorPercentage,
     BooleanSupplier resetElevator,
     SpikeController controller
     )
@@ -174,34 +174,39 @@ public class SubsystemControl {
         elevator.calculateOffset();
       }
 
-      if (Math.abs(elevatorPercentage.getAsDouble()) > 0.05) {
-        elevator.changePosition(-elevatorPercentage.getAsDouble());
-      }
+      // if (Math.abs(elevatorPercentage.getAsDouble()) > 0.05) {
+      //   elevator.changePosition(-elevatorPercentage.getAsDouble());
+      // }
 
       if (controller.a().getAsBoolean()) {
-        elevator.setPresetPos(0);
+        // elevator.setPresetPos(0);
       } else if (controller.b().getAsBoolean()) {
         elevator.setPresetPos(1);
       } else if (controller.y().getAsBoolean()) {
         elevator.setPresetPos(2);
       } else if (controller.x().getAsBoolean()) {
-        elevator.setPresetPos(3);
+        elevator.setPresetPos(4);
       }
     }, elevator);
   }
 
   public static Command coralControl(
     CoralScorer coralScorer,
-    BooleanSupplier intake,
+    DoubleSupplier updown,
     BooleanSupplier output
   ) {
     return Commands.run(() -> {
-      if (intake.getAsBoolean()) {
-        coralScorer.intakePiece();
-      } else if (output.getAsBoolean()) {
-        coralScorer.outtakePiece();
+      if (updown.getAsDouble() > 0.5) {
+        coralScorer.pointDown();
+        
+        if (output.getAsBoolean()) {
+          coralScorer.forwardMotor();
+        } else {
+          coralScorer.reverseMotor();
+        }
       } else {
-        coralScorer.disableCoralScorer();
+        coralScorer.pointUp();
+        coralScorer.reverseMotor();
       }
     }, coralScorer);
   }

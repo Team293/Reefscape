@@ -1,6 +1,6 @@
 package frc.robot.subsystems.coralScorer;
 
-import edu.wpi.first.wpilibj.Compressor;
+// import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -11,22 +11,23 @@ public class CoralScorer extends SubsystemBase {
     private final CoralScorerIOTalonFX coralScorerMotor;
     private final CoralScorerIOInputsAutoLogged inputs = new CoralScorerIOInputsAutoLogged();
   
-    private Compressor compressor;
+    // private Compressor compressor;
     private PneumaticHub hub;
     private DoubleSolenoid coralSolenoid;
     public static final double MAX_VELOCITY = 10.0;
 
     public CoralScorer() {
         hub = new PneumaticHub(25);
-        compressor = new Compressor(25, PneumaticsModuleType.REVPH);
-        compressor.enableAnalog(110, 120);
+        coralSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 4);
+        // compressor = new Compressor(25, PneumaticsModuleType.REVPH);
+        // compressor.enableAnalog(110, 120);
         coralScorerMotor = new CoralScorerIOTalonFX(3);
 
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Compresser Pressure", compressor.getPressure());
+        // SmartDashboard.putNumber("Compresser Pressure", compressor.getPressure());
         coralScorerMotor.updateInputs(inputs);
     }
 
@@ -37,15 +38,23 @@ public class CoralScorer extends SubsystemBase {
         coralScorerMotor.setSpeed(cappedTargetVelocity);
     }
 
-    public void intakePiece() {
+    public void pointUp() {
         coralSolenoid.set(DoubleSolenoid.Value.kReverse);
-        coralScorerMotor.setSpeed(-1.0); //TODO Change later
     }
 
-    public void outtakePiece() {
-        coralSolenoid.set(DoubleSolenoid.Value.kForward);
-        coralScorerMotor.setSpeed(1.0); //TODO: Change later
+    public void reverseMotor() {
+        coralScorerMotor.setSpeed(-2.5);
     }
+
+    public void pointDown() {
+        coralSolenoid.set(DoubleSolenoid.Value.kForward);
+    }
+
+    public void forwardMotor() {
+        coralScorerMotor.setSpeed(2.5); //TODO: Change later
+    }
+
+
 
     public void disableCoralScorer() {
         coralScorerMotor.setSpeed(0.0);
