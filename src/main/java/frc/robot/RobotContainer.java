@@ -27,6 +27,7 @@ import frc.lib.SpikeController;
 import frc.robot.commands.DropCoral;
 import frc.robot.commands.SetElevatorHeight;
 import frc.robot.commands.SubsystemControl;
+import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
 import frc.robot.subsystems.algaepickup.AlgaePickup;
 import frc.robot.subsystems.coralScorer.CoralScorer;
 import frc.robot.subsystems.drive.Drive;
@@ -49,7 +50,7 @@ public class RobotContainer {
   private final CoralScorer coralScorer;
   // private final AlgaePickup algaePickup;
   private final Vision vision;
-  // private final AlgaeKnocker algaeKnocker;
+  private final AlgaeKnocker algaeKnocker;
   private final Elevator elevator;
 
   // Controller
@@ -70,6 +71,7 @@ public class RobotContainer {
     elevator = new Elevator();
     coralScorer = new CoralScorer();
     vision = new Vision();
+    algaeKnocker = new AlgaeKnocker();
 
     switch (Constants.currentMode) {
       case REAL:
@@ -168,28 +170,35 @@ public class RobotContainer {
 
     /* Intake auto-run command */
     /* Reverse intake control as well */
-    // algaePickup.setDefaultCommand(
-    //     SubsystemControl.alagaePickup(
-    //         algaePickup,
-    //         operatorController::getRightY));
-
+    algaePickup.setDefaultCommand(
+        SubsystemControl.algaePickup(
+            algaePickup,
+            operatorController::getRightY));    
+    
     driverController
         .a()
         .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
 
     elevator.setDefaultCommand(SubsystemControl.elevatorControl(
       elevator,
-      operatorController::getLeftY,
-      () -> operatorController.leftStick().getAsBoolean(),
+      // operatorController::getLeftY,
+      () -> operatorController.rightStick().getAsBoolean(),
       operatorController
     ));
 
-    coralScorer.setDefaultCommand(SubsystemControl.coralControl(
-      coralScorer, 
-      () -> operatorController.leftBumper().getAsBoolean(), 
-      () -> operatorController.rightBumper().getAsBoolean()
-    ));
-  } 
+    coralScorer.setDefaultCommand(
+      SubsystemControl.coralControl(
+        coralScorer, 
+        operatorController::getLeftY, 
+        () -> operatorController.leftStick().getAsBoolean()
+      )
+    );
+
+    operatorController.leftBumper().onTrue(Commands.runOnce(() -> algaeKnocker.enableAlgaeKnocker(), algaeKnocker));
+    operatorController.rightBumper().onTrue(Commands.runOnce(() -> algaeKnocker.disableAlgaeKnocker(), algaeKnocker));
+  }
+    //     .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
+  
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

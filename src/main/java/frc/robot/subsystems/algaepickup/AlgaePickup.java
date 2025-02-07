@@ -28,7 +28,7 @@ public class AlgaePickup extends SubsystemBase {
         algaePickupMotor.setSpeed(1.0);
     }
 
-    public void diableAlgaePickup() {
+    public void disableAlgaePickup() {
         algaePickupMotor.setSpeed(0.0);
     }
     
