@@ -17,12 +17,19 @@ public class DropCoral extends Command {
 
     @Override
     public void initialize() {
-        coralScorer.outtakePiece();
+        coralScorer.pointDown();
         timer.restart();
     }
 
     @Override
+    public void execute() {
+        if (timer.hasElapsed(0.5)) {
+            coralScorer.forwardMotor();   
+        }
+    }
+
+    @Override
     public boolean isFinished() {
-        return timer.hasElapsed(0.2);
+        return timer.hasElapsed(1.0);
     }
 }

@@ -5,19 +5,25 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "pickupCoral"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "path",
-                "data": {
-                  "pathName": "Leave and Score L2"
-                }
-              },
-              {
                 "type": "named",
                 "data": {
                   "name": "elevatorToL2"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Leave and Score L2"
                 }
               }
             ]
@@ -26,7 +32,7 @@
         {
           "type": "named",
           "data": {
-            "name": "dropCoral"
+            "name": "dropCoral2"
           }
         }
       ]

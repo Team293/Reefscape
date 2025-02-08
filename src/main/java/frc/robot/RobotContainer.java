@@ -48,7 +48,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final CoralScorer coralScorer;
-  // private final AlgaePickup algaePickup;
+  private final AlgaePickup algaePickup;
   private final Vision vision;
   private final AlgaeKnocker algaeKnocker;
   private final Elevator elevator;
@@ -67,7 +67,7 @@ public class RobotContainer {
     String logDir = DataLogManager.getLogDir();
     System.out.print(logDir);
 
-    // algaePickup = new AlgaePickup();
+    algaePickup = new AlgaePickup();
     elevator = new Elevator();
     coralScorer = new CoralScorer();
     vision = new Vision();
@@ -100,8 +100,9 @@ public class RobotContainer {
          break;
      }
 
-    NamedCommands.registerCommand("pickupCoral", Commands.runOnce(() -> coralScorer.intakePiece(), coralScorer));
+    NamedCommands.registerCommand("pickupCoral", Commands.runOnce(() -> coralScorer.reverseMotor(), coralScorer));
     NamedCommands.registerCommand("dropCoral", new DropCoral(coralScorer));
+    NamedCommands.registerCommand("dropCoral2", new DropCoral(coralScorer));
     NamedCommands.registerCommand("elevatorToL2", new SetElevatorHeight(elevator, 2, 20));
 
     // Set up auto routines
