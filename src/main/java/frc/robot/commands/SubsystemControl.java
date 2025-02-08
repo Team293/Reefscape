@@ -196,17 +196,21 @@ public class SubsystemControl {
     BooleanSupplier output
   ) {
     return Commands.run(() -> {
-      if (updown.getAsDouble() > 0.5) {
+      if (DriverStation.isAutonomous()) {
         coralScorer.pointDown();
-        
-        if (output.getAsBoolean()) {
-          coralScorer.forwardMotor();
+      } else {
+        if (updown.getAsDouble() > 0.5) {
+          coralScorer.pointDown();
+          
+          if (output.getAsBoolean()) {
+            coralScorer.forwardMotor();
+          } else {
+            coralScorer.reverseMotor();
+          }
         } else {
+          coralScorer.pointUp();
           coralScorer.reverseMotor();
         }
-      } else {
-        coralScorer.pointUp();
-        coralScorer.reverseMotor();
       }
     }, coralScorer);
   }

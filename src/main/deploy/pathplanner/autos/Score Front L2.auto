@@ -5,12 +5,6 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "pickupCoral"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -21,9 +15,22 @@
                 }
               },
               {
-                "type": "path",
+                "type": "race",
                 "data": {
-                  "pathName": "Leave and Score L2"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Leave and Score L2"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "pickupCoral"
+                      }
+                    }
+                  ]
                 }
               }
             ]

@@ -14,7 +14,7 @@ public class Elevator extends SubsystemBase {
     private static final double MAX_SPEED = .5;
 
     private static final double L1_POSITION = 0.0d;
-    private static final double L2_POSITION = 2.0d;
+    private static final double L2_POSITION = 1.25d;
     private static final double L3_POSITION = 2.7d;
     private static final double L4_POSITION = 0.0d;
     private static final double CORAL_STATION_POS = 0.719d;

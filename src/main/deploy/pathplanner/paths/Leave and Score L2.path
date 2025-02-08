@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 5.778073770491804,
-        "y": 3.80922131147541
+        "y": 3.83
       },
       "prevControl": {
         "x": 7.277073770491803,
-        "y": 3.75497131147541
+        "y": 3.7757500000000004
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,14 +31,7 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "dropCoral",
-      "waypointRelativePos": 0.7994598244429509,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 1.0,
     "maxAcceleration": 1.0,

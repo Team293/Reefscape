@@ -43,7 +43,7 @@ public class CoralScorer extends SubsystemBase {
     }
 
     public void reverseMotor() {
-        coralScorerMotor.setSpeed(-2.5);
+        coralScorerMotor.setSpeed(-5);
     }
 
     public void pointDown() {
@@ -51,7 +51,7 @@ public class CoralScorer extends SubsystemBase {
     }
 
     public void forwardMotor() {
-        coralScorerMotor.setSpeed(2.5); //TODO: Change later
+        coralScorerMotor.setSpeed(5); //TODO: Change later
     }
 
 

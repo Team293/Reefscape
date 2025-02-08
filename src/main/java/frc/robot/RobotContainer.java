@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.SpikeController;
 import frc.robot.commands.DropCoral;
+import frc.robot.commands.PickupCoral;
 import frc.robot.commands.SetElevatorHeight;
 import frc.robot.commands.SubsystemControl;
 import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
@@ -100,7 +101,7 @@ public class RobotContainer {
          break;
      }
 
-    NamedCommands.registerCommand("pickupCoral", Commands.runOnce(() -> coralScorer.reverseMotor(), coralScorer));
+    NamedCommands.registerCommand("pickupCoral", new PickupCoral(coralScorer));
     NamedCommands.registerCommand("dropCoral", new DropCoral(coralScorer));
     NamedCommands.registerCommand("dropCoral2", new DropCoral(coralScorer));
     NamedCommands.registerCommand("elevatorToL2", new SetElevatorHeight(elevator, 2, 20));
