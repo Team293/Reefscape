@@ -19,14 +19,14 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     public ElevatorIOTalonFX(int canID) {
         this.elevatorMotor = new TalonFX(canID);
         var config = new TalonFXConfiguration();
-        config.CurrentLimits.StatorCurrentLimit = 40.0;
+        config.CurrentLimits.StatorCurrentLimit = 30.0;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
         config.Feedback.SensorToMechanismRatio = m_gearRatio;
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         // Set motor PID
-        config.Slot0.kP = 2.0;
+        config.Slot0.kP = 8.0;
         config.Slot0.kI = 0.0;
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 0.462;

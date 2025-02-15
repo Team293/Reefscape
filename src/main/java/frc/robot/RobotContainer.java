@@ -14,6 +14,8 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -22,6 +24,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.SpikeController;
+import frc.robot.commands.ReverseAlgaeKnocker;
+import frc.robot.commands.DropCoral;
+import frc.robot.commands.EnableAlgaeKnocker;
+import frc.robot.commands.EnableAlgaePickup;
+import frc.robot.commands.PickupCoral;
+import frc.robot.commands.ReverseAlgaePickup;
+import frc.robot.commands.SetElevatorHeight;
 import frc.robot.commands.SubsystemControl;
 import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
 import frc.robot.subsystems.algaepickup.AlgaePickup;
@@ -47,7 +56,7 @@ public class RobotContainer {
   private final AlgaePickup algaePickup;
   private final Vision vision;
   private final AlgaeKnocker algaeKnocker;
-  private final Elevator elevator;
+  // private final Elevator elevator;
 
   // Controller
   private static final double DEADBAND = 0.05;
@@ -64,7 +73,7 @@ public class RobotContainer {
     System.out.print(logDir);
 
     algaePickup = new AlgaePickup();
-    elevator = new Elevator();
+    // elevator = new Elevator();
     coralScorer = new CoralScorer();
     vision = new Vision();
     algaeKnocker = new AlgaeKnocker();
@@ -82,7 +91,6 @@ public class RobotContainer {
                 new ModuleIOTalonFX(3));
         break;
 
-
        default:
         // Replayed robot, disable IO implementations
          drive =
@@ -95,6 +103,16 @@ public class RobotContainer {
                 new ModuleIO() {});
          break;
      }
+
+    NamedCommands.registerCommand("pickupCoral", new PickupCoral(coralScorer));
+    NamedCommands.registerCommand("dropCoral", new DropCoral(coralScorer));
+    NamedCommands.registerCommand("dropCoral2", new DropCoral(coralScorer));
+    //NamedCommands.registerCommand("elevatorToL2", new SetElevatorHeight(elevator, 2, 20));
+    NamedCommands.registerCommand("enableAlgaePickup", new EnableAlgaePickup(algaePickup));
+    NamedCommands.registerCommand("reverseAlgaePickup", new ReverseAlgaePickup(algaePickup));
+    NamedCommands.registerCommand("enableAlgaeKnocker", new EnableAlgaeKnocker(algaeKnocker));
+    NamedCommands.registerCommand("disableAlgaeKnocker", new ReverseAlgaeKnocker(algaeKnocker));
+    //NamedCommands.registerCommand("elevatorToL4", new SetElevatorHeight(elevator, 4, 20)); //Check if correct
 
     // Set up auto routines
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -171,12 +189,12 @@ public class RobotContainer {
         .a()
         .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
 
-    elevator.setDefaultCommand(SubsystemControl.elevatorControl(
-      elevator,
-      // operatorController::getLeftY,
-      () -> operatorController.rightStick().getAsBoolean(),
-      operatorController
-    ));
+    // elevator.setDefaultCommand(SubsystemControl.elevatorControl(
+    //   elevator,
+    //   // operatorController::getLeftY,
+    //   () -> operatorController.rightStick().getAsBoolean(),
+    //   operatorController
+    // ));
 
     coralScorer.setDefaultCommand(
       SubsystemControl.coralControl(
