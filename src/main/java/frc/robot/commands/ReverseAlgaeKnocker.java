@@ -5,11 +5,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
 
 // For L2 algae
-public class DisableAlgaeKnocker extends Command {
+public class ReverseAlgaeKnocker extends Command {
     private final AlgaeKnocker algaeKnocker;
     private final Timer timer;
 
-    public DisableAlgaeKnocker(AlgaeKnocker algaeKnocker) {
+    public ReverseAlgaeKnocker(AlgaeKnocker algaeKnocker) {
         this.algaeKnocker = algaeKnocker;
         this.timer = new Timer();
 
