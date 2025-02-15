@@ -91,7 +91,6 @@ public class RobotContainer {
                 new ModuleIOTalonFX(3));
         break;
 
-
        default:
         // Replayed robot, disable IO implementations
          drive =

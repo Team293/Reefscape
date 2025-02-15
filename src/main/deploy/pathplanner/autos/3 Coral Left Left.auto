@@ -5,15 +5,29 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "(Left - Left) Blue Leave and Score L2"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "(Left - Left) Blue Leave and Score L2"
+                }
+              }
+            ]
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Left Corner to Left Coral Station"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Left Corner to Left Coral Station"
+                }
+              }
+            ]
           }
         },
         {
