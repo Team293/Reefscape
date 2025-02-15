@@ -7,19 +7,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "(Center - Left) Blue Leave and Score L2"
+            "pathName": "(Left - Left) Blue Leave and Score L2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Front to Coral Station (Right)"
+            "pathName": "Left Corner to Left Coral Station"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "(Teleop Blue) Coral Station (Left) to Reef"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom Left to Coral Station"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BL Coral Station to Bottom Left"
           }
         }
       ]

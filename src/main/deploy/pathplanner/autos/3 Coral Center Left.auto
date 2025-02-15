@@ -13,13 +13,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left to Left Algae Intake"
+            "pathName": "Front to Coral Station (Right)"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Left to Left Algae Score"
+            "pathName": "(Teleop Blue) Coral Station (Left) to Reef"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom Left to Coral Station"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BL Coral Station to Bottom Left"
           }
         }
       ]
