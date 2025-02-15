@@ -52,7 +52,7 @@ public class RobotContainer {
   private final AlgaePickup algaePickup;
   private final Vision vision;
   private final AlgaeKnocker algaeKnocker;
-  private final Elevator elevator;
+  // private final Elevator elevator;
 
   // Controller
   private static final double DEADBAND = 0.05;
@@ -69,7 +69,7 @@ public class RobotContainer {
     System.out.print(logDir);
 
     algaePickup = new AlgaePickup();
-    elevator = new Elevator();
+    // elevator = new Elevator();
     coralScorer = new CoralScorer();
     vision = new Vision();
     algaeKnocker = new AlgaeKnocker();
@@ -101,10 +101,10 @@ public class RobotContainer {
          break;
      }
 
-    NamedCommands.registerCommand("pickupCoral", new PickupCoral(coralScorer));
-    NamedCommands.registerCommand("dropCoral", new DropCoral(coralScorer));
-    NamedCommands.registerCommand("dropCoral2", new DropCoral(coralScorer));
-    NamedCommands.registerCommand("elevatorToL2", new SetElevatorHeight(elevator, 2, 20));
+    // NamedCommands.registerCommand("pickupCoral", new PickupCoral(coralScorer));
+    // NamedCommands.registerCommand("dropCoral", new DropCoral(coralScorer));
+    // NamedCommands.registerCommand("dropCoral2", new DropCoral(coralScorer));
+    // NamedCommands.registerCommand("elevatorToL2", new SetElevatorHeight(elevator, 2, 20));
 
     // Set up auto routines
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -181,12 +181,12 @@ public class RobotContainer {
         .a()
         .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
 
-    elevator.setDefaultCommand(SubsystemControl.elevatorControl(
-      elevator,
-      // operatorController::getLeftY,
-      () -> operatorController.rightStick().getAsBoolean(),
-      operatorController
-    ));
+    // elevator.setDefaultCommand(SubsystemControl.elevatorControl(
+    //   elevator,
+    //   // operatorController::getLeftY,
+    //   () -> operatorController.rightStick().getAsBoolean(),
+    //   operatorController
+    // ));
 
     coralScorer.setDefaultCommand(
       SubsystemControl.coralControl(
