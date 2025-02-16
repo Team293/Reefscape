@@ -30,11 +30,41 @@ public class TargetPositions {
         Logger.recordOutput("Targets/ReefCenter", REEF_CENTER);
     }
 
-    // get robot position on field. Use position to get the section of the field
-    
+    //Get robot position on field. Use position to get the section of the field
+    public Pose2d getPositionClosestToRobotPosition()
+    {
+        Pose2d robotPosition = new Pose2d(); //Put in actual position
+        Pose2d[] targetPositions = {REEF_FAR, REEF_FAR_LEFT, REEF_FAR_RIGHT, REEF_NEAR, REEF_NEAR_LEFT, REEF_NEAR_RIGHT};
+        //Sets the closest position to REEF_FAR
+        Pose2d closestPosition = targetPositions[0]; 
+        //Gets the distance between the robot position and closest target position
+        double minDistance = getDistance(robotPosition, closestPosition); 
+        for (Pose2d target : targetPositions) {
+            //Gets the distance between the robot and the target positions
+            double distance = getDistance(robotPosition, target); 
+            //If the distance is shorter than the minimum distance set the target position to the closest target position
+            if (distance < minDistance) { 
+                minDistance = distance;
+                closestPosition = target;
+            }
+        }
+        return closestPosition;
+    }
 
+    public double getDistance(Pose2d robotPosition, Pose2d target) {
+        double dx = robotPosition.getX() - target.getX();
+        double dy = robotPosition.getY() - target.getY();
+        //returns the distance between the center of the robot and the center of the target position
+        return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)); 
+    }
+        
     // get the side of the reef that the robot is on by getting angle between center of robot and center of reef (REEF_CENTER)
-
-
+    public double getAngle(Pose2d robotPosition, Pose2d target) {
+        // Record how off the robot is from the center of reef on the y-axis and x-axis
+        double dx = robotPosition.getX() - target.getX();
+        double dy = robotPosition.getY() - target.getY();
+        // Take the inverse tan of the two values to get the angle
+        return Math.toDegrees(Math.atan2(dy, dx));
+    }
     // get a target position for the robot by checking whick area of the field the robot is in and the side of the field that it is on
 }
