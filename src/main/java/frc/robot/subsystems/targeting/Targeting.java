@@ -50,14 +50,10 @@ public class Targeting extends SubsystemBase {
     {
         Pose2d robotPosition = drive.getPose();
         Pose2d[] targetPositions = {REEF_FAR, REEF_FAR_LEFT, REEF_FAR_RIGHT, REEF_NEAR, REEF_NEAR_LEFT, REEF_NEAR_RIGHT, RIGHT_CORAL_STATION, ALGAE_SCORE, LEFT_CORAL_STATION};
-        //Sets the closest position to REEF_FAR
         Pose2d closestPosition = targetPositions[0]; 
-        //Gets the distance between the robot position and closest target position
         double minDistance = getDistance(robotPosition, closestPosition); 
         for (Pose2d target : targetPositions) {
-            //Gets the distance between the robot and the target positions
             double distance = getDistance(robotPosition, target); 
-            //If the distance is shorter than the minimum distance puset the target position to the closest target position
             if (distance < minDistance) { 
                 minDistance = distance;
                 closestPosition = target;
