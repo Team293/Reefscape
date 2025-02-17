@@ -41,6 +41,7 @@ import frc.robot.subsystems.drive.GyroIONavX;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.targeting.Targeting;
 import frc.robot.subsystems.vision.Vision;
 
 /**
@@ -56,6 +57,7 @@ public class RobotContainer {
   private final AlgaePickup algaePickup;
   private final Vision vision;
   private final AlgaeKnocker algaeKnocker;
+  private final Targeting targeting;
   // private final Elevator elevator;
 
   // Controller
@@ -103,6 +105,8 @@ public class RobotContainer {
                 new ModuleIO() {});
          break;
      }
+
+    targeting = new Targeting(drive);
 
     NamedCommands.registerCommand("pickupCoral", new PickupCoral(coralScorer));
     NamedCommands.registerCommand("dropCoral", new DropCoral(coralScorer));
