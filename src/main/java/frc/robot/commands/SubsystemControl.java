@@ -12,6 +12,9 @@
 // GNU General Public License for more details.
 
 package frc.robot.commands;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -20,14 +23,12 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.lib.SpikeController;
+import frc.robot.subsystems.algaepickup.AlgaePickup;
 import frc.robot.subsystems.coralScorer.CoralScorer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.lib.SpikeController;
-import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
-import frc.robot.subsystems.algaepickup.AlgaePickup;
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
+import frc.robot.subsystems.targeting.Targeting;
 
 public class SubsystemControl {
 
@@ -77,6 +78,7 @@ public class SubsystemControl {
 
   public static Command joystickDrive(
     Drive drive,
+    Targeting targeting,
     DoubleSupplier xSupplier,
     DoubleSupplier ySupplier,
     DoubleSupplier omegaSupplier,
@@ -121,6 +123,7 @@ public class SubsystemControl {
         }
 
         if (selfDriving.getAsBoolean()) {
+          drive.setTargetPose(targeting.getPositionClosestToRobotPosition());
           drive.driveToTargetPose();
           return;
         }

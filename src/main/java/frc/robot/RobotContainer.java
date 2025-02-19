@@ -143,12 +143,13 @@ public class RobotContainer {
     drive.setDefaultCommand(
         SubsystemControl.joystickDrive(
             drive,
+            targeting,
             () -> -driverController.getLeftY(),
             () -> -driverController.getLeftX(),
             () -> -driverController.getRightX(),
             () -> driverController.getLeftTriggerAxis(),
             () -> driverController.getRightTriggerAxis(),
-            () -> driverController.leftBumper().getAsBoolean() || driverController.rightBumper().getAsBoolean()));
+            () -> driverController.rightBumper().getAsBoolean()));
     /*
      * SubsystemControl.fieldOrientedRotation(
      * drive,
@@ -172,6 +173,7 @@ public class RobotContainer {
 
     /* Brake command */
     driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    // driverController.b().onTrue(Commands.runOnce(targeting::))
 
     /* Reset heading command */
     driverController

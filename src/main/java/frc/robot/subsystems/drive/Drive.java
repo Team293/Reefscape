@@ -21,6 +21,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 // import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 // import com.pathplanner.lib.util.ReplanningConfig;
@@ -238,10 +239,13 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("Odometry/SelfDriving/OutputY", translationY);
     Logger.recordOutput("Odometry/SelfDriving/RotationRadians", omegaOutput);
 
+    translationX = MathUtil.clamp(translationX, -1, 1);
+    translationY = MathUtil.clamp(translationY, -1, 1);
+
     runVelocity(
       ChassisSpeeds.fromFieldRelativeSpeeds(
-        0,
-        0,
+        translationX,
+        translationY,
         omegaOutput,
         getRotation()));
   }
