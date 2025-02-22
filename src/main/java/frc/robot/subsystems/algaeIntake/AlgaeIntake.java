@@ -1,6 +1,7 @@
-package frc.robot.subsystems.algaepickup;
+package frc.robot.subsystems.algaeIntake;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.algaepickup.AlgaePickupIOInputsAutoLogged;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;

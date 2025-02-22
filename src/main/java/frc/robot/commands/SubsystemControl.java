@@ -24,8 +24,9 @@ import frc.robot.subsystems.coralScorer.CoralScorer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.lib.SpikeController;
+import frc.robot.subsystems.algaeIntake.AlgaeIntake;
 import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
-import frc.robot.subsystems.algaepickup.AlgaeIntake;
+
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 

@@ -1,4 +1,4 @@
-package frc.robot.subsystems.algaepickup;
+package frc.robot.subsystems.algaeIntake;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
