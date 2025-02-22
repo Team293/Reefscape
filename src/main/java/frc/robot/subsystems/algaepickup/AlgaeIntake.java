@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public class AlgaeIntake extends SubsystemBase {
-    private final AlgaeIntakeIOTalonFX algaePickupMotor;
+    private final AlgaeIntakeIOTalonFX algaeIntakeMotor;
     private PneumaticHub hub;
     private Compressor compressor;
     private DoubleSolenoid algaeSolenoidLeft;
@@ -19,7 +19,7 @@ public class AlgaeIntake extends SubsystemBase {
     public static final double MAX_VELOCITY = 20.0;
     
     public AlgaeIntake() {
-        algaePickupMotor = new AlgaeIntakeIOTalonFX(1);
+        algaeIntakeMotor = new AlgaeIntakeIOTalonFX(1);
         hub = new PneumaticHub(25);
         algaeSolenoidLeft = new DoubleSolenoid(PneumaticsModuleType.REVPH, 2, 5); //Change channels once testing
         algaeSolenoidRight = new DoubleSolenoid(PneumaticsModuleType.REVPH, 3, 6); //Change channels once testing      
@@ -29,22 +29,22 @@ public class AlgaeIntake extends SubsystemBase {
 
     @Override
     public void periodic() {
-        algaePickupMotor.updateInputs(inputs);
+        algaeIntakeMotor.updateInputs(inputs);
     }
 
     public void setVelocity(double targetVelocity) {
         double cappedTargetVelocity = Math.min(MAX_VELOCITY, Math.abs(targetVelocity));
         cappedTargetVelocity *= Math.signum(targetVelocity);
 
-        algaePickupMotor.setSpeed(cappedTargetVelocity);
+        algaeIntakeMotor.setSpeed(cappedTargetVelocity);
     }
 
     public void enableAlgaeIntake() {
-        algaePickupMotor.setSpeed(1.0);
+        algaeIntakeMotor.setSpeed(1.0);
     }
 
     public void disableAlgaeIntake() {
-        algaePickupMotor.setSpeed(0.0);
+        algaeIntakeMotor.setSpeed(0.0);
     }
 
     public void extendRightSolenoid()
