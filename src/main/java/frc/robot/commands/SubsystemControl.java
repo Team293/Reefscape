@@ -25,7 +25,7 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.lib.SpikeController;
 import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
-import frc.robot.subsystems.algaepickup.AlgaePickup;
+import frc.robot.subsystems.algaepickup.AlgaeIntake;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -216,12 +216,12 @@ public class SubsystemControl {
   }
 
   public static Command algaePickup(
-    AlgaePickup algaePickup,
+    AlgaeIntake algaePickup,
     DoubleSupplier speed
   )
   {
     return Commands.run(() -> {
-      algaePickup.setVelocity(speed.getAsDouble() * AlgaePickup.MAX_VELOCITY);
+      algaePickup.setVelocity(speed.getAsDouble() * AlgaeIntake.MAX_VELOCITY);
     }, algaePickup);
   }
 

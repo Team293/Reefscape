@@ -27,13 +27,13 @@ import frc.lib.SpikeController;
 import frc.robot.commands.ReverseAlgaeKnocker;
 import frc.robot.commands.DropCoral;
 import frc.robot.commands.EnableAlgaeKnocker;
-import frc.robot.commands.EnableAlgaePickup;
+import frc.robot.commands.EnableAlgaeIntake;
 import frc.robot.commands.PickupCoral;
 import frc.robot.commands.ReverseAlgaePickup;
 import frc.robot.commands.SetElevatorHeight;
 import frc.robot.commands.SubsystemControl;
 import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
-import frc.robot.subsystems.algaepickup.AlgaePickup;
+import frc.robot.subsystems.algaepickup.AlgaeIntake;
 import frc.robot.subsystems.coralScorer.CoralScorer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -53,7 +53,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final CoralScorer coralScorer;
-  private final AlgaePickup algaePickup;
+  private final AlgaeIntake algaeIntake;
   private final Vision vision;
   private final AlgaeKnocker algaeKnocker;
   // private final Elevator elevator;
@@ -72,7 +72,7 @@ public class RobotContainer {
     String logDir = DataLogManager.getLogDir();
     System.out.print(logDir);
 
-    algaePickup = new AlgaePickup();
+    algaeIntake = new AlgaeIntake();
     // elevator = new Elevator();
     coralScorer = new CoralScorer();
     vision = new Vision();
@@ -108,8 +108,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("dropCoral", new DropCoral(coralScorer));
     NamedCommands.registerCommand("dropCoral2", new DropCoral(coralScorer));
     //NamedCommands.registerCommand("elevatorToL2", new SetElevatorHeight(elevator, 2, 20));
-    NamedCommands.registerCommand("enableAlgaePickup", new EnableAlgaePickup(algaePickup));
-    NamedCommands.registerCommand("reverseAlgaePickup", new ReverseAlgaePickup(algaePickup));
+    NamedCommands.registerCommand("enableAlgaePickup", new EnableAlgaeIntake(algaeIntake));
+    NamedCommands.registerCommand("reverseAlgaePickup", new ReverseAlgaePickup(algaeIntake));
     NamedCommands.registerCommand("enableAlgaeKnocker", new EnableAlgaeKnocker(algaeKnocker));
     NamedCommands.registerCommand("disableAlgaeKnocker", new ReverseAlgaeKnocker(algaeKnocker));
     //NamedCommands.registerCommand("elevatorToL4", new SetElevatorHeight(elevator, 4, 20)); //Check if correct
@@ -180,9 +180,9 @@ public class RobotContainer {
 
     /* Intake auto-run command */
     /* Reverse intake control as well */
-    algaePickup.setDefaultCommand(
+    algaeIntake.setDefaultCommand(
         SubsystemControl.algaePickup(
-            algaePickup,
+            algaeIntake,
             operatorController::getRightY));    
     
     driverController

@@ -7,13 +7,13 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 
-public class AlgaePickupIOTalonFX implements AlgaePickupIO {
+public class AlgaeIntakeIOTalonFX implements AlgaeIntakeIO {
     private TalonFX algaePickupMotor;
     private double m_gearRatio = 1.0; // change to the actual later
 
     private static VelocityVoltage velocityVoltageCommand = new VelocityVoltage(0.0).withSlot(0);
 
-    public AlgaePickupIOTalonFX(int canID) {
+    public AlgaeIntakeIOTalonFX(int canID) {
         this.algaePickupMotor = new TalonFX(canID);
         var config = new TalonFXConfiguration();
         config.CurrentLimits.StatorCurrentLimit = 40.0;
@@ -35,7 +35,7 @@ public class AlgaePickupIOTalonFX implements AlgaePickupIO {
 
     @Override
     public void updateInputs(AlgaePickupIOInputs inputs) {
-        AlgaePickupIO.super.updateInputs(inputs);
+        AlgaeIntakeIO.super.updateInputs(inputs);
     }
 
     @Override
