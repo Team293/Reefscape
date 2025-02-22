@@ -1,6 +1,7 @@
 package frc.robot.subsystems.coralScorer;
 
-// import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.Compressor;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -14,13 +15,14 @@ public class CoralScorer extends SubsystemBase {
     // private Compressor compressor;
     private PneumaticHub hub;
     private DoubleSolenoid coralSolenoid;
+    private Compressor compressor;
     public static final double MAX_VELOCITY = 10.0;
 
     public CoralScorer() {
         hub = new PneumaticHub(25);
         coralSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 4);
-        // compressor = new Compressor(25, PneumaticsModuleType.REVPH);
-        // compressor.enableAnalog(110, 120);
+        compressor = new Compressor(25, PneumaticsModuleType.REVPH);
+        compressor.enableAnalog(110, 120);
         coralScorerMotor = new CoralScorerIOTalonFX(3);
 
     }
@@ -54,11 +56,7 @@ public class CoralScorer extends SubsystemBase {
         coralScorerMotor.setSpeed(5); //TODO: Change later
     }
 
-
-
     public void disableCoralScorer() {
         coralScorerMotor.setSpeed(0.0);
     }
-
-    
 }

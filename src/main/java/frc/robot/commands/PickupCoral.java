@@ -17,8 +17,9 @@ public class PickupCoral extends Command {
 
     @Override
     public void initialize() {
-        coralScorer.pointDown();
-        coralScorer.reverseMotor();   
+        timer.restart();
+        coralScorer.pointUp();
+        coralScorer.reverseMotor();
     }
 
     @Override
