@@ -4,11 +4,11 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.algaePickup.AlgaePickup;
 
-public class ReverseAlgaePickup extends Command {
+public class EnableAlgaePickup extends Command {
     private final AlgaePickup algaePickupMotor;
     private final Timer timer;
 
-    public ReverseAlgaePickup(AlgaePickup algaePickupMotor) {
+    public EnableAlgaePickup(AlgaePickup algaePickupMotor) {
         this.algaePickupMotor = algaePickupMotor;
         this.timer = new Timer();
 
@@ -17,7 +17,7 @@ public class ReverseAlgaePickup extends Command {
 
     @Override
     public void initialize() {
-        algaePickupMotor.disableAlgaeIntake();
+        algaePickupMotor.enableAlgaeIntake();
     }
 
     @Override

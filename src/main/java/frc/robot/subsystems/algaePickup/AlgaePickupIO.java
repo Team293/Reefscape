@@ -1,8 +1,8 @@
-package frc.robot.subsystems.algaeIntake;
+package frc.robot.subsystems.algaePickup;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface AlgaeIntakeIO {
+public interface AlgaePickupIO {
     @AutoLog
     public static class AlgaePickupIOInputs {
         // ...

@@ -1,13 +1,13 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.algaeIntake.AlgaeIntake;
+import frc.robot.subsystems.algaePickup.AlgaePickup;
 
 public class AlgaeIntakeExtendPistons extends Command {
-    private final AlgaeIntake algaeSolenoidRight;
-    private final AlgaeIntake algaeSolenoidLeft;
+    private final AlgaePickup algaeSolenoidRight;
+    private final AlgaePickup algaeSolenoidLeft;
 
-    public AlgaeIntakeExtendPistons(AlgaeIntake algaeSolenoidLeft, AlgaeIntake algaeSolenoidRight) {
+    public AlgaeIntakeExtendPistons(AlgaePickup algaeSolenoidLeft, AlgaePickup algaeSolenoidRight) {
         this.algaeSolenoidRight = algaeSolenoidRight;
         this.algaeSolenoidLeft = algaeSolenoidLeft;
 

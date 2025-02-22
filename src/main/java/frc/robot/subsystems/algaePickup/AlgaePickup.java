@@ -1,4 +1,4 @@
-package frc.robot.subsystems.algaeIntake;
+package frc.robot.subsystems.algaePickup;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.algaepickup.AlgaePickupIOInputsAutoLogged;
@@ -7,8 +7,8 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
-public class AlgaeIntake extends SubsystemBase {
-    private final AlgaeIntakeIOTalonFX algaeIntakeMotor;
+public class AlgaePickup extends SubsystemBase {
+    private final AlgaePickupIOTalonFX algaePickupMotor;
     private PneumaticHub hub;
     private Compressor compressor;
     private DoubleSolenoid algaeSolenoidLeft;
@@ -19,8 +19,8 @@ public class AlgaeIntake extends SubsystemBase {
 
     public static final double MAX_VELOCITY = 20.0;
     
-    public AlgaeIntake() {
-        algaeIntakeMotor = new AlgaeIntakeIOTalonFX(1);
+    public AlgaePickup() {
+        algaePickupMotor = new AlgaePickupIOTalonFX(1);
         hub = new PneumaticHub(25);
         algaeSolenoidLeft = new DoubleSolenoid(PneumaticsModuleType.REVPH, 2, 5); //Change channels once testing
         algaeSolenoidRight = new DoubleSolenoid(PneumaticsModuleType.REVPH, 3, 6); //Change channels once testing      
@@ -30,22 +30,22 @@ public class AlgaeIntake extends SubsystemBase {
 
     @Override
     public void periodic() {
-        algaeIntakeMotor.updateInputs(inputs);
+        algaePickupMotor.updateInputs(inputs);
     }
 
     public void setVelocity(double targetVelocity) {
         double cappedTargetVelocity = Math.min(MAX_VELOCITY, Math.abs(targetVelocity));
         cappedTargetVelocity *= Math.signum(targetVelocity);
 
-        algaeIntakeMotor.setSpeed(cappedTargetVelocity);
+        algaePickupMotor.setSpeed(cappedTargetVelocity);
     }
 
     public void enableAlgaeIntake() {
-        algaeIntakeMotor.setSpeed(1.0);
+        algaePickupMotor.setSpeed(1.0);
     }
 
     public void disableAlgaeIntake() {
-        algaeIntakeMotor.setSpeed(0.0);
+        algaePickupMotor.setSpeed(0.0);
     }
 
     public void extendRightSolenoid()

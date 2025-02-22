@@ -1,4 +1,4 @@
-package frc.robot.subsystems.algaeIntake;
+package frc.robot.subsystems.algaePickup;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -7,13 +7,13 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 
-public class AlgaeIntakeIOTalonFX implements AlgaeIntakeIO {
+public class AlgaePickupIOTalonFX implements AlgaePickupIO {
     private TalonFX algaePickupMotor;
     private double m_gearRatio = 1.0; // change to the actual later
 
     private static VelocityVoltage velocityVoltageCommand = new VelocityVoltage(0.0).withSlot(0);
 
-    public AlgaeIntakeIOTalonFX(int canID) {
+    public AlgaePickupIOTalonFX(int canID) {
         this.algaePickupMotor = new TalonFX(canID);
         var config = new TalonFXConfiguration();
         config.CurrentLimits.StatorCurrentLimit = 40.0;
@@ -35,7 +35,7 @@ public class AlgaeIntakeIOTalonFX implements AlgaeIntakeIO {
 
     @Override
     public void updateInputs(AlgaePickupIOInputs inputs) {
-        AlgaeIntakeIO.super.updateInputs(inputs);
+        AlgaePickupIO.super.updateInputs(inputs);
     }
 
     @Override
