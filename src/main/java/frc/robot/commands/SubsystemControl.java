@@ -20,6 +20,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.coralScorer.CoralScorer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
@@ -223,6 +224,22 @@ public class SubsystemControl {
     return Commands.run(() -> {
       algaePickup.setVelocity(speed.getAsDouble() * AlgaePickup.MAX_VELOCITY);
     }, algaePickup);
+  }
+
+    public static Command climb(
+        Climber climber,
+        BooleanSupplier up,
+        BooleanSupplier down
+    ) {
+        return Commands.run(() -> {
+            if (up.getAsBoolean()) {
+                climber.startClimbingUp();
+            } else if (down.getAsBoolean()) {
+                climber.startClimbingDown();
+            } else {
+                climber.stopClimbing();
+            }
+        }, climber);
   }
 
   // public static Command limelightDrive(

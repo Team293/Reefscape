@@ -34,6 +34,7 @@ import frc.robot.commands.SetElevatorHeight;
 import frc.robot.commands.SubsystemControl;
 import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
 import frc.robot.subsystems.algaepickup.AlgaePickup;
+import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.coralScorer.CoralScorer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -56,6 +57,7 @@ public class RobotContainer {
   private final AlgaePickup algaePickup;
   private final Vision vision;
   private final AlgaeKnocker algaeKnocker;
+  private final Climber climber;
   // private final Elevator elevator;
 
   // Controller
@@ -77,6 +79,7 @@ public class RobotContainer {
     coralScorer = new CoralScorer();
     vision = new Vision();
     algaeKnocker = new AlgaeKnocker();
+    climber = new Climber();
 
     switch (Constants.currentMode) {
       case REAL:
@@ -206,6 +209,14 @@ public class RobotContainer {
 
     operatorController.leftBumper().onTrue(Commands.runOnce(() -> algaeKnocker.enableAlgaeKnocker(), algaeKnocker));
     operatorController.rightBumper().onTrue(Commands.runOnce(() -> algaeKnocker.disableAlgaeKnocker(), algaeKnocker));
+
+    climber.setDefaultCommand(
+            SubsystemControl.climb(
+                    climber,
+                    () -> operatorController.a().getAsBoolean(),
+                    () -> operatorController.b().getAsBoolean()
+            )
+    );
   }
     //     .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
   
