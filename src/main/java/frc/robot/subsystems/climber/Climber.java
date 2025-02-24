@@ -2,15 +2,10 @@ package frc.robot.subsystems.climber;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.littletonrobotics.junction.AutoLog;
+import frc.robot.subsystems.climber.ClimberIO.ClimberIOInputs;
 
 public class Climber extends SubsystemBase {
     private static final double CLIMB_VELOCITY = 0.5;
-
-    @AutoLog
-    public static class ClimberIOInputs {
-        public double currentVelocity = 0.0;
-    }
 
     private final ClimberIOInputs inputs = new ClimberIOInputs();
     private final ClimberIOTalonFX climberMotor;
