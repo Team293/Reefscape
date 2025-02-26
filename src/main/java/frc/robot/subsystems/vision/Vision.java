@@ -56,7 +56,7 @@ public class Vision extends SubsystemBase {
         
         int i = 0;
         for (String name : LIMELIGHT_NAMES) {
-            setVisionPoseEstimation(name, estimator, gyroInputs, LIMELIGHT_YAW_OFFSETS[i]);
+            // setVisionPoseEstimation(name, estimator, gyroInputs, LIMELIGHT_YAW_OFFSETS[i]);
             i++;
         }
     }

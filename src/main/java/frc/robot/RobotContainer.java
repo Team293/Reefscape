@@ -52,10 +52,10 @@ import frc.robot.subsystems.vision.Vision;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final CoralScorer coralScorer;
-  private final AlgaePickup algaePickup;
+  // private final CoralScorer coralScorer;
+  // private final AlgaePickup algaePickup;
   private final Vision vision;
-  private final AlgaeKnocker algaeKnocker;
+  // private final AlgaeKnocker algaeKnocker;
   // private final Elevator elevator;
 
   // Controller
@@ -72,11 +72,11 @@ public class RobotContainer {
     String logDir = DataLogManager.getLogDir();
     System.out.print(logDir);
 
-    algaePickup = new AlgaePickup();
+    // algaePickup = new AlgaePickup();
     // elevator = new Elevator();
-    coralScorer = new CoralScorer();
+    // coralScorer = new CoralScorer();
     vision = new Vision();
-    algaeKnocker = new AlgaeKnocker();
+    // algaeKnocker = new AlgaeKnocker();
 
     switch (Constants.currentMode) {
       case REAL:
@@ -104,14 +104,14 @@ public class RobotContainer {
          break;
      }
 
-    NamedCommands.registerCommand("pickupCoral", new PickupCoral(coralScorer));
-    NamedCommands.registerCommand("dropCoral", new DropCoral(coralScorer));
-    NamedCommands.registerCommand("dropCoral2", new DropCoral(coralScorer));
+    // NamedCommands.registerCommand("pickupCoral", new PickupCoral(coralScorer));
+    // NamedCommands.registerCommand("dropCoral", new DropCoral(coralScorer));
+    // NamedCommands.registerCommand("dropCoral2", new DropCoral(coralScorer));
     //NamedCommands.registerCommand("elevatorToL2", new SetElevatorHeight(elevator, 2, 20));
-    NamedCommands.registerCommand("enableAlgaePickup", new EnableAlgaePickup(algaePickup));
-    NamedCommands.registerCommand("reverseAlgaePickup", new ReverseAlgaePickup(algaePickup));
-    NamedCommands.registerCommand("enableAlgaeKnocker", new EnableAlgaeKnocker(algaeKnocker));
-    NamedCommands.registerCommand("disableAlgaeKnocker", new ReverseAlgaeKnocker(algaeKnocker));
+    // NamedCommands.registerCommand("enableAlgaePickup", new EnableAlgaePickup(algaePickup));
+    // NamedCommands.registerCommand("reverseAlgaePickup", new ReverseAlgaePickup(algaePickup));
+    // NamedCommands.registerCommand("enableAlgaeKnocker", new EnableAlgaeKnocker(algaeKnocker));
+    // NamedCommands.registerCommand("disableAlgaeKnocker", new ReverseAlgaeKnocker(algaeKnocker));
     //NamedCommands.registerCommand("elevatorToL4", new SetElevatorHeight(elevator, 4, 20)); //Check if correct
 
     // Set up auto routines
@@ -180,10 +180,10 @@ public class RobotContainer {
 
     /* Intake auto-run command */
     /* Reverse intake control as well */
-    algaePickup.setDefaultCommand(
-        SubsystemControl.algaePickup(
-            algaePickup,
-            operatorController::getRightY));    
+    // algaePickup.setDefaultCommand(
+    //     SubsystemControl.algaePickup(
+    //         algaePickup,
+    //         operatorController::getRightY));    
     
     driverController
         .a()
@@ -196,16 +196,16 @@ public class RobotContainer {
     //   operatorController
     // ));
 
-    coralScorer.setDefaultCommand(
-      SubsystemControl.coralControl(
-        coralScorer, 
-        operatorController::getLeftY, 
-        () -> operatorController.leftStick().getAsBoolean()
-      )
-    );
+    // coralScorer.setDefaultCommand(
+    //   SubsystemControl.coralControl(
+    //     coralScorer, 
+    //     operatorController::getLeftY, 
+    //     () -> operatorController.leftStick().getAsBoolean()
+    //   )
+    // );
 
-    operatorController.leftBumper().onTrue(Commands.runOnce(() -> algaeKnocker.enableAlgaeKnocker(), algaeKnocker));
-    operatorController.rightBumper().onTrue(Commands.runOnce(() -> algaeKnocker.disableAlgaeKnocker(), algaeKnocker));
+    // operatorController.leftBumper().onTrue(Commands.runOnce(() -> algaeKnocker.enableAlgaeKnocker(), algaeKnocker));
+    // operatorController.rightBumper().onTrue(Commands.runOnce(() -> algaeKnocker.disableAlgaeKnocker(), algaeKnocker));
   }
     //     .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
   

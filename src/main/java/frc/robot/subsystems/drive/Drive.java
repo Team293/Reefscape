@@ -162,9 +162,14 @@ public class Drive extends SubsystemBase {
     }
     // Log empty setpoint states when disabled
     // if (DriverStation.isDisabled()) {
-    // Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
-    // Logger.recordOutput("SwerveStates/SetpointsOptimized", new
-    // SwerveModuleState[] {});
+    Logger.recordOutput("SwerveStates/Setpoints", getWheelPositions());
+
+    SwerveModuleState[] states = new SwerveModuleState[4];
+    for (int i = 0; i < states.length; i++) {
+      states[i] = modules[i].getState();
+    }
+
+    Logger.recordOutput("SwerveStates", states);
     // }
 
     // Update odometry
