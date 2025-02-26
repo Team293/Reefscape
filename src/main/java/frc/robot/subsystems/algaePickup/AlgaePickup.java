@@ -15,10 +15,14 @@ public class AlgaePickup extends SubsystemBase {
 
     
     private final AlgaePickupIOInputsAutoLogged inputs = new AlgaePickupIOInputsAutoLogged();
+    private final ColorSensorIOInputsAutoLogged rightSightSensorInputs = new ColorSensorIOInputsAutoLogged();
+
+    private final RightSightSensor proximitySensorIO;
 
     public static final double MAX_VELOCITY = 20.0;
     
     public AlgaePickup() {
+        proximitySensorIO = new RightSightSensor(0);
         algaePickupMotor = new AlgaePickupIOTalonFX(1);
         hub = new PneumaticHub(25);
         algaeSolenoidLeft = new DoubleSolenoid(PneumaticsModuleType.REVPH, 2, 5); //Change channels once testing
@@ -30,6 +34,7 @@ public class AlgaePickup extends SubsystemBase {
     @Override
     public void periodic() {
         algaePickupMotor.updateInputs(inputs);
+        proximitySensorIO.updateInputs(rightSightSensorInputs);
     }
 
     public void setVelocity(double targetVelocity) {
@@ -66,4 +71,9 @@ public class AlgaePickup extends SubsystemBase {
     {
         algaeSolenoidRight.set(DoubleSolenoid.Value.kReverse);
     }
+
+    public double detectedAlgaeForSeconds() {
+        return rightSightSensorInputs.detectedForSeconds;
+      }
+    
 }
