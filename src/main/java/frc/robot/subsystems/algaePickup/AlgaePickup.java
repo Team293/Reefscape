@@ -1,6 +1,7 @@
 package frc.robot.subsystems.algaePickup;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.algaePickup.AlgaePickupIOInputsAutoLogged;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
@@ -15,7 +16,7 @@ public class AlgaePickup extends SubsystemBase {
 
     
     private final AlgaePickupIOInputsAutoLogged inputs = new AlgaePickupIOInputsAutoLogged();
-    private final ColorSensorIOInputsAutoLogged rightSightSensorInputs = new ColorSensorIOInputsAutoLogged();
+    //private final ColorSensorIOInputsAutoLogged rightSightSensorInputs = new ColorSensorIOInputsAutoLogged();
 
     private final RightSightSensor proximitySensorIO;
 
@@ -34,7 +35,7 @@ public class AlgaePickup extends SubsystemBase {
     @Override
     public void periodic() {
         algaePickupMotor.updateInputs(inputs);
-        proximitySensorIO.updateInputs(rightSightSensorInputs);
+        //proximitySensorIO.updateInputs(rightSightSensorInputs);
     }
 
     public void setVelocity(double targetVelocity) {
@@ -72,8 +73,8 @@ public class AlgaePickup extends SubsystemBase {
         algaeSolenoidRight.set(DoubleSolenoid.Value.kReverse);
     }
 
-    public double detectedAlgaeForSeconds() {
+    /*public double detectedAlgaeForSeconds() {
         return rightSightSensorInputs.detectedForSeconds;
       }
-    
+    */
 }

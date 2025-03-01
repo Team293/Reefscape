@@ -9,7 +9,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class AlgaePickupIOTalonFX implements AlgaePickupIO {
     private TalonFX algaePickupMotor;
-    private double m_gearRatio = 1.0; // change to the actual later
+    private double m_gearRatio = 4.0; // change to the actual later
 
     private static VelocityVoltage velocityVoltageCommand = new VelocityVoltage(0.0).withSlot(0);
 

@@ -114,7 +114,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("enableAlgaeKnocker", new EnableAlgaeKnocker(algaeKnocker));
     NamedCommands.registerCommand("disableAlgaeKnocker", new ReverseAlgaeKnocker(algaeKnocker));
     NamedCommands.registerCommand("elevatorToL4", new SetElevatorHeight(elevator, 4, 20)); //Check if correct
-    NamedCommands.registerCommand("colorSensorPickup", new ColorSensorPickup(algaePickup));
+   // NamedCommands.registerCommand("colorSensorPickup", new ColorSensorPickup(algaePickup));
 
     // Set up auto routines
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -180,12 +180,10 @@ public class RobotContainer {
     //     .a()
     //     .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
 
-    /* Intake auto-run command */
-    /* Reverse intake control as well */
-    // algaePickup.setDefaultCommand(
-    //     SubsystemControl.algaePickup(
-    //         algaePickup,
-    //         operatorController::getRightY));    
+     algaePickup.setDefaultCommand(
+        SubsystemControl.algaePickup(
+             algaePickup,
+             operatorController::getRightY));    
     
     driverController
         .a()
