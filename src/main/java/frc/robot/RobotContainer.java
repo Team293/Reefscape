@@ -54,11 +54,11 @@ import frc.robot.subsystems.vision.Vision;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final CoralScorer coralScorer;
-  private final AlgaePickup algaePickup;
+  // private final CoralScorer coralScorer;
+  // private final AlgaePickup algaePickup;
   private final Vision vision;
-  private final AlgaeKnocker algaeKnocker;
-  private final Elevator elevator;
+  // private final AlgaeKnocker algaeKnocker;
+  // private final Elevator elevator;
   private final Targeting targeting;
 
   // Controller
@@ -75,11 +75,11 @@ public class RobotContainer {
     String logDir = DataLogManager.getLogDir();
     System.out.print(logDir);
 
-    algaePickup = new AlgaePickup();
-    elevator = new Elevator();
-    coralScorer = new CoralScorer();
+    // algaePickup = new AlgaePickup();
+    // elevator = new Elevator();
+    // coralScorer = new CoralScorer();
     vision = new Vision();
-    algaeKnocker = new AlgaeKnocker();
+    // algaeKnocker = new AlgaeKnocker();
 
     switch (Constants.currentMode) {
       case REAL:
@@ -109,16 +109,16 @@ public class RobotContainer {
 
     targeting = new Targeting(drive);
 
-    NamedCommands.registerCommand("pickupCoral", new PickupCoral(coralScorer));
-    NamedCommands.registerCommand("dropCoral", new DropCoral(coralScorer));
-    NamedCommands.registerCommand("dropCoral2", new DropCoral(coralScorer));
-    NamedCommands.registerCommand("elevatorToL2", new SetElevatorHeight(elevator, 2, 20));
-    NamedCommands.registerCommand("enableAlgaePickup", new EnableAlgaePickup(algaePickup));
-    NamedCommands.registerCommand("reverseAlgaePickup", new ReverseAlgaePickup(algaePickup));
-    NamedCommands.registerCommand("enableAlgaeKnocker", new EnableAlgaeKnocker(algaeKnocker));
-    NamedCommands.registerCommand("disableAlgaeKnocker", new ReverseAlgaeKnocker(algaeKnocker));
-    NamedCommands.registerCommand("elevatorToL4", new SetElevatorHeight(elevator, 4, 20)); //Check if correct
-   // NamedCommands.registerCommand("colorSensorPickup", new ColorSensorPickup(algaePickup));
+  //   NamedCommands.registerCommand("pickupCoral", new PickupCoral(coralScorer));
+  //   NamedCommands.registerCommand("dropCoral", new DropCoral(coralScorer));
+  //   NamedCommands.registerCommand("dropCoral2", new DropCoral(coralScorer));
+  //   NamedCommands.registerCommand("elevatorToL2", new SetElevatorHeight(elevator, 2, 20));
+  //   NamedCommands.registerCommand("enableAlgaePickup", new EnableAlgaePickup(algaePickup));
+  //   NamedCommands.registerCommand("reverseAlgaePickup", new ReverseAlgaePickup(algaePickup));
+  //   NamedCommands.registerCommand("enableAlgaeKnocker", new EnableAlgaeKnocker(algaeKnocker));
+  //   NamedCommands.registerCommand("disableAlgaeKnocker", new ReverseAlgaeKnocker(algaeKnocker));
+  //   NamedCommands.registerCommand("elevatorToL4", new SetElevatorHeight(elevator, 4, 20)); //Check if correct
+  //  // NamedCommands.registerCommand("colorSensorPickup", new ColorSensorPickup(algaePickup));
 
     // Set up auto routines
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -186,10 +186,10 @@ public class RobotContainer {
     //     .a()
     //     .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
 
-     algaePickup.setDefaultCommand(
-        SubsystemControl.algaePickup(
-             algaePickup,
-             operatorController::getRightY));    
+    //  algaePickup.setDefaultCommand(
+    //     SubsystemControl.algaePickup(
+    //          algaePickup,
+    //          operatorController::getRightY));    
     
     driverController
         .a()

@@ -52,7 +52,7 @@ public class CoralScorerIOTalonFX implements CoralScorerIO {
     @Override
     public void updateInputs(CoralScorerIOInputs inputs) {
         BaseStatusSignal.refreshAll(velocity);
-        inputs.speed = velocity.getAsDouble();
+        inputs.speed = velocity.getValueAsDouble();
         CoralScorerIO.super.updateInputs(inputs);
     }
 
