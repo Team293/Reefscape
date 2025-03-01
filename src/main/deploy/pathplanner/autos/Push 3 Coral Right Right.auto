@@ -1,0 +1,43 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Push Right Leave"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right Corner to Right Coral Station"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "(Teleop Blue) Coral Station (Right) to Reef"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom Right to Coral Station"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BR Coral Station to Bottom Right"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

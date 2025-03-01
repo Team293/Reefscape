@@ -30,7 +30,7 @@ public class Vision extends SubsystemBase {
             0.0, // side
             0.19, // up
             0.0, // roll
-            0.0, // pitch
+            16, // pitch
             180 // yaw
         );
 

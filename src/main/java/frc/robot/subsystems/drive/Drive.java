@@ -21,6 +21,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 // import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 // import com.pathplanner.lib.util.ReplanningConfig;
@@ -41,6 +42,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.LocalADStarAK;
+
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -62,12 +64,16 @@ public class Drive extends SubsystemBase {
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
   private Pose2d defaultPose = new Pose2d(7.45, 4.11, new Rotation2d());
+  
+  private Pose2d targetPose = defaultPose;
+  
   private Rotation2d lastGyroRotation = new Rotation2d();
-
+  
   private SwerveDrivePoseEstimator poseEstimator;
-
+  
   // Field oriented direction in degrees
-  private PIDController fieldOrientedDirectionController = new PIDController(0.05, 0.0, 0.0);
+  private PIDController drivingController = new PIDController(1.0, 0, 0);
+  private PIDController fieldOrientedDirectionController = new PIDController(5.0, 2.0, 0.0);
 
   private final Vision vision;
 
@@ -85,8 +91,7 @@ public class Drive extends SubsystemBase {
     modules[2] = new Module(blModuleIO, 2);
     modules[3] = new Module(brModuleIO, 3);
 
-    fieldOrientedDirectionController.enableContinuousInput(0, 360.0);
-
+    fieldOrientedDirectionController.enableContinuousInput(0, Math.PI*2);
 
     RobotConfig config;
     try{
@@ -226,13 +231,28 @@ public class Drive extends SubsystemBase {
     // optimizedSetpointStates);
   }
 
-  public void runFieldOrientedDirection(Translation2d translation) {
-    double currentDegrees = getRotation().getDegrees();
-    double omegaOutput = fieldOrientedDirectionController.calculate(currentDegrees);
+  public void setTargetPose(Pose2d newTargetPose) {
+    targetPose = newTargetPose;
+  }
+
+  public void driveToTargetPose() {
+    double translationX = drivingController.calculate(getPose().getX(), getTargetPose().getX());
+    double translationY = drivingController.calculate(getPose().getY(), getTargetPose().getY());
+    double omegaOutput = fieldOrientedDirectionController.calculate(getPose().getRotation().getRadians(), targetPose.getRotation().getRadians());
+
+    Logger.recordOutput("Odometry/SelfDriving/OutputX", translationX);
+    Logger.recordOutput("Odometry/SelfDriving/OutputY", translationY);
+    Logger.recordOutput("Odometry/SelfDriving/RotationRadians", omegaOutput);
+
+    translationX = MathUtil.clamp(translationX, -1, 1);
+    translationY = MathUtil.clamp(translationY, -1, 1);
 
     runVelocity(
-        ChassisSpeeds.fromFieldRelativeSpeeds(
-            translation.getX(), translation.getY(), omegaOutput, getRotation()));
+      ChassisSpeeds.fromFieldRelativeSpeeds(
+        translationX,
+        translationY,
+        omegaOutput,
+        getRotation()));
   }
 
   /** Stops the drive. */
@@ -318,6 +338,11 @@ public class Drive extends SubsystemBase {
   @AutoLogOutput(key = "Odometry/Robot")
   public Pose2d getPose() {
     return poseEstimator.getEstimatedPosition();
+  }
+
+  @AutoLogOutput(key = "Odometry/TargetPose")
+  public Pose2d getTargetPose() {
+    return targetPose;
   }
 
   /** Returns the maximum linear speed in meters per sec. */
