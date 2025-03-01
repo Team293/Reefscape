@@ -41,6 +41,7 @@ import frc.robot.subsystems.drive.GyroIONavX;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.targeting.Targeting;
 import frc.robot.subsystems.vision.Vision;
 
 /**
@@ -56,6 +57,7 @@ public class RobotContainer {
   private final AlgaePickup algaePickup;
   private final Vision vision;
   private final AlgaeKnocker algaeKnocker;
+  private final Targeting targeting;
   // private final Elevator elevator;
 
   // Controller
@@ -104,6 +106,8 @@ public class RobotContainer {
          break;
      }
 
+    targeting = new Targeting(drive);
+
     NamedCommands.registerCommand("pickupCoral", new PickupCoral(coralScorer));
     NamedCommands.registerCommand("dropCoral", new DropCoral(coralScorer));
     NamedCommands.registerCommand("dropCoral2", new DropCoral(coralScorer));
@@ -139,11 +143,13 @@ public class RobotContainer {
     drive.setDefaultCommand(
         SubsystemControl.joystickDrive(
             drive,
+            targeting,
             () -> -driverController.getLeftY(),
             () -> -driverController.getLeftX(),
             () -> -driverController.getRightX(),
             () -> driverController.getLeftTriggerAxis(),
-            () -> driverController.getRightTriggerAxis()));
+            () -> driverController.getRightTriggerAxis(),
+            () -> driverController.rightBumper().getAsBoolean()));
     /*
      * SubsystemControl.fieldOrientedRotation(
      * drive,
@@ -167,6 +173,7 @@ public class RobotContainer {
 
     /* Brake command */
     driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    // driverController.b().onTrue(Commands.runOnce(targeting::))
 
     /* Reset heading command */
     driverController

@@ -11,6 +11,8 @@ public class PickupCoral extends Command {
     public PickupCoral(CoralScorer coralScorer) {
         this.coralScorer = coralScorer;
         this.timer = new Timer();
+        timer.start();
+
 
         this.addRequirements(coralScorer);
     }
@@ -24,6 +26,6 @@ public class PickupCoral extends Command {
 
     @Override
     public boolean isFinished() {
-        return false;
+        return timer.advanceIfElapsed(1.0);
     }
 }
