@@ -14,7 +14,7 @@ import edu.wpi.first.units.measure.Angle;
 public class ElevatorIOTalonFX implements ElevatorIO {
     private TalonFX elevatorMotor;
     private StatusSignal<Angle> elevatorPosition;
-    private double m_gearRatio = 4/1; // change to the actual later
+    private double m_gearRatio = 4/1; 
 
     public ElevatorIOTalonFX(int canID) {
         this.elevatorMotor = new TalonFX(canID);

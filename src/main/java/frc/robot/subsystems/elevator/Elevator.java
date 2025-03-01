@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Elevator extends SubsystemBase {
-    private static final double MAX_POSITION = 3.32;
+    private static final double MAX_POSITION = 6.5;
     private static final double MIN_POSITION = 0.1;
     private static final double DELTA_POSITION_DEADBAND = 0.001;
     private static final double MAX_SPEED = .5;
