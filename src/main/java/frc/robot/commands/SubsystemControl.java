@@ -24,10 +24,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.SpikeController;
-import frc.robot.subsystems.algaepickup.AlgaePickup;
 import frc.robot.subsystems.coralScorer.CoralScorer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.algaePickup.AlgaePickup;
 import frc.robot.subsystems.targeting.Targeting;
 
 public class SubsystemControl {

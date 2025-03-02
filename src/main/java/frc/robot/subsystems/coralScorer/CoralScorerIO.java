@@ -5,7 +5,7 @@ import org.littletonrobotics.junction.AutoLog;
 public interface CoralScorerIO {
     @AutoLog
     public static class CoralScorerIOInputs {
-        // ...
+        public double speed;
     }
 
     public default void updateInputs(CoralScorerIOInputs inputs) {}
