@@ -14,6 +14,7 @@ public interface ColorSensorIO {
     public double Blue;
     public int Proximity;
     public double MatchResultConfidence;
+    public boolean IsCoralDetected;
     public boolean IsAlgaeDetected;
     public double detectedForSeconds;
   }

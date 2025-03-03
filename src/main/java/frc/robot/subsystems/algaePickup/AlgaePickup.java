@@ -15,12 +15,9 @@ public class AlgaePickup extends SubsystemBase {
     
     private final AlgaePickupIOInputsAutoLogged inputs = new AlgaePickupIOInputsAutoLogged();
 
-    private final RightSightSensor proximitySensorIO;
-
     public static final double MAX_VELOCITY = 20.0;
     
     public AlgaePickup() {
-        proximitySensorIO = new RightSightSensor(0);
         algaePickupMotor = new AlgaePickupIOTalonFX(0);
         algaeSolenoidLeft = new DoubleSolenoid(PneumaticsModuleType.REVPH, 10,9); //Change channels once testing    
         algaeSolenoidRight = new DoubleSolenoid(PneumaticsModuleType.REVPH, 5,7); //Change channels once testing    

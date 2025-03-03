@@ -25,7 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.SpikeController;
 import frc.robot.commands.ReverseAlgaeKnocker;
-import frc.robot.commands.ColorSensorPickup;
+import frc.robot.commands.CoralBeamBreak;
 import frc.robot.commands.DropCoral;
 import frc.robot.commands.EnableAlgaeKnocker;
 import frc.robot.commands.EnableAlgaePickup;
@@ -114,6 +114,7 @@ public class RobotContainer {
     targeting = new Targeting(drive);
 
     NamedCommands.registerCommand("pickupCoral", new PickupCoral(coralScorer));
+    NamedCommands.registerCommand("coralBeamBreak", new CoralBeamBreak(coralScorer));
     NamedCommands.registerCommand("dropCoral", new DropCoral(coralScorer));
     NamedCommands.registerCommand("dropCoral2", new DropCoral(coralScorer));
     NamedCommands.registerCommand("elevatorToL2", new SetElevatorHeight(elevator, 2, 20));

@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.pneumatics.Pneumatics;
+import frc.robot.subsystems.algaePickup.ColorSensorIOInputsAutoLogged;
+import frc.robot.subsystems.coralScorer.RightSightSensor;
 
 
 public class CoralScorer extends SubsystemBase {
@@ -12,9 +14,12 @@ public class CoralScorer extends SubsystemBase {
 
     private final CoralScorerIOTalonFX coralScorerMotor;
     private final CoralScorerIOInputsAutoLogged inputs = new CoralScorerIOInputsAutoLogged();
+    private final ColorSensorIOInputsAutoLogged rightSightSensorInputs =
+      new ColorSensorIOInputsAutoLogged();
 
     private DoubleSolenoid coralSolenoid;
-    private DigitalInput proximity;
+    private final RightSightSensor proximitySensorIO;
+
 
     public static final double MAX_VELOCITY = 10.0d;
     public static double previousVelocity = 0.0d;
@@ -24,17 +29,19 @@ public class CoralScorer extends SubsystemBase {
         
         coralSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 8, 4);
         coralScorerMotor = new CoralScorerIOTalonFX(3);
-        // proximity = new DigitalInput(0);
+        proximitySensorIO = new RightSightSensor(0);
     }
 
     @Override
     public void periodic() {
        // SmartDashboard.putNumber("Compressor Pressure", compressor.getPressure());
         coralScorerMotor.updateInputs(inputs);
+        proximitySensorIO.updateInputs(rightSightSensorInputs);
+    }
 
-        // if (proximity.get()) {
-        //     coralScorerMotor.setSpeed(0);
-        // }
+    public boolean isCoralDetected() {
+        // Updated when m_sensorIO.updateInputs(m_sensorInputs) happens in periodic
+        return (rightSightSensorInputs.IsCoralDetected);
     }
 
     public void setVelocity(double targetVelocity) {
