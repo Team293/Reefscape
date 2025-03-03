@@ -42,6 +42,7 @@ import frc.robot.subsystems.drive.GyroIONavX;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.pneumatics.Pneumatics;
 import frc.robot.subsystems.targeting.Targeting;
 import frc.robot.subsystems.vision.Vision;
 
@@ -60,6 +61,7 @@ public class RobotContainer {
   private final AlgaeKnocker algaeKnocker;
   private final Elevator elevator;
   private final Targeting targeting;
+  private final Pneumatics pneumatics;
 
   // Controller
   private static final double DEADBAND = 0.05;
@@ -75,10 +77,12 @@ public class RobotContainer {
     String logDir = DataLogManager.getLogDir();
     System.out.print(logDir);
 
-    algaePickup = new AlgaePickup();
+    pneumatics = new Pneumatics();
     elevator = new Elevator();
-    coralScorer = new CoralScorer();
     vision = new Vision();
+
+    algaePickup = new AlgaePickup();
+    coralScorer = new CoralScorer(pneumatics);
     algaeKnocker = new AlgaeKnocker();
 
     switch (Constants.currentMode) {
@@ -149,8 +153,8 @@ public class RobotContainer {
             () -> -driverController.getLeftY(),
             () -> -driverController.getLeftX(),
             () -> -driverController.getRightX(),
-            () -> driverController.getLeftTriggerAxis(),
             () -> driverController.getRightTriggerAxis(),
+            () -> driverController.getLeftTriggerAxis(),
             () -> driverController.rightBumper().getAsBoolean()));
     /*
      * SubsystemControl.fieldOrientedRotation(
@@ -189,26 +193,21 @@ public class RobotContainer {
      algaePickup.setDefaultCommand(
         SubsystemControl.algaePickup(
              algaePickup,
-             operatorController::getRightY));    
+             operatorController::getRightY, operatorController));    
     
     driverController
         .a()
         .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
 
-    // elevator.setDefaultCommand(SubsystemControl.elevatorControl(
-    //   elevator,
-    //   // operatorController::getLeftY,
-    //   () -> operatorController.rightStick().getAsBoolean(),
-    //   operatorController
-    // ));
+   
 
-    // coralScorer.setDefaultCommand(
-    //   SubsystemControl.coralControl(
-    //     coralScorer, 
-    //     operatorController::getLeftY, 
-    //     () -> operatorController.leftStick().getAsBoolean()
-    //   )
-    // );
+    coralScorer.setDefaultCommand(
+      SubsystemControl.coralControl(
+        coralScorer, 
+        operatorController::getLeftY, 
+        () -> operatorController.leftStick().getAsBoolean()
+      )
+    );
 
     // operatorController.leftBumper().onTrue(Commands.runOnce(() -> algaeKnocker.enableAlgaeKnocker(), algaeKnocker));
     // operatorController.rightBumper().onTrue(Commands.runOnce(() -> algaeKnocker.disableAlgaeKnocker(), algaeKnocker));

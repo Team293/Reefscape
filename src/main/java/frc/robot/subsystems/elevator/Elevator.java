@@ -4,6 +4,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import com.ctre.phoenix6.controls.PositionVoltage;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -14,9 +15,9 @@ public class Elevator extends SubsystemBase {
     private static final double MAX_SPEED = .5;
 
     private static final double L1_POSITION = 0.0d;
-    private static final double L2_POSITION = 1.25d;
-    private static final double L3_POSITION = 2.7d;
-    private static final double L4_POSITION = 0.0d;
+    private static final double L2_POSITION = 2.3d;
+    private static final double L3_POSITION = 7.84d;
+    private static final double L4_POSITION = 18.18d;
     private static final double CORAL_STATION_POS = 0.719d;
 
     private static final double heights[] = {L1_POSITION, L2_POSITION, L3_POSITION, L4_POSITION, CORAL_STATION_POS};
@@ -24,6 +25,13 @@ public class Elevator extends SubsystemBase {
     private final ElevatorIOInputsAutoLogged elevatorInputs = new ElevatorIOInputsAutoLogged();
     private final ElevatorIOTalonFX elevatorMotor;
     private final PositionVoltage command;
+
+    final TrapezoidProfile m_profile = new TrapezoidProfile(
+        new TrapezoidProfile.Constraints(5, 10)
+    );
+
+    private TrapezoidProfile.State goal = new TrapezoidProfile.State(5, 0);
+    private TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
     
     // Encoder Offset Calculation Variables
     private boolean isCalculatingOffset = false; 
@@ -85,6 +93,9 @@ public class Elevator extends SubsystemBase {
     public void setPosition(double position) {
         targetPosition = MathUtil.clamp(position, MIN_POSITION, MAX_POSITION);
 
+       // command.Position = 
+
+       // trapezoidTargetPosition = new TrapezoidProfile.State(200, 0);
         elevatorMotor.applyPosition(command.withPosition(position)); 
     }
 

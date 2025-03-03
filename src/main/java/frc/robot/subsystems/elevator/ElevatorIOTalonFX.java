@@ -10,10 +10,12 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
     private TalonFX elevatorMotor;
     private StatusSignal<Angle> elevatorPosition;
+    private StatusSignal<AngularVelocity> elevatorVelocity;
     private double m_gearRatio = 4/1; 
 
     public ElevatorIOTalonFX(int canID) {
@@ -26,18 +28,21 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         // Set motor PID
-        config.Slot0.kP = 8.0;
+        config.Slot0.kP = 0.6;
         config.Slot0.kI = 0.0;
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 0.462;
         config.Slot0.kS = 0.05;
+        config.Slot0.kG = 0.45;
         elevatorMotor.getConfigurator().apply(config);
 
         elevatorPosition = elevatorMotor.getPosition();
+        elevatorVelocity = elevatorMotor.getVelocity();
 
         BaseStatusSignal.setUpdateFrequencyForAll(
             50.0,
-            elevatorPosition
+            elevatorPosition,
+            elevatorVelocity
         );
 
         elevatorMotor.optimizeBusUtilization();
@@ -50,6 +55,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
             );
 
         inputs.positionValue = elevatorPosition.getValueAsDouble();
+        inputs.velocityValue = elevatorPosition.getValueAsDouble();
     }
 
     public void applyPosition(PositionVoltage request) {

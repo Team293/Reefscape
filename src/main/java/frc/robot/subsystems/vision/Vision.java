@@ -15,33 +15,33 @@ import frc.robot.util.LimelightHelpers;
 
 public class Vision extends SubsystemBase {
     private static final String[] LIMELIGHT_NAMES = {
-        "limelight-front",
-        "limelight-back"
+        // "limelight-front",
+        // "limelight-back"
     };
 
     private static final Rotation2d[] LIMELIGHT_YAW_OFFSETS = {
-        Rotation2d.fromDegrees(180.0),
-        Rotation2d.fromDegrees(180.0)
+        // Rotation2d.fromDegrees(180.0),
+        // Rotation2d.fromDegrees(.180)
     };
 
     public Vision() {
-        LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[0],
-            0.05, // forward
-            0.0, // side
-            0.19, // up
-            0.0, // roll
-            16, // pitch
-            180 // yaw
-        );
+        // LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[0],
+        //     0.05, // forward
+        //     0.0, // side
+        //     0.19, // up
+        //     0.0, // roll
+        //     16, // pitch
+        //     180 // yaw
+        // );
 
-        LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[1],
-            0.34, // forward
-            0.0, // side
-            0.24, // up
-            0.0, // roll
-            0.0, // pitch
-            0 // yaw
-        );
+        // LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[0],
+        //     0.15, // forward
+        //     -0.13, // side
+        //     0.53, // up
+        //     0.0, // roll
+        //     0.0, // pitch
+        //     0 // yaw
+        // );
 
         // force limelights to use roboRIO for gyro
         for (String name : LIMELIGHT_NAMES) {
@@ -66,7 +66,7 @@ public class Vision extends SubsystemBase {
 
         LimelightHelpers.SetRobotOrientation(
             limelightName, 
-            gyroInputs.yawPosition.getDegrees(),
+            gyroInputs.yawPosition.plus(Rotation2d.fromDegrees(180)).getDegrees(),
             gyroInputs.yawVelocityRadPerSec / Math.PI * 180,
             0,
             0,
@@ -74,17 +74,18 @@ public class Vision extends SubsystemBase {
             0
         );
 
-        LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2(limelightName);
+        LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
 
         if (poseEstimate.tagCount == 0) {
             rejectOdometry = true;  
         }
 
         if (!rejectOdometry) {
-            Pose2d visionPose = new Pose2d(poseEstimate.pose.getTranslation(), poseEstimate.pose.getRotation().plus(yawOffset));
+            Pose2d visionPose = new Pose2d(poseEstimate.pose.getTranslation(), poseEstimate.pose.getRotation().plus(Rotation2d.fromDegrees(180)));
             Pose2d currentPose = estimator.getEstimatedPosition();
             
             Logger.recordOutput("Limelight/EstimatedPose-" + limelightName, visionPose);
+            Logger.recordOutput("Limelight/RawEstimatedPose-" + limelightName, poseEstimate.pose);
 
             // reject position greater than 1 meter apart from current
             if (currentPose.getTranslation().getDistance(visionPose.getTranslation()) > 3) {

@@ -26,7 +26,7 @@ public class CoralScorerIOTalonFX implements CoralScorerIO {
         config.CurrentLimits.StatorCurrentLimit = 40.0;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
         config.Feedback.SensorToMechanismRatio = m_gearRatio;
-        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         // Set motor PID, TODO: Set PID
@@ -52,7 +52,7 @@ public class CoralScorerIOTalonFX implements CoralScorerIO {
     @Override
     public void updateInputs(CoralScorerIOInputs inputs) {
         BaseStatusSignal.refreshAll(velocity);
-        inputs.speed = velocity.getAsDouble();
+        inputs.speed = velocity.getValueAsDouble();
         CoralScorerIO.super.updateInputs(inputs);
     }
 

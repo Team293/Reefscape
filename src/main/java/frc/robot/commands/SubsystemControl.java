@@ -114,9 +114,9 @@ public class SubsystemControl {
                 .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
                 .getTranslation();
 
-        if (Math.abs(strafe) > 0.01) {
-          xTranslation = Math.sin(-drive.getRotation().getRadians()) * strafe;
-          yTranslation = Math.cos(-drive.getRotation().getRadians()) * strafe;
+        if (Math.abs(strafe) > 0.005) {
+          xTranslation = Math.sin(-drive.getRotation().getRadians()) * strafe * 0.5;
+          yTranslation = Math.cos(-drive.getRotation().getRadians()) * strafe * 0.5;
         } else {
           xTranslation = linearVelocity.getX();
           yTranslation = linearVelocity.getY();
@@ -156,11 +156,11 @@ public class SubsystemControl {
       // }
 
       if (controller.a().getAsBoolean()) {
-        // elevator.setPresetPos(0);
-      } else if (controller.b().getAsBoolean()) {
         elevator.setPresetPos(1);
-      } else if (controller.y().getAsBoolean()) {
+      } else if (controller.b().getAsBoolean()) {
         elevator.setPresetPos(2);
+      } else if (controller.y().getAsBoolean()) {
+        elevator.setPresetPos(3);
       } else if (controller.x().getAsBoolean()) {
         elevator.setPresetPos(4);
       }
@@ -194,12 +194,22 @@ public class SubsystemControl {
 
   public static Command algaePickup(
     AlgaePickup algaePickup,
-    DoubleSupplier speed
+    DoubleSupplier speed,
+    SpikeController controller
   )
   {
     return Commands.run(() -> {
       algaePickup.setVelocity(speed.getAsDouble() * AlgaePickup.MAX_VELOCITY);
+      
+      
+      if (controller.rightStick().getAsBoolean()) {
+        algaePickup.extendAlagePickup();
+       } else {
+        algaePickup.retractAlgaePickup();
+       }
     }, algaePickup);
+
+    
   }
 
   // public static Command limelightDrive(

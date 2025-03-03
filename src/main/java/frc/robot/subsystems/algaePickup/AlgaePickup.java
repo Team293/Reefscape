@@ -4,19 +4,16 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.algaePickup.AlgaePickupIOInputsAutoLogged;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AlgaePickup extends SubsystemBase {
     private final AlgaePickupIOTalonFX algaePickupMotor;
-    private PneumaticHub hub;
-    private Compressor compressor;
     private DoubleSolenoid algaeSolenoidLeft;
     private DoubleSolenoid algaeSolenoidRight;
 
     
     private final AlgaePickupIOInputsAutoLogged inputs = new AlgaePickupIOInputsAutoLogged();
-    //private final ColorSensorIOInputsAutoLogged rightSightSensorInputs = new ColorSensorIOInputsAutoLogged();
 
     private final RightSightSensor proximitySensorIO;
 
@@ -24,12 +21,9 @@ public class AlgaePickup extends SubsystemBase {
     
     public AlgaePickup() {
         proximitySensorIO = new RightSightSensor(0);
-        algaePickupMotor = new AlgaePickupIOTalonFX(1);
-        hub = new PneumaticHub(25);
-        algaeSolenoidLeft = new DoubleSolenoid(PneumaticsModuleType.REVPH, 2, 5); //Change channels once testing
-        algaeSolenoidRight = new DoubleSolenoid(PneumaticsModuleType.REVPH, 3, 6); //Change channels once testing      
-        compressor = new Compressor(25, PneumaticsModuleType.REVPH);
-        compressor.enableAnalog(110, 120);
+        algaePickupMotor = new AlgaePickupIOTalonFX(0);
+        algaeSolenoidLeft = new DoubleSolenoid(PneumaticsModuleType.REVPH, 10,9); //Change channels once testing    
+        algaeSolenoidRight = new DoubleSolenoid(PneumaticsModuleType.REVPH, 5,7); //Change channels once testing    
     }
 
     @Override
@@ -52,24 +46,16 @@ public class AlgaePickup extends SubsystemBase {
     public void disableAlgaeIntake() {
         algaePickupMotor.setSpeed(0.0);
     }
-
-    public void extendRightSolenoid()
-    {
-        algaeSolenoidRight.set(DoubleSolenoid.Value.kForward);
-    }
-
-    public void extendLeftSolenoid()
+    
+    public void extendAlagePickup()
     {
         algaeSolenoidLeft.set(DoubleSolenoid.Value.kForward);
-    }
-
-    public void retractLeftSolenoid()
-    {
-        algaeSolenoidLeft.set(DoubleSolenoid.Value.kReverse);
+        algaeSolenoidRight.set(DoubleSolenoid.Value.kForward);
     }
     
-    public void retractRightSolenoid()
+    public void retractAlgaePickup()
     {
+        algaeSolenoidLeft.set(DoubleSolenoid.Value.kReverse);
         algaeSolenoidRight.set(DoubleSolenoid.Value.kReverse);
     }
 

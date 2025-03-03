@@ -83,29 +83,29 @@ public class ModuleIOTalonFX implements ModuleIO {
         driveTalon = new TalonFX(20);
         turnTalon = new TalonFX(21);
         cancoder = new CANcoder(22);
-        // absoluteEncoderOffset = 0.329d + 0.5933d; // CANCoder rotations
-        absoluteEncoderOffset = -0.324d + 0.5d;
+        absoluteEncoderOffset = -0.959d + 0.5d; // 2024
+        // absoluteEncoderOffset = -0.324d + 0.5d; // 2025
         break;
       case 1: // Front Right
         driveTalon = new TalonFX(23);
         turnTalon = new TalonFX(24);
         cancoder = new CANcoder(25);
-        // absoluteEncoderOffset = 0.509d + 0.235d; // CANcoder rotations
-        absoluteEncoderOffset = -0.5068d;
+        absoluteEncoderOffset = -0.445d + 0.5d; // 2024
+        // absoluteEncoderOffset = -0.5068d; // 2025
         break;
       case 2: // Back Left
         driveTalon = new TalonFX(26);
         turnTalon = new TalonFX(27);
         cancoder = new CANcoder(28);
-        // absoluteEncoderOffset = 0.3d; // CANcoder rotations
-        absoluteEncoderOffset = -0.959d + 0.5d;
+        absoluteEncoderOffset = -0.467d; // 2024
+        // absoluteEncoderOffset = -0.959d + 0.5d; // 2025
         break;
       case 3: // Back Right
         driveTalon = new TalonFX(29);
         turnTalon = new TalonFX(30);
         cancoder = new CANcoder(31);
-        // absoluteEncoderOffset = 0.0493d - 0.33d; // CANcoder rotations
-        absoluteEncoderOffset = -0.047d;
+        absoluteEncoderOffset = -0.094d; // 2024
+        // absoluteEncoderOffset = -0.047d; // 2025
         break;
       default:
         throw new RuntimeException("Invalid module index");
@@ -114,7 +114,8 @@ public class ModuleIOTalonFX implements ModuleIO {
     // CANcoder config
     var canCoderConfig = new CANcoderConfiguration();
     canCoderConfig.MagnetSensor.SensorDirection = SDSMK4L1Constants.canCoderSensorDirection;
-    canCoderConfig.MagnetSensor.MagnetOffset = absoluteEncoderOffset;
+    canCoderConfig.MagnetSensor.MagnetOffset = absoluteEncoderOffset  + 0.25d; // 2024
+    // canCoderConfig.MagnetSensor.MagnetOffset = absoluteEncoderOffset; // 2025
     canCoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1.0;
     cancoder.getConfigurator().apply(canCoderConfig);
 
