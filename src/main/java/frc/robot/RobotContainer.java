@@ -194,7 +194,9 @@ public class RobotContainer {
      algaePickup.setDefaultCommand(
         SubsystemControl.algaePickup(
              algaePickup,
-             operatorController::getRightY, operatorController));    
+             operatorController::getRightY,
+             operatorController,
+             () -> operatorController.leftStick().getAsBoolean()));    
     
     driverController
         .a()
@@ -210,8 +212,8 @@ public class RobotContainer {
       )
     );
 
-    // operatorController.leftBumper().onTrue(Commands.runOnce(() -> algaeKnocker.enableAlgaeKnocker(), algaeKnocker));
-    // operatorController.rightBumper().onTrue(Commands.runOnce(() -> algaeKnocker.disableAlgaeKnocker(), algaeKnocker));
+
+
   }
     //     .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
   

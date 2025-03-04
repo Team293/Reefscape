@@ -19,7 +19,7 @@ public class AlgaePickup extends SubsystemBase {
     
     public AlgaePickup() {
         algaePickupMotor = new AlgaePickupIOTalonFX(0);
-        algaeSolenoidLeft = new DoubleSolenoid(PneumaticsModuleType.REVPH, 10,9); //Change channels once testing    
+       // algaeSolenoidLeft = new DoubleSolenoid(PneumaticsModuleType.REVPH, 10,9); //Change channels once testing    
         algaeSolenoidRight = new DoubleSolenoid(PneumaticsModuleType.REVPH, 5,7); //Change channels once testing    
     }
 
@@ -46,13 +46,13 @@ public class AlgaePickup extends SubsystemBase {
     
     public void extendAlagePickup()
     {
-        algaeSolenoidLeft.set(DoubleSolenoid.Value.kForward);
+       // algaeSolenoidLeft.set(DoubleSolenoid.Value.kForward);
         algaeSolenoidRight.set(DoubleSolenoid.Value.kForward);
     }
     
     public void retractAlgaePickup()
     {
-        algaeSolenoidLeft.set(DoubleSolenoid.Value.kReverse);
+       // algaeSolenoidLeft.set(DoubleSolenoid.Value.kReverse);
         algaeSolenoidRight.set(DoubleSolenoid.Value.kReverse);
     }
 
