@@ -195,13 +195,12 @@ public class SubsystemControl {
   public static Command algaePickup(
     AlgaePickup algaePickup,
     DoubleSupplier speed,
-    SpikeController controller,
     BooleanSupplier output
   )
   {
     return Commands.run(() -> {
       algaePickup.setVelocity(speed.getAsDouble() * AlgaePickup.MAX_VELOCITY);
-      if (controller.rightStick().getAsBoolean()) {
+      if (output.getAsBoolean()) {
         algaePickup.extendAlagePickup();
        } else {
         algaePickup.retractAlgaePickup();

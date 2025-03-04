@@ -195,8 +195,7 @@ public class RobotContainer {
         SubsystemControl.algaePickup(
              algaePickup,
              operatorController::getRightY,
-             operatorController,
-             () -> operatorController.leftStick().getAsBoolean()));    
+             () -> operatorController.rightStick().getAsBoolean()));    
     
     driverController
         .a()
@@ -207,7 +206,7 @@ public class RobotContainer {
     coralScorer.setDefaultCommand(
       SubsystemControl.coralControl(
         coralScorer, 
-        operatorController::getLeftY, 
+        operatorController::getLeftY,
         () -> operatorController.leftStick().getAsBoolean()
       )
     );

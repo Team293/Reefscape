@@ -19,7 +19,7 @@ public class AlgaePickup extends SubsystemBase {
     
     public AlgaePickup() {
         algaePickupMotor = new AlgaePickupIOTalonFX(0);
-       // algaeSolenoidLeft = new DoubleSolenoid(PneumaticsModuleType.REVPH, 10,9); //Change channels once testing    
+       // algaeSolenoidLeft = new DoubleSolenoid(PneumaticsModuleType.REVPH, 10, 8); //Change channels once testing
         algaeSolenoidRight = new DoubleSolenoid(PneumaticsModuleType.REVPH, 5,7); //Change channels once testing    
     }
 
