@@ -6,6 +6,7 @@ public interface CoralScorerIO {
     @AutoLog
     public static class CoralScorerIOInputs {
         public double speed;
+        public double current;
     }
 
     public default void updateInputs(CoralScorerIOInputs inputs) {}

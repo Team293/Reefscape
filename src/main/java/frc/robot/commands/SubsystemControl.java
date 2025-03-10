@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.SpikeController;
 import frc.robot.subsystems.coralScorer.CoralScorer;
+import frc.robot.subsystems.coralScorer.CoralScorer.States;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.algaePickup.AlgaePickup;
@@ -173,21 +174,14 @@ public class SubsystemControl {
     BooleanSupplier output
   ) {
     return Commands.run(() -> {
-      if (DriverStation.isAutonomous()) {
-        coralScorer.pointDown();
-      } else {
-        if (updown.getAsDouble() > 0.5) {
-          coralScorer.pointDown();
-          
-          if (output.getAsBoolean()) {
-            coralScorer.forwardMotor();
-          } else {
-            coralScorer.reverseMotor();
-          }
+      if (coralScorer.hasCoral()) {
+        if (output.getAsBoolean()) {
+          coralScorer.setState(States.DROP);
         } else {
-          coralScorer.pointUp();
-          coralScorer.reverseMotor();
+          coralScorer.setState(States.POINT_DOWN);
         }
+      } else {
+        coralScorer.setState(States.INTAKE);
       }
     }, coralScorer);
   }

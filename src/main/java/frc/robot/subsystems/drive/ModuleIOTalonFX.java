@@ -80,32 +80,33 @@ public class ModuleIOTalonFX implements ModuleIO {
   public ModuleIOTalonFX(int index) {
     switch (index) {
       case 0: // Front Left
-        driveTalon = new TalonFX(20);
-        turnTalon = new TalonFX(21);
-        cancoder = new CANcoder(22);
-        absoluteEncoderOffset = -0.959d + 0.5d; // 2024
-        // absoluteEncoderOffset = -0.324d + 0.5d; // 2025
-        break;
-      case 1: // Front Right
         driveTalon = new TalonFX(23);
         turnTalon = new TalonFX(24);
         cancoder = new CANcoder(25);
-        absoluteEncoderOffset = -0.445d + 0.5d; // 2024
-        // absoluteEncoderOffset = -0.5068d; // 2025
+        // absoluteEncoderOffset = -0.959d + 0.5d; // 2024
+        absoluteEncoderOffset = -0.7734d + 0.25; // 2025
         break;
-      case 2: // Back Left
-        driveTalon = new TalonFX(26);
-        turnTalon = new TalonFX(27);
-        cancoder = new CANcoder(28);
-        absoluteEncoderOffset = -0.467d; // 2024
-        // absoluteEncoderOffset = -0.959d + 0.5d; // 2025
-        break;
-      case 3: // Back Right
+      case 1: // Front Right
         driveTalon = new TalonFX(29);
         turnTalon = new TalonFX(30);
         cancoder = new CANcoder(31);
-        absoluteEncoderOffset = -0.094d; // 2024
-        // absoluteEncoderOffset = -0.047d; // 2025
+        // absoluteEncoderOffset = -0.445d + 0.5d; // 2024
+        absoluteEncoderOffset = -0.7832d + 0.25 + 0.5; // 2025
+        break;
+      case 2: // Back Left
+        driveTalon = new TalonFX(20);
+        turnTalon = new TalonFX(21);
+        cancoder = new CANcoder(22);
+        // absoluteEncoderOffset = -0.467d; // 2024
+        absoluteEncoderOffset = -0.0793 + 0.25d
+        ; // 2025
+        break;
+      case 3: // Back Right
+        driveTalon = new TalonFX(26);
+        turnTalon = new TalonFX(27);
+        cancoder = new CANcoder(28);
+        // absoluteEncoderOffset = -0.094d; // 2024
+        absoluteEncoderOffset = -0.229d + 0.25 + 0.5; // 2025
         break;
       default:
         throw new RuntimeException("Invalid module index");
