@@ -214,9 +214,6 @@ public class RobotContainer {
       )
     );
 
-    operatorController.leftBumper().onTrue(Commands.runOnce(() -> algaeKnocker.enableAlgaeKnocker(), algaeKnocker));
-    operatorController.rightBumper().onTrue(Commands.runOnce(() -> algaeKnocker.disableAlgaeKnocker(), algaeKnocker));
-
     climber.setDefaultCommand(
             SubsystemControl.climb(
                     climber,
@@ -224,9 +221,7 @@ public class RobotContainer {
                     () -> operatorController.b().getAsBoolean()
             )
     );
-  }
-    //     .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
-  
+  }  
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
