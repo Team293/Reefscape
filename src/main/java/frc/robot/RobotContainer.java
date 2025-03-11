@@ -34,6 +34,7 @@ import frc.robot.commands.SubsystemControl;
 import frc.robot.subsystems.algaePickup.AlgaePickup;
 import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
 import frc.robot.subsystems.coralScorer.CoralScorer;
+import frc.robot.subsystems.coralScorer.CoralScorer.States;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIONavX;
@@ -57,7 +58,7 @@ public class RobotContainer {
   // private final AlgaePickup algaePickup;
   private final Vision vision;
   private final AlgaeKnocker algaeKnocker;
-  // private final Elevator elevator;
+  private final Elevator elevator;
   private final Targeting targeting;
   private final Pneumatics pneumatics;
 
@@ -75,8 +76,8 @@ public class RobotContainer {
     String logDir = DataLogManager.getLogDir();
     System.out.print(logDir);
 
-     pneumatics = new Pneumatics();
-    // elevator = new Elevator();
+    pneumatics = new Pneumatics();
+    elevator = new Elevator();
     vision = new Vision();
 
     // algaePickup = new AlgaePickup();
@@ -207,13 +208,18 @@ public class RobotContainer {
        )
      );
 
-     algaeKnocker.setDefaultCommand(
+    elevator.setDefaultCommand(
+      SubsystemControl.elevatorControl(elevator, operatorController)
+    );
+
+    algaeKnocker.setDefaultCommand(
        SubsystemControl.AlgaeKnocker(
          algaeKnocker, 
          () -> operatorController.rightBumper().getAsBoolean(),
          () -> operatorController.leftBumper().getAsBoolean()
        )
-     );
+     );    operatorController.rightTrigger().onTrue(Commands.runOnce(() -> coralScorer.setState(States.INTAKE), coralScorer));
+    
   }
     //     .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
   

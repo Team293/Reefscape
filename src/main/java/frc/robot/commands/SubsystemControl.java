@@ -144,14 +144,10 @@ public class SubsystemControl {
     public static Command elevatorControl(
     Elevator elevator,
     // DoubleSupplier elevatorPercentage,
-    BooleanSupplier resetElevator,
     SpikeController controller
     )
     {
     return Commands.run(() -> {
-      if (resetElevator.getAsBoolean()) {
-        elevator.calculateOffset();
-      }
 
       // if (Math.abs(elevatorPercentage.getAsDouble()) > 0.05) {
       //   elevator.changePosition(-elevatorPercentage.getAsDouble());
@@ -165,6 +161,8 @@ public class SubsystemControl {
         elevator.setPresetPos(3);
       } else if (controller.x().getAsBoolean()) {
         elevator.setPresetPos(4);
+      } else if (controller.leftTrigger().getAsBoolean()) {
+        elevator.zero();
       }
     }, elevator);
   }

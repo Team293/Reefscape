@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.lang.Thread.State;
+import java.util.Currency;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -46,7 +47,7 @@ public class CoralScorer extends SubsystemBase {
     public CoralScorer(Pneumatics pneumatics) {
         this.pneumatics = pneumatics;
         
-        coralSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 8, 10); //Check
+        coralSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 9, 10);
         coralScorerMotor = new CoralScorerIOTalonFX(0);
         proximitySensorIO = new RightSightSensor(0);
 
@@ -59,9 +60,11 @@ public class CoralScorer extends SubsystemBase {
         proximitySensorIO.updateInputs(rightSightSensorInputs);
     
         SmartDashboard.putBoolean("HasPiece", hasPiece);
+        SmartDashboard.putString("State", state.name());
     
         if (state == States.INTAKE) {
             pointUp();
+        
             if (!hasPiece) {
                 coralScorerMotor.setSpeed(-TARGET_VELOCITY);
                 if (inputs.current > 2.0 && stateTimer.hasElapsed(0.2)) {
@@ -122,6 +125,5 @@ public class CoralScorer extends SubsystemBase {
     public void disableCoralScorer() {
         coralScorerMotor.setSpeed(0.0);
     }
-
 
 }
