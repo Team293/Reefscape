@@ -23,7 +23,8 @@ public class EnableAlgaeKnocker extends Command {
 
     @Override
     public void execute() {
-        algaeKnocker.enableAlgaeKnocker();   
+        algaeKnocker.fowardAlgaeKnockerMotor();
+        algaeKnocker.extendAlgaeKnocker();   
     }
 
     @Override
