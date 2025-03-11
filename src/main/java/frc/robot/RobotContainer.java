@@ -56,7 +56,7 @@ public class RobotContainer {
   private final CoralScorer coralScorer;
   // private final AlgaePickup algaePickup;
   private final Vision vision;
-  // private final AlgaeKnocker algaeKnocker;
+  private final AlgaeKnocker algaeKnocker;
   // private final Elevator elevator;
   private final Targeting targeting;
   private final Pneumatics pneumatics;
@@ -81,7 +81,7 @@ public class RobotContainer {
 
     // algaePickup = new AlgaePickup();
     coralScorer = new CoralScorer(pneumatics);
-    // algaeKnocker = new AlgaeKnocker();
+    algaeKnocker = new AlgaeKnocker(pneumatics);
 
     switch (Constants.currentMode) {
       case REAL:
@@ -199,8 +199,6 @@ public class RobotContainer {
         .a()
         .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
 
-   
-
      coralScorer.setDefaultCommand(
        SubsystemControl.coralControl(
          coralScorer, 
@@ -209,8 +207,13 @@ public class RobotContainer {
        )
      );
 
-
-
+     algaeKnocker.setDefaultCommand(
+       SubsystemControl.AlgaeKnocker(
+         algaeKnocker, 
+         () -> operatorController.rightBumper().getAsBoolean(),
+         () -> operatorController.leftBumper().getAsBoolean()
+       )
+     );
   }
     //     .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
   

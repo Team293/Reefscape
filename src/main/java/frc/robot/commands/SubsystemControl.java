@@ -29,6 +29,7 @@ import frc.robot.subsystems.coralScorer.CoralScorer.States;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.algaePickup.AlgaePickup;
+import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
 import frc.robot.subsystems.targeting.Targeting;
 
 public class SubsystemControl {
@@ -202,6 +203,24 @@ public class SubsystemControl {
     }, algaePickup);
   }
 
+  public static Command AlgaeKnocker(
+    AlgaeKnocker algaeKnocker,
+    BooleanSupplier L3,
+    BooleanSupplier L2
+    )
+    {
+    return Commands.run(() -> {
+      if (L3.getAsBoolean()) {
+        algaeKnocker.extendAlgaeKnocker();
+        algaeKnocker.fowardAlgaeKnockerMotor();
+      } else if (L2.getAsBoolean()) {
+        algaeKnocker.extendAlgaeKnocker();
+        algaeKnocker.reverseAlgaeKnockerMotor();
+      } else {
+        algaeKnocker.retractAlgaeKnocker();
+      }
+    }, algaeKnocker);
+  }
   // public static Command limelightDrive(
   //     Drive drive,
   //     Vision vision,
