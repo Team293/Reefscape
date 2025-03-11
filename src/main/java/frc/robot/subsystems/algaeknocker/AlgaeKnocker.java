@@ -17,7 +17,7 @@ public class AlgaeKnocker extends SubsystemBase {
     public AlgaeKnocker(Pneumatics pneumatics) {
         this.pneumatics = pneumatics;
         
-        talonSRX = new TalonSRX(12);
+        talonSRX = new TalonSRX(4);
         algaeKnocker = new DoubleSolenoid(PneumaticsModuleType.REVPH, 5,7); //Change channels once testing    
     }
 
