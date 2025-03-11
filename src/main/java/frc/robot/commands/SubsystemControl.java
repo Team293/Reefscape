@@ -170,14 +170,17 @@ public class SubsystemControl {
   public static Command coralControl(
     CoralScorer coralScorer,
     DoubleSupplier updown,
-    BooleanSupplier output
+    BooleanSupplier output,
+    BooleanSupplier pointDown
   ) {
     return Commands.run(() -> {
       if (coralScorer.hasCoral()) {
         if (output.getAsBoolean()) {
           coralScorer.setState(States.DROP);
         } else {
-          coralScorer.setState(States.POINT_DOWN);
+          if (pointDown.getAsBoolean()) {
+            coralScorer.setState(States.POINT_DOWN);
+          }
         }
       } else {
         coralScorer.setState(States.INTAKE);
@@ -210,7 +213,7 @@ public class SubsystemControl {
     return Commands.run(() -> {
       if (L3.getAsBoolean()) {
         algaeKnocker.extendAlgaeKnocker();
-        algaeKnocker.fowardAlgaeKnockerMotor();
+        algaeKnocker.forwardAlgaeKnockerMotor();
       } else if (L2.getAsBoolean()) {
         algaeKnocker.extendAlgaeKnocker();
         algaeKnocker.reverseAlgaeKnockerMotor();

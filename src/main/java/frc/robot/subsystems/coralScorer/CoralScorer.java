@@ -47,7 +47,7 @@ public class CoralScorer extends SubsystemBase {
     public CoralScorer(Pneumatics pneumatics) {
         this.pneumatics = pneumatics;
         
-        coralSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 9, 10);
+        coralSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1);
         coralScorerMotor = new CoralScorerIOTalonFX(0);
         proximitySensorIO = new RightSightSensor(0);
 
