@@ -1,6 +1,7 @@
 package frc.robot.subsystems.climber;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.climber.ClimberIO.ClimberIOInputs;
 
@@ -9,18 +10,18 @@ public class Climber extends SubsystemBase {
 
     private final ClimberIOInputs inputs = new ClimberIOInputs();
     private final ClimberIOTalonFX climberMotor;
-    private final DigitalInput topLimitSwitch;
     private final DigitalInput bottomLimitSwitch;
+    private final Timer timer;
 
     private boolean isClimbing;
     private boolean isClimbingUp;
 
     public Climber() {
-        this.climberMotor = new ClimberIOTalonFX(0); //TODO
-        this.topLimitSwitch = new DigitalInput(0); //TODO
+        this.climberMotor = new ClimberIOTalonFX(12);
         this.bottomLimitSwitch = new DigitalInput(1); //TODO
         this.isClimbing = false;
         this.isClimbingUp = true;
+        this.timer = new Timer();
     }
 
     @Override
@@ -28,7 +29,7 @@ public class Climber extends SubsystemBase {
         climberMotor.updateInputs(inputs);
 
         if (isClimbing) {
-            if (isClimbingUp && topLimitSwitch.get()) {
+            if (isClimbingUp && timer.hasElapsed(10))  { // Change time
                 // climber fully at top and ready to climb
                 stopClimbing();
             } else if (!isClimbingUp && bottomLimitSwitch.get()) {
