@@ -8,6 +8,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.ReverseLimitValue;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -16,7 +17,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     private TalonFX elevatorMotor;
     private StatusSignal<Angle> elevatorPosition;
     private StatusSignal<AngularVelocity> elevatorVelocity;
-    private double m_gearRatio = 4/1; 
+    private StatusSignal<ReverseLimitValue> limitSwitch;
+    private double m_gearRatio = 36/1; 
 
     public ElevatorIOTalonFX(int canID) {
         this.elevatorMotor = new TalonFX(canID);
@@ -28,7 +30,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         // Set motor PID
-        config.Slot0.kP = 0.6;
+        config.Slot0.kP = 8;
         config.Slot0.kI = 0.0;
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 0.462;
@@ -38,11 +40,13 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
         elevatorPosition = elevatorMotor.getPosition();
         elevatorVelocity = elevatorMotor.getVelocity();
+        limitSwitch = elevatorMotor.getReverseLimit();
 
         BaseStatusSignal.setUpdateFrequencyForAll(
             50.0,
             elevatorPosition,
-            elevatorVelocity
+            elevatorVelocity,
+            limitSwitch
         );
 
         elevatorMotor.optimizeBusUtilization();
@@ -51,7 +55,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     @Override
     public void updateInputs(ElevatorIOInputs inputs) {
         BaseStatusSignal.refreshAll(
-            elevatorPosition
+            elevatorPosition,
+            elevatorVelocity,
+            limitSwitch
             );
 
         inputs.positionValue = elevatorPosition.getValueAsDouble();
@@ -74,5 +80,13 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     public void setPosition(double position) {
         this.elevatorMotor.setPosition(position);
+    }
+
+    public void runVelocity(double velocity) {
+        this.elevatorMotor.set(velocity);
+    }
+
+    public boolean isAtZero() {
+        return this.limitSwitch.getValue() == ReverseLimitValue.ClosedToGround;
     }
 }
