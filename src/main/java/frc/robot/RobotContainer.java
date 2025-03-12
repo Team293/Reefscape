@@ -201,7 +201,8 @@ public class RobotContainer {
        SubsystemControl.coralControl(
          coralScorer, 
          operatorController::getLeftY,
-         () -> operatorController.leftStick().getAsBoolean()
+         () -> operatorController.leftStick().getAsBoolean(),
+         () -> operatorController.rightTrigger().getAsBoolean()
        )
      );
 
@@ -212,8 +213,8 @@ public class RobotContainer {
     algaeKnocker.setDefaultCommand(
        SubsystemControl.AlgaeKnocker(
          algaeKnocker, 
-         () -> operatorController.rightBumper().getAsBoolean(),
-         () -> operatorController.leftBumper().getAsBoolean()
+         () -> operatorController.rightBumper().getAsBoolean(), //L3
+         () -> operatorController.leftBumper().getAsBoolean() //L2
        )
      );    operatorController.rightTrigger().onTrue(Commands.runOnce(() -> coralScorer.setState(States.INTAKE), coralScorer));
     

@@ -18,7 +18,7 @@ public class AlgaeKnocker extends SubsystemBase {
         this.pneumatics = pneumatics;
         
         talonSRX = new TalonSRX(4);
-        algaeKnocker = new DoubleSolenoid(PneumaticsModuleType.REVPH, 5,7); //Change channels once testing    
+        algaeKnocker = new DoubleSolenoid(PneumaticsModuleType.REVPH, 3,2); //Change channels once testing    
     }
 
     @Override
@@ -26,8 +26,13 @@ public class AlgaeKnocker extends SubsystemBase {
 
     }
 
-    public void fowardAlgaeKnockerMotor() {
+    public void forwardAlgaeKnockerMotor() {
         talonSRX.set(ControlMode.PercentOutput, PERCENT_OUTPUT);    
+    }
+
+    public void disableAlgaeKnockerMotor()
+    {
+        talonSRX.set(ControlMode.PercentOutput, 0);    
     }
 
     public void reverseAlgaeKnockerMotor() {
