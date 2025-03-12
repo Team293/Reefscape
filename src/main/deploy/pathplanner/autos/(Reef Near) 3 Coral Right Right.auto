@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Push Right Leave"
+            "pathName": "Far Right Coral Start"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Right Corner to Right Coral Station"
+            "pathName": "Right 2nd Coral Path"
           }
         },
         {
@@ -31,7 +31,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "BR Coral Station to Bottom Right"
+            "pathName": "Right Coral Station to Near"
           }
         }
       ]
