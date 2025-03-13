@@ -126,4 +126,11 @@ public class CoralScorer extends SubsystemBase {
         coralScorerMotor.setSpeed(0.0);
     }
 
+    public void forwardMotor() {
+        coralScorerMotor.setSpeed(TARGET_VELOCITY);
+    }
+
+    public void reverseMotor() {
+        coralScorerMotor.setSpeed(-TARGET_VELOCITY);
+    }
 }

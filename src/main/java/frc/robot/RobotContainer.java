@@ -112,8 +112,8 @@ public class RobotContainer {
 
     targeting = new Targeting(drive);
 
-    //NamedCommands.registerCommand("pickupCoral", new PickupCoral(coralScorer));
-    //NamedCommands.registerCommand("coralBeamBreak", new CoralBeamBreak(coralScorer));
+    // NamedCommands.registerCommand("pickupCoral", new PickupCoral(coralScorer));
+    // NamedCommands.registerCommand("coralBeamBreak", new CoralBeamBreak(coralScorer));
     // NamedCommands.registerCommand("dropCoral", new DropCoral(coralScorer));
     // NamedCommands.registerCommand("dropCoral2", new DropCoral(coralScorer));
     // NamedCommands.registerCommand("enableAlgaePickup", new EnableAlgaePickup(algaePickup));
@@ -121,6 +121,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("enableAlgaeKnocker", new EnableAlgaeKnocker(algaeKnocker));
     NamedCommands.registerCommand("disableAlgaeKnocker", new ReverseAlgaeKnocker(algaeKnocker));
     NamedCommands.registerCommand("elevatorToL4", new SetElevatorHeight(elevator, 4, 20));
+    NamedCommands.registerCommand("elevatorToCS", new SetElevatorHeight(elevator, 5, 20));
     // Set up auto routines
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
