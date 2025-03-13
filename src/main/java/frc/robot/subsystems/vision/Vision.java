@@ -15,33 +15,33 @@ import frc.robot.util.LimelightHelpers;
 
 public class Vision extends SubsystemBase {
     private static final String[] LIMELIGHT_NAMES = {
-        // "limelight-front",
-        // "limelight-back"
+        "limelight-front",
+        "limelight-back"
     };
 
     private static final Rotation2d[] LIMELIGHT_YAW_OFFSETS = {
-        // Rotation2d.fromDegrees(180.0),
-        // Rotation2d.fromDegrees(.180)
+        Rotation2d.fromDegrees(180),
+        Rotation2d.fromDegrees(0),
     };
 
     public Vision() {
-        // LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[0],
-        //     0.05, // forward
-        //     0.0, // side
-        //     0.19, // up
-        //     0.0, // roll
-        //     16, // pitch
-        //     180 // yaw
-        // );
+        LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[0],
+            0.34925, // forward
+            0.0, // side
+            0.26035, // up
+            180, // roll
+            0, // pitch
+            0 // yaw
+        );
 
-        // LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[0],
-        //     0.15, // forward
-        //     -0.13, // side
-        //     0.53, // up
-        //     0.0, // roll
-        //     0.0, // pitch
-        //     0 // yaw
-        // );
+        LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[1],
+            0.05715, // forward
+            0, // side
+            0.88265, // up
+            0, // roll
+            0.0, // pitch
+            180 // yaw
+        );
 
         // force limelights to use roboRIO for gyro
         for (String name : LIMELIGHT_NAMES) {
@@ -56,17 +56,17 @@ public class Vision extends SubsystemBase {
         
         int i = 0;
         for (String name : LIMELIGHT_NAMES) {
-            // setVisionPoseEstimation(name, estimator, gyroInputs, LIMELIGHT_YAW_OFFSETS[i]);
+            setVisionPoseEstimation(name, estimator, gyroInputs, LIMELIGHT_YAW_OFFSETS[i]);
             i++;
         }
     }
 
     private void setVisionPoseEstimation(String limelightName, SwerveDrivePoseEstimator estimator, GyroIOInputs gyroInputs, Rotation2d yawOffset) {
         boolean rejectOdometry = false;
-
+        
         LimelightHelpers.SetRobotOrientation(
             limelightName, 
-            gyroInputs.yawPosition.plus(Rotation2d.fromDegrees(180)).getDegrees(),
+            gyroInputs.yawPosition.plus(yawOffset).getDegrees(),
             gyroInputs.yawVelocityRadPerSec / Math.PI * 180,
             0,
             0,
@@ -74,14 +74,15 @@ public class Vision extends SubsystemBase {
             0
         );
 
-        LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
+
+        LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2(limelightName);
 
         if (poseEstimate.tagCount == 0) {
             rejectOdometry = true;  
         }
 
         if (!rejectOdometry) {
-            Pose2d visionPose = new Pose2d(poseEstimate.pose.getTranslation(), poseEstimate.pose.getRotation().plus(Rotation2d.fromDegrees(180)));
+            Pose2d visionPose = poseEstimate.pose;
             Pose2d currentPose = estimator.getEstimatedPosition();
             
             Logger.recordOutput("Limelight/EstimatedPose-" + limelightName, visionPose);

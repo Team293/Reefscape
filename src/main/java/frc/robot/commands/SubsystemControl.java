@@ -142,9 +142,9 @@ public class SubsystemControl {
   }
 
     public static Command elevatorControl(
-    Elevator elevator,
-    // DoubleSupplier elevatorPercentage,
-    SpikeController controller
+      Elevator elevator,
+      // DoubleSupplier elevatorPercentage,
+      SpikeController controller
     )
     {
     return Commands.run(() -> {
@@ -153,14 +153,14 @@ public class SubsystemControl {
       //   elevator.changePosition(-elevatorPercentage.getAsDouble());
       // }
 
-      if (controller.a().getAsBoolean()) {
-        elevator.setPresetPos(1);
+      if (controller.x().getAsBoolean()) {
+        elevator.setPresetPos(1); // L2
+      } else if (controller.a().getAsBoolean()) {
+        elevator.setPresetPos(2); // L3
       } else if (controller.b().getAsBoolean()) {
-        elevator.setPresetPos(2);
+        elevator.setPresetPos(3); // L4
       } else if (controller.y().getAsBoolean()) {
-        elevator.setPresetPos(3);
-      } else if (controller.x().getAsBoolean()) {
-        elevator.setPresetPos(4);
+        elevator.setPresetPos(4); // coral station
       } else if (controller.leftTrigger().getAsBoolean()) {
         elevator.zero();
       }

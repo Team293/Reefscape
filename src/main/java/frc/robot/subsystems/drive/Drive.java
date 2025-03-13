@@ -63,7 +63,7 @@ public class Drive extends SubsystemBase {
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
-  private Pose2d defaultPose = new Pose2d(7.45, 4.11, new Rotation2d());
+  private Pose2d defaultPose = new Pose2d(7.45, 4.11, Rotation2d.fromDegrees(180));
   
   private Pose2d targetPose = defaultPose;
   
