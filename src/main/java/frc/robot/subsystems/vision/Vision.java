@@ -77,7 +77,7 @@ public class Vision extends SubsystemBase {
 
         LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2(limelightName);
 
-        if (poseEstimate.tagCount == 0) {
+        if (poseEstimate == null || poseEstimate.tagCount == 0) {
             rejectOdometry = true;  
         }
 
@@ -87,7 +87,6 @@ public class Vision extends SubsystemBase {
             
             Logger.recordOutput("Limelight/EstimatedPose-" + limelightName, visionPose);
             Logger.recordOutput("Limelight/RawEstimatedPose-" + limelightName, poseEstimate.pose);
-
             // reject position greater than 1 meter apart from current
             if (currentPose.getTranslation().getDistance(visionPose.getTranslation()) > 3) {
                 return;
