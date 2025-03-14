@@ -83,25 +83,29 @@ public class ModuleIOTalonFX implements ModuleIO {
         driveTalon = new TalonFX(20);
         turnTalon = new TalonFX(21);
         cancoder = new CANcoder(22);
-        absoluteEncoderOffset = -0.959d + 0.5d; // CANCoder rotations
+        // absoluteEncoderOffset = 0.329d + 0.5933d; // CANCoder rotations
+        absoluteEncoderOffset = -0.324d + 0.5d;
         break;
       case 1: // Front Right
         driveTalon = new TalonFX(23);
         turnTalon = new TalonFX(24);
         cancoder = new CANcoder(25);
-        absoluteEncoderOffset = -0.445d + 0.5d; // CANcoder rotations
+        // absoluteEncoderOffset = 0.509d + 0.235d; // CANcoder rotations
+        absoluteEncoderOffset = -0.5068d;
         break;
       case 2: // Back Left
         driveTalon = new TalonFX(26);
         turnTalon = new TalonFX(27);
         cancoder = new CANcoder(28);
-        absoluteEncoderOffset = -0.467d; // CANcoder rotations
+        // absoluteEncoderOffset = 0.3d; // CANcoder rotations
+        absoluteEncoderOffset = -0.959d + 0.5d;
         break;
       case 3: // Back Right
         driveTalon = new TalonFX(29);
         turnTalon = new TalonFX(30);
         cancoder = new CANcoder(31);
-        absoluteEncoderOffset = -0.094d; // CANcoder rotations
+        // absoluteEncoderOffset = 0.0493d - 0.33d; // CANcoder rotations
+        absoluteEncoderOffset = -0.047d;
         break;
       default:
         throw new RuntimeException("Invalid module index");
@@ -110,7 +114,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     // CANcoder config
     var canCoderConfig = new CANcoderConfiguration();
     canCoderConfig.MagnetSensor.SensorDirection = SDSMK4L1Constants.canCoderSensorDirection;
-    canCoderConfig.MagnetSensor.MagnetOffset = absoluteEncoderOffset + 0.25d;
+    canCoderConfig.MagnetSensor.MagnetOffset = absoluteEncoderOffset;
     canCoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1.0;
     cancoder.getConfigurator().apply(canCoderConfig);
 
@@ -239,7 +243,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveConfig.Slot0.kP = 0.15;
     driveConfig.Slot0.kI = 0.0;
     driveConfig.Slot0.kD = 0.005;
-    driveConfig.Slot0.kS = 0.15;
+    driveConfig.Slot0.kS = 0.218;
     driveConfig.Slot0.kV = 0.93;
 
     driveConfig.Feedback.SensorToMechanismRatio = DRIVE_GEAR_RATIO;
