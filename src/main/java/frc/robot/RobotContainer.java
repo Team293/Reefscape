@@ -151,8 +151,8 @@ public class RobotContainer {
             () -> -driverController.getLeftY(),
             () -> -driverController.getLeftX(),
             () -> -driverController.getRightX(),
-            () -> driverController.getRightTriggerAxis(),
             () -> driverController.getLeftTriggerAxis(),
+            () -> driverController.getRightTriggerAxis(),
             () -> driverController.rightBumper().getAsBoolean()));
     /*
      * SubsystemControl.fieldOrientedRotation(

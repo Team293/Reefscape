@@ -11,12 +11,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Elevator extends SubsystemBase {
     private static final double MAX_POSITION = 5.26;
     private static final double MIN_POSITION = 0;
-    private static final double MAX_SPEED = .1;
+    private static final double MAX_SPEED = 3d;
 
     private static final double L1_POSITION = 0.0d;
     private static final double L2_POSITION = 0.87d;
-    private static final double L3_POSITION = 2.4d;
-    private static final double L4_POSITION = 5.1;
+    private static final double L3_POSITION = 2.8d;
+    private static final double L4_POSITION = 5.1d;
     private static final double CORAL_STATION_POS = 0.03d;
 
     private static final double heights[] = {L1_POSITION, L2_POSITION, L3_POSITION, L4_POSITION, CORAL_STATION_POS};

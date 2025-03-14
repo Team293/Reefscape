@@ -116,9 +116,9 @@ public class SubsystemControl {
                 .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
                 .getTranslation();
 
-        if (Math.abs(strafe) > 0.005) {
-          xTranslation = Math.sin(-drive.getRotation().getRadians()) * strafe * 0.5;
-          yTranslation = Math.cos(-drive.getRotation().getRadians()) * strafe * 0.5;
+        if (Math.abs(strafe) > 0.001) {
+          xTranslation = Math.sin(-drive.getRotation().getRadians()) * strafe * 0.1;
+          yTranslation = Math.cos(-drive.getRotation().getRadians()) * strafe * 0.1;
         } else {
           xTranslation = linearVelocity.getX();
           yTranslation = linearVelocity.getY();
