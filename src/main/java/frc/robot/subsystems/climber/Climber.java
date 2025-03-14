@@ -1,7 +1,5 @@
 package frc.robot.subsystems.climber;
 
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.climber.ClimberIO.ClimberIOInputs;
 
@@ -10,18 +8,14 @@ public class Climber extends SubsystemBase {
 
     private final ClimberIOInputs inputs = new ClimberIOInputs();
     private final ClimberIOTalonFX climberMotor;
-    private final DigitalInput bottomLimitSwitch;
-    private final Timer timer;
 
     private boolean isClimbing;
     private boolean isClimbingUp;
 
     public Climber() {
         this.climberMotor = new ClimberIOTalonFX(12);
-        this.bottomLimitSwitch = new DigitalInput(1); //TODO
         this.isClimbing = false;
         this.isClimbingUp = true;
-        this.timer = new Timer();
     }
 
     @Override
@@ -29,15 +23,15 @@ public class Climber extends SubsystemBase {
         climberMotor.updateInputs(inputs);
 
         if (isClimbing) {
-            if (isClimbingUp && timer.hasElapsed(10))  { // Change time
+            if (isClimbingUp && isClimberReset())  {
                 // climber fully at top and ready to climb
                 stopClimbing();
-            } else if (!isClimbingUp && bottomLimitSwitch.get()) {
-                // climber fully pulled down
-                stopClimbing();
+            } else if (isClimbing) {
+                // the physical limit switch takes care of stopping the motor
+                climberMotor.setSpeed(-CLIMB_VELOCITY);
             } else {
-                // we are in the middle of climbing
-                climberMotor.setSpeed(isClimbingUp ? CLIMB_VELOCITY : -CLIMB_VELOCITY);
+                // we are in the middle of resetting the climber to the up position
+                climberMotor.setSpeed(CLIMB_VELOCITY);
             }
         } else {
             climberMotor.setSpeed(0);
@@ -57,5 +51,13 @@ public class Climber extends SubsystemBase {
     public void stopClimbing() {
         isClimbing = false;
         climberMotor.setSpeed(0);
+    }
+
+    private boolean isClimberReset() {
+        if (isClimbing) {
+            return inputs.supplyVoltage >= 10; //TODO: check the supply voltage
+        } else {
+            return false;
+        }
     }
 }
