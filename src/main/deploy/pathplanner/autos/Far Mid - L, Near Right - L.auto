@@ -1,0 +1,125 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "resetElevator"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "pointCoralDown"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Start Center to Far Mid - L"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "elevatorToL4"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "dropCoral"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Far Mid to CSR"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "elevatorToCS"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "pickupCoral2"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "elevatorToL42"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "(Teleop Blue) Coral Station (Left) to Reef"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.25
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "pointCoralDown2"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "dropCoral2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "resetElevator2"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

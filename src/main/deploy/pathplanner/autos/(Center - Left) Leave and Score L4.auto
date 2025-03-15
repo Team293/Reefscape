@@ -7,7 +7,13 @@
         {
           "type": "named",
           "data": {
-            "name": "pickupCoral"
+            "name": "resetElevator"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "pointCoralDown"
           }
         },
         {
@@ -17,13 +23,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "(ReefFar - Right) Leave and Score L4"
+                  "pathName": "Start Center to Far Mid - L"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "elevatorToL2"
+                  "name": "elevatorToL4"
                 }
               }
             ]
@@ -33,6 +39,18 @@
           "type": "named",
           "data": {
             "name": "dropCoral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "elevatorToCS"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "pickupCoral2"
           }
         }
       ]
