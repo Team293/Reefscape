@@ -30,6 +30,7 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.algaePickup.AlgaePickup;
 import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
+import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.targeting.Targeting;
 
 public class SubsystemControl {
@@ -222,6 +223,23 @@ public class SubsystemControl {
       }
     }, algaeKnocker);
   }
+
+  public static Command climb(
+    Climber climber,
+    BooleanSupplier up,
+    BooleanSupplier down
+  ) {
+      return Commands.run(() -> {
+          if (up.getAsBoolean()) {
+              climber.startClimbingUp();
+          } else if (down.getAsBoolean()) {
+              climber.startClimbingDown();
+          } else {
+              climber.stopClimbing();
+          }
+      }, climber);
+  }
+
   // public static Command limelightDrive(
   //     Drive drive,
   //     Vision vision,
