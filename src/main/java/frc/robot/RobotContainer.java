@@ -25,13 +25,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.SpikeController;
 import frc.robot.commands.ReverseAlgaeKnocker;
-import frc.robot.commands.CoralBeamBreak;
+import frc.robot.commands.SetCoralState;
 import frc.robot.commands.EnableAlgaeKnocker;
-import frc.robot.commands.EnableAlgaePickup;
-import frc.robot.commands.ReverseAlgaePickup;
-import frc.robot.commands.SetElevatorHeight;
+import frc.robot.commands.PickupCoral;
+import frc.robot.commands.ResetElevator;
+import frc.robot.commands.SetElevator;
 import frc.robot.commands.SubsystemControl;
-import frc.robot.subsystems.algaePickup.AlgaePickup;
 import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
 import frc.robot.subsystems.coralScorer.CoralScorer;
 import frc.robot.subsystems.coralScorer.CoralScorer.States;
@@ -112,16 +111,31 @@ public class RobotContainer {
 
     targeting = new Targeting(drive);
 
-    // NamedCommands.registerCommand("pickupCoral", new PickupCoral(coralScorer));
-    // NamedCommands.registerCommand("coralBeamBreak", new CoralBeamBreak(coralScorer));
-    // NamedCommands.registerCommand("dropCoral", new DropCoral(coralScorer));
-    // NamedCommands.registerCommand("dropCoral2", new DropCoral(coralScorer));
     // NamedCommands.registerCommand("enableAlgaePickup", new EnableAlgaePickup(algaePickup));
     // NamedCommands.registerCommand("reverseAlgaePickup", new ReverseAlgaePickup(algaePickup));
+    // NamedCommands.registerCommand("dropCoral", new DropCoral(coralScorer));
+    // NamedCommands.registerCommand("dropCoral2", new DropCoral(coralScorer));
+    NamedCommands.registerCommand("pickupCoral", new PickupCoral(coralScorer));
+    NamedCommands.registerCommand("pickupCoral2", new PickupCoral(coralScorer));
+    
+    NamedCommands.registerCommand("pointCoralDown", new SetCoralState(coralScorer, States.POINT_DOWN));
+    NamedCommands.registerCommand("pointCoralDown2", new SetCoralState(coralScorer, States.POINT_DOWN));
+
+    NamedCommands.registerCommand("dropCoral", new SetCoralState(coralScorer, States.DROP));
+    NamedCommands.registerCommand("dropCoral2", new SetCoralState(coralScorer, States.DROP));
+    
+    NamedCommands.registerCommand("resetElevator", new ResetElevator(elevator));
+    NamedCommands.registerCommand("resetElevator2", new ResetElevator(elevator));
+    
     NamedCommands.registerCommand("enableAlgaeKnocker", new EnableAlgaeKnocker(algaeKnocker));
     NamedCommands.registerCommand("disableAlgaeKnocker", new ReverseAlgaeKnocker(algaeKnocker));
-    NamedCommands.registerCommand("elevatorToL4", new SetElevatorHeight(elevator, 4, 20));
-    NamedCommands.registerCommand("elevatorToCS", new SetElevatorHeight(elevator, 5, 20));
+    
+    NamedCommands.registerCommand("elevatorToL2", new SetElevator(elevator, 1));
+    NamedCommands.registerCommand("elevatorToL3", new SetElevator(elevator, 2));
+    NamedCommands.registerCommand("elevatorToL4", new SetElevator(elevator, 3));
+    NamedCommands.registerCommand("elevatorToL42", new SetElevator(elevator, 3));
+    NamedCommands.registerCommand("elevatorToCS", new SetElevator(elevator, 4));
+    
     // Set up auto routines
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);

@@ -12,6 +12,7 @@ public class Elevator extends SubsystemBase {
     private static final double MAX_POSITION = 5.26;
     private static final double MIN_POSITION = 0;
     private static final double MAX_SPEED = 3d;
+    private static final double POSITION_ERROR_THRESHOLD = 0.05;
 
     private static final double L1_POSITION = 0.0d;
     private static final double L2_POSITION = 0.87d;
@@ -57,6 +58,14 @@ public class Elevator extends SubsystemBase {
             // calculate the offsets of the encoders
             elevatorMotor.setPosition(0);
         }
+    }
+
+    public boolean isAtTarget() {
+        return Math.abs(getPosition() - targetPosition) < POSITION_ERROR_THRESHOLD;
+    }
+
+    public boolean getIsZeroing() {
+        return isZeroing;
     }
 
     public void setPercentage(double percentValue) {

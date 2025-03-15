@@ -98,6 +98,10 @@ public class CoralScorer extends SubsystemBase {
         return hasPiece;
     }
 
+    public Timer getStateTimer() {
+        return stateTimer;
+    }
+
     public void setState(States state) {
         if (this.state == States.DROP && !stateTimer.hasElapsed(DROP_TIME_SEC)) return;
 

@@ -3,22 +3,22 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.elevator.Elevator;
 
-public class ResetElevator extends Command {
+public class SetElevator extends Command {
     private final Elevator elevator;
+    private int level;
 
-    public ResetElevator(Elevator elevator) {
+    public SetElevator(Elevator elevator, int level) {
         this.elevator = elevator;
-
-        this.addRequirements(elevator);
+        this.level = level;
     }
 
     @Override
     public void initialize() {
-        elevator.zero();
+        elevator.setPresetPos(level);
     }
 
     @Override
     public boolean isFinished() {
-        return !elevator.getIsZeroing();
+        return elevator.isAtTarget();
     }
 }
