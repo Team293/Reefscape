@@ -67,7 +67,7 @@ public class CoralScorer extends SubsystemBase {
         
             if (!hasPiece) {
                 coralScorerMotor.setSpeed(-TARGET_VELOCITY);
-                if (inputs.current > 2.0 && stateTimer.hasElapsed(0.2)) {
+                if (inputs.current > 4.5 && stateTimer.hasElapsed(0.2)) {
                     hasPiece = true;
                 }
             } else {
