@@ -10,6 +10,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
 
 public class CoralScorerIOTalonFX implements CoralScorerIO {
     private TalonFX CoralScorerMotor;
@@ -17,6 +18,7 @@ public class CoralScorerIOTalonFX implements CoralScorerIO {
 
     private StatusSignal<Angle> position;
     private StatusSignal<AngularVelocity> velocity;
+    private StatusSignal<Current> current;
 
     private static VelocityVoltage velocityVoltageCommand = new VelocityVoltage(0.0).withSlot(0);
 
@@ -26,7 +28,7 @@ public class CoralScorerIOTalonFX implements CoralScorerIO {
         config.CurrentLimits.StatorCurrentLimit = 40.0;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
         config.Feedback.SensorToMechanismRatio = m_gearRatio;
-        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         // Set motor PID, TODO: Set PID
@@ -39,11 +41,13 @@ public class CoralScorerIOTalonFX implements CoralScorerIO {
 
         position = CoralScorerMotor.getPosition();
         velocity = CoralScorerMotor.getVelocity();
+        current = CoralScorerMotor.getSupplyCurrent();
 
         BaseStatusSignal.setUpdateFrequencyForAll(
             50.0,
             position,
-            velocity
+            velocity,
+            current
         );
 
         CoralScorerMotor.optimizeBusUtilization();
@@ -51,8 +55,9 @@ public class CoralScorerIOTalonFX implements CoralScorerIO {
 
     @Override
     public void updateInputs(CoralScorerIOInputs inputs) {
-        BaseStatusSignal.refreshAll(velocity);
-        inputs.speed = velocity.getAsDouble();
+        BaseStatusSignal.refreshAll(velocity, current);
+        inputs.speed = velocity.getValueAsDouble();
+        inputs.current = current.getValueAsDouble();
         CoralScorerIO.super.updateInputs(inputs);
     }
 

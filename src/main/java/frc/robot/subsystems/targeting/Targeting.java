@@ -18,15 +18,15 @@ public class Targeting extends SubsystemBase {
 
     private static Translation2d REEF_CENTER = new Translation2d(4.5, 4.0);
 
-    private static Pose2d REEF_FAR = new Pose2d(5.75, 4.00, Rotation2d.fromDegrees(0));
-    private static Pose2d REEF_FAR_RIGHT = new Pose2d(5.10, 2.93, Rotation2d.fromDegrees(-60));
-    private static Pose2d REEF_NEAR_RIGHT = new Pose2d(3.87, 2.93, Rotation2d.fromDegrees(-120));
-    private static Pose2d REEF_NEAR = new Pose2d(3.23, 4.00, Rotation2d.fromDegrees(180));
-    private static Pose2d REEF_NEAR_LEFT = new Pose2d(3.87, 5.13, Rotation2d.fromDegrees(120));
-    private static Pose2d REEF_FAR_LEFT = new Pose2d(5.10, 5.13, Rotation2d.fromDegrees(60));
-    private static Pose2d RIGHT_CORAL_STATION = new Pose2d(1.06, 1.11, Rotation2d.fromDegrees(55));
-    private static Pose2d ALGAE_SCORE = new Pose2d(5.8,0.77,Rotation2d.fromDegrees(-90));
-    private static Pose2d LEFT_CORAL_STATION = new Pose2d(1.21, 6.95, Rotation2d.fromDegrees(-53));
+    private static Pose2d REEF_FAR = new Pose2d(5.75, 4.00, Rotation2d.fromDegrees(0 + 180));
+    private static Pose2d REEF_FAR_RIGHT = new Pose2d(5.10, 2.93, Rotation2d.fromDegrees(-60 + 180));
+    private static Pose2d REEF_NEAR_RIGHT = new Pose2d(3.87, 2.93, Rotation2d.fromDegrees(-120 + 180));
+    private static Pose2d REEF_NEAR = new Pose2d(3.23, 4.00, Rotation2d.fromDegrees(180 + 180));
+    private static Pose2d REEF_NEAR_LEFT = new Pose2d(3.87, 5.13, Rotation2d.fromDegrees(120 + 180));
+    private static Pose2d REEF_FAR_LEFT = new Pose2d(5.10, 5.13, Rotation2d.fromDegrees(60 + 180));
+    private static Pose2d RIGHT_CORAL_STATION = new Pose2d(1.06, 1.11, Rotation2d.fromDegrees(55 + 180));
+    private static Pose2d ALGAE_SCORE = new Pose2d(5.8,0.77,Rotation2d.fromDegrees(-90 + 180));
+    private static Pose2d LEFT_CORAL_STATION = new Pose2d(1.21, 6.95, Rotation2d.fromDegrees(-53 + 180));
     private final Drive drive;
 
     public Targeting(Drive drive) {

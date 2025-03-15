@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start Center to Far Mid - L"
+            "pathName": "Far Left Coral Start"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Far Mid to CSR"
+            "pathName": "Left 2nd Coral Path"
           }
         },
         {
@@ -26,12 +26,6 @@
           "type": "path",
           "data": {
             "pathName": "Bottom Left to Coral Station"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "BL Coral Station to Bottom Left"
           }
         }
       ]

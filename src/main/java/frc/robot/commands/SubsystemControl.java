@@ -25,9 +25,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.SpikeController;
 import frc.robot.subsystems.coralScorer.CoralScorer;
+import frc.robot.subsystems.coralScorer.CoralScorer.States;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.algaePickup.AlgaePickup;
+import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
 import frc.robot.subsystems.targeting.Targeting;
 
 public class SubsystemControl {
@@ -114,9 +116,9 @@ public class SubsystemControl {
                 .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
                 .getTranslation();
 
-        if (Math.abs(strafe) > 0.01) {
-          xTranslation = Math.sin(-drive.getRotation().getRadians()) * strafe;
-          yTranslation = Math.cos(-drive.getRotation().getRadians()) * strafe;
+        if (Math.abs(strafe) > 0.001) {
+          xTranslation = Math.sin(-drive.getRotation().getRadians()) * strafe * 0.1;
+          yTranslation = Math.cos(-drive.getRotation().getRadians()) * strafe * 0.1;
         } else {
           xTranslation = linearVelocity.getX();
           yTranslation = linearVelocity.getY();
@@ -140,29 +142,27 @@ public class SubsystemControl {
   }
 
     public static Command elevatorControl(
-    Elevator elevator,
-    // DoubleSupplier elevatorPercentage,
-    BooleanSupplier resetElevator,
-    SpikeController controller
+      Elevator elevator,
+      // DoubleSupplier elevatorPercentage,
+      SpikeController controller
     )
     {
     return Commands.run(() -> {
-      if (resetElevator.getAsBoolean()) {
-        elevator.calculateOffset();
-      }
 
       // if (Math.abs(elevatorPercentage.getAsDouble()) > 0.05) {
       //   elevator.changePosition(-elevatorPercentage.getAsDouble());
       // }
 
-      if (controller.a().getAsBoolean()) {
-        // elevator.setPresetPos(0);
+      if (controller.x().getAsBoolean()) {
+        elevator.setPresetPos(1); // L2
+      } else if (controller.a().getAsBoolean()) {
+        elevator.setPresetPos(2); // L3
       } else if (controller.b().getAsBoolean()) {
-        elevator.setPresetPos(1);
+        elevator.setPresetPos(3); // L4
       } else if (controller.y().getAsBoolean()) {
-        elevator.setPresetPos(2);
-      } else if (controller.x().getAsBoolean()) {
-        elevator.setPresetPos(4);
+        elevator.setPresetPos(4); // coral station
+      } else if (controller.leftTrigger().getAsBoolean()) {
+        elevator.zero();
       }
     }, elevator);
   }
@@ -170,38 +170,58 @@ public class SubsystemControl {
   public static Command coralControl(
     CoralScorer coralScorer,
     DoubleSupplier updown,
-    BooleanSupplier output
+    BooleanSupplier output,
+    BooleanSupplier pointDown
   ) {
     return Commands.run(() -> {
-      if (DriverStation.isAutonomous()) {
-        coralScorer.pointDown();
-      } else {
-        if (updown.getAsDouble() > 0.5) {
-          coralScorer.pointDown();
-          
-          if (output.getAsBoolean()) {
-            coralScorer.forwardMotor();
-          } else {
-            coralScorer.reverseMotor();
-          }
+      if (coralScorer.hasCoral()) {
+        if (output.getAsBoolean()) {
+          coralScorer.setState(States.DROP);
         } else {
-          coralScorer.pointUp();
-          coralScorer.reverseMotor();
+          if (pointDown.getAsBoolean()) {
+            coralScorer.setState(States.POINT_DOWN);
+          }
         }
+      } else {
+        coralScorer.setState(States.INTAKE);
       }
     }, coralScorer);
   }
 
   public static Command algaePickup(
     AlgaePickup algaePickup,
-    DoubleSupplier speed
+    DoubleSupplier speed,
+    BooleanSupplier output
   )
   {
     return Commands.run(() -> {
       algaePickup.setVelocity(speed.getAsDouble() * AlgaePickup.MAX_VELOCITY);
+      if (output.getAsBoolean()) {
+        algaePickup.extendAlagePickup();
+       } else {
+        algaePickup.retractAlgaePickup();
+       }
     }, algaePickup);
   }
 
+  public static Command AlgaeKnocker(
+    AlgaeKnocker algaeKnocker,
+    BooleanSupplier L3,
+    BooleanSupplier L2
+    )
+    {
+    return Commands.run(() -> {
+      if (L3.getAsBoolean()) {
+        algaeKnocker.extendAlgaeKnocker();
+        algaeKnocker.forwardAlgaeKnockerMotor();
+      } else if (L2.getAsBoolean()) {
+        algaeKnocker.extendAlgaeKnocker();
+        algaeKnocker.reverseAlgaeKnockerMotor();
+      } else {
+        algaeKnocker.retractAlgaeKnocker();
+      }
+    }, algaeKnocker);
+  }
   // public static Command limelightDrive(
   //     Drive drive,
   //     Vision vision,

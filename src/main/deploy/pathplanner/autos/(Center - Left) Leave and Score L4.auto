@@ -5,16 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Push Left Leave"
-                }
-              }
-            ]
+            "name": "resetElevator"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "pointCoralDown"
           }
         },
         {
@@ -24,28 +23,34 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Left Corner to Left Coral Station"
+                  "pathName": "Start Center to Far Mid - L"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "elevatorToL4"
                 }
               }
             ]
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "(Teleop Blue) Coral Station (Left) to Reef"
+            "name": "dropCoral"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Bottom Left to Coral Station"
+            "name": "elevatorToCS"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "BL Coral Station to Bottom Left"
+            "name": "pickupCoral2"
           }
         }
       ]

@@ -25,23 +25,22 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.SpikeController;
 import frc.robot.commands.ReverseAlgaeKnocker;
-import frc.robot.commands.ColorSensorPickup;
-import frc.robot.commands.DropCoral;
+import frc.robot.commands.SetCoralState;
 import frc.robot.commands.EnableAlgaeKnocker;
-import frc.robot.commands.EnableAlgaePickup;
 import frc.robot.commands.PickupCoral;
-import frc.robot.commands.ReverseAlgaePickup;
-import frc.robot.commands.SetElevatorHeight;
+import frc.robot.commands.ResetElevator;
+import frc.robot.commands.SetElevator;
 import frc.robot.commands.SubsystemControl;
-import frc.robot.subsystems.algaePickup.AlgaePickup;
 import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
 import frc.robot.subsystems.coralScorer.CoralScorer;
+import frc.robot.subsystems.coralScorer.CoralScorer.States;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIONavX;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.pneumatics.Pneumatics;
 import frc.robot.subsystems.targeting.Targeting;
 import frc.robot.subsystems.vision.Vision;
 
@@ -55,11 +54,12 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final CoralScorer coralScorer;
-  private final AlgaePickup algaePickup;
+  // private final AlgaePickup algaePickup;
   private final Vision vision;
   private final AlgaeKnocker algaeKnocker;
   private final Elevator elevator;
   private final Targeting targeting;
+  private final Pneumatics pneumatics;
 
   // Controller
   private static final double DEADBAND = 0.05;
@@ -75,11 +75,13 @@ public class RobotContainer {
     String logDir = DataLogManager.getLogDir();
     System.out.print(logDir);
 
-    algaePickup = new AlgaePickup();
+    pneumatics = new Pneumatics();
     elevator = new Elevator();
-    coralScorer = new CoralScorer();
     vision = new Vision();
-    algaeKnocker = new AlgaeKnocker();
+
+    // algaePickup = new AlgaePickup();
+    coralScorer = new CoralScorer(pneumatics);
+    algaeKnocker = new AlgaeKnocker(pneumatics);
 
     switch (Constants.currentMode) {
       case REAL:
@@ -109,17 +111,31 @@ public class RobotContainer {
 
     targeting = new Targeting(drive);
 
+    // NamedCommands.registerCommand("enableAlgaePickup", new EnableAlgaePickup(algaePickup));
+    // NamedCommands.registerCommand("reverseAlgaePickup", new ReverseAlgaePickup(algaePickup));
+    // NamedCommands.registerCommand("dropCoral", new DropCoral(coralScorer));
+    // NamedCommands.registerCommand("dropCoral2", new DropCoral(coralScorer));
     NamedCommands.registerCommand("pickupCoral", new PickupCoral(coralScorer));
-    NamedCommands.registerCommand("dropCoral", new DropCoral(coralScorer));
-    NamedCommands.registerCommand("dropCoral2", new DropCoral(coralScorer));
-    NamedCommands.registerCommand("elevatorToL2", new SetElevatorHeight(elevator, 2, 20));
-    NamedCommands.registerCommand("enableAlgaePickup", new EnableAlgaePickup(algaePickup));
-    NamedCommands.registerCommand("reverseAlgaePickup", new ReverseAlgaePickup(algaePickup));
+    NamedCommands.registerCommand("pickupCoral2", new PickupCoral(coralScorer));
+    
+    NamedCommands.registerCommand("pointCoralDown", new SetCoralState(coralScorer, States.POINT_DOWN));
+    NamedCommands.registerCommand("pointCoralDown2", new SetCoralState(coralScorer, States.POINT_DOWN));
+
+    NamedCommands.registerCommand("dropCoral", new SetCoralState(coralScorer, States.DROP));
+    NamedCommands.registerCommand("dropCoral2", new SetCoralState(coralScorer, States.DROP));
+    
+    NamedCommands.registerCommand("resetElevator", new ResetElevator(elevator));
+    NamedCommands.registerCommand("resetElevator2", new ResetElevator(elevator));
+    
     NamedCommands.registerCommand("enableAlgaeKnocker", new EnableAlgaeKnocker(algaeKnocker));
     NamedCommands.registerCommand("disableAlgaeKnocker", new ReverseAlgaeKnocker(algaeKnocker));
-    NamedCommands.registerCommand("elevatorToL4", new SetElevatorHeight(elevator, 4, 20)); //Check if correct
-   // NamedCommands.registerCommand("colorSensorPickup", new ColorSensorPickup(algaePickup));
-
+    
+    NamedCommands.registerCommand("elevatorToL2", new SetElevator(elevator, 1));
+    NamedCommands.registerCommand("elevatorToL3", new SetElevator(elevator, 2));
+    NamedCommands.registerCommand("elevatorToL4", new SetElevator(elevator, 3));
+    NamedCommands.registerCommand("elevatorToL42", new SetElevator(elevator, 3));
+    NamedCommands.registerCommand("elevatorToCS", new SetElevator(elevator, 4));
+    
     // Set up auto routines
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -186,32 +202,37 @@ public class RobotContainer {
     //     .a()
     //     .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
 
-     algaePickup.setDefaultCommand(
-        SubsystemControl.algaePickup(
-             algaePickup,
-             operatorController::getRightY));    
+    //  algaePickup.setDefaultCommand(
+    //     SubsystemControl.algaePickup(
+    //          algaePickup,
+    //          operatorController::getRightY,
+    //          () -> operatorController.rightStick().getAsBoolean()));    
     
     driverController
         .a()
         .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
 
-    // elevator.setDefaultCommand(SubsystemControl.elevatorControl(
-    //   elevator,
-    //   // operatorController::getLeftY,
-    //   () -> operatorController.rightStick().getAsBoolean(),
-    //   operatorController
-    // ));
+     coralScorer.setDefaultCommand(
+       SubsystemControl.coralControl(
+         coralScorer, 
+         operatorController::getLeftY,
+         () -> operatorController.leftStick().getAsBoolean(),
+         () -> operatorController.rightTrigger().getAsBoolean()
+       )
+     );
 
-    // coralScorer.setDefaultCommand(
-    //   SubsystemControl.coralControl(
-    //     coralScorer, 
-    //     operatorController::getLeftY, 
-    //     () -> operatorController.leftStick().getAsBoolean()
-    //   )
-    // );
+    elevator.setDefaultCommand(
+      SubsystemControl.elevatorControl(elevator, operatorController)
+    );
 
-    // operatorController.leftBumper().onTrue(Commands.runOnce(() -> algaeKnocker.enableAlgaeKnocker(), algaeKnocker));
-    // operatorController.rightBumper().onTrue(Commands.runOnce(() -> algaeKnocker.disableAlgaeKnocker(), algaeKnocker));
+    algaeKnocker.setDefaultCommand(
+       SubsystemControl.AlgaeKnocker(
+         algaeKnocker, 
+         () -> operatorController.rightBumper().getAsBoolean(), //L3
+         () -> operatorController.leftBumper().getAsBoolean() //L2
+       )
+     );    operatorController.rightTrigger().onTrue(Commands.runOnce(() -> coralScorer.setState(States.INTAKE), coralScorer));
+    
   }
     //     .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
   

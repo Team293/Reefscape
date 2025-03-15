@@ -3,18 +3,18 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.algaePickup.AlgaePickup;
 
-public class AlgaeIntakeExtendPistons extends Command {
+public class AlgaeIntakeRetractPistons extends Command {
     private final AlgaePickup algaePickup;
 
-    public AlgaeIntakeExtendPistons(AlgaePickup algaePickup) {
+    public AlgaeIntakeRetractPistons(AlgaePickup algaePickup) {
         this.algaePickup = algaePickup;
 
-        this.addRequirements(this.algaePickup);
+        this.addRequirements(algaePickup);
     }
 
     @Override
     public void initialize() {
-        algaePickup.extendAlagePickup();
+        algaePickup.retractAlgaePickup();
     }
 
     @Override

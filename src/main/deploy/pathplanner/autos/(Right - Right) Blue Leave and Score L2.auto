@@ -7,7 +7,13 @@
         {
           "type": "named",
           "data": {
-            "name": "pickupCoral"
+            "name": "resetElevator"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "pointCoralDown"
           }
         },
         {
@@ -17,13 +23,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "(Right - Right) Blue Leave and Score L2"
+                  "pathName": "(Right - Right) Leave and Score L4"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "elevatorToL2"
+                  "name": "elevatorToL4"
                 }
               }
             ]
