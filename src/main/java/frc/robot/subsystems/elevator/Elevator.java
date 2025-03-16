@@ -19,7 +19,7 @@ public class Elevator extends SubsystemBase {
 
     private static final double L1_POSITION = 0.0d;
     private static final double L2_POSITION = 0.87d;
-    private static final double L3_POSITION = 2.8d;
+    private static final double L3_POSITION = 2.83d;
     private static final double L4_POSITION = 5.1d;
     private static final double CORAL_STATION_POS = 0.03d;
 
