@@ -7,12 +7,6 @@
         {
           "type": "named",
           "data": {
-            "name": "resetElevator"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "pointCoralDown"
           }
         },
@@ -27,9 +21,22 @@
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "elevatorToL4"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "resetElevator"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "elevatorToL4"
+                      }
+                    }
+                  ]
                 }
               }
             ]

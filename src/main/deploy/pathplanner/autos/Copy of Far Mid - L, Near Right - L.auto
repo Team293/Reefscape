@@ -7,12 +7,6 @@
         {
           "type": "named",
           "data": {
-            "name": "resetElevator"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "pointCoralDown"
           }
         },
@@ -21,15 +15,22 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": "Start Right to Far Right - L"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "elevatorToL4"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "resetElevator"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "elevatorToL4"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -39,6 +40,12 @@
           "type": "named",
           "data": {
             "name": "dropCoral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "resetElevator2"
           }
         }
       ]

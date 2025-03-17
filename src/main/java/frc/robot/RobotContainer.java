@@ -32,6 +32,7 @@ import frc.robot.commands.ResetElevator;
 import frc.robot.commands.SetElevator;
 import frc.robot.commands.SubsystemControl;
 import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
+import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.coralScorer.CoralScorer;
 import frc.robot.subsystems.coralScorer.CoralScorer.States;
 import frc.robot.subsystems.drive.Drive;
@@ -56,10 +57,11 @@ public class RobotContainer {
   private final CoralScorer coralScorer;
   // private final AlgaePickup algaePickup;
   private final Vision vision;
-  private final AlgaeKnocker algaeKnocker;
+  // private final AlgaeKnocker algaeKnocker;
   private final Elevator elevator;
   private final Targeting targeting;
   private final Pneumatics pneumatics;
+  // private final Climber climber;
 
   // Controller
   private static final double DEADBAND = 0.05;
@@ -81,7 +83,8 @@ public class RobotContainer {
 
     // algaePickup = new AlgaePickup();
     coralScorer = new CoralScorer(pneumatics);
-    algaeKnocker = new AlgaeKnocker(pneumatics);
+    // algaeKnocker = new AlgaeKnocker(pneumatics);
+    // climber = new Climber();
 
     switch (Constants.currentMode) {
       case REAL:
@@ -127,8 +130,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("resetElevator", new ResetElevator(elevator));
     NamedCommands.registerCommand("resetElevator2", new ResetElevator(elevator));
     
-    NamedCommands.registerCommand("enableAlgaeKnocker", new EnableAlgaeKnocker(algaeKnocker));
-    NamedCommands.registerCommand("disableAlgaeKnocker", new ReverseAlgaeKnocker(algaeKnocker));
+    // NamedCommands.registerCommand("enableAlgaeKnocker", new EnableAlgaeKnocker(algaeKnocker));
+    // NamedCommands.registerCommand("disableAlgaeKnocker", new ReverseAlgaeKnocker(algaeKnocker));
     
     NamedCommands.registerCommand("elevatorToL2", new SetElevator(elevator, 1));
     NamedCommands.registerCommand("elevatorToL3", new SetElevator(elevator, 2));
@@ -225,14 +228,21 @@ public class RobotContainer {
       SubsystemControl.elevatorControl(elevator, operatorController)
     );
 
-    algaeKnocker.setDefaultCommand(
-       SubsystemControl.AlgaeKnocker(
-         algaeKnocker, 
-         () -> operatorController.rightBumper().getAsBoolean(), //L3
-         () -> operatorController.leftBumper().getAsBoolean() //L2
-       )
-     );    operatorController.rightTrigger().onTrue(Commands.runOnce(() -> coralScorer.setState(States.INTAKE), coralScorer));
-    
+    // climber.setDefaultCommand(
+    //         SubsystemControl.climb(
+    //                 climber,
+    //                 () -> operatorController.getRightY() < -0.3,
+    //                 () -> operatorController.getRightY() > 0.3
+    //         )
+    // );
+
+    // algaeKnocker.setDefaultCommand(
+    //    SubsystemControl.AlgaeKnocker(
+    //      algaeKnocker, 
+    //      () -> operatorController.rightBumper().getAsBoolean(), //L3
+    //      () -> operatorController.leftBumper().getAsBoolean() //L2
+    //    )
+    //  );    operatorController.rightTrigger().onTrue(Commands.runOnce(() -> coralScorer.setState(States.INTAKE), coralScorer));
   }
     //     .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
   

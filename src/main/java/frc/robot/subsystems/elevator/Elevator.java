@@ -1,22 +1,25 @@
 package frc.robot.subsystems.elevator;
 
+import java.util.logging.Logger;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 
 import com.ctre.phoenix6.controls.PositionVoltage;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Elevator extends SubsystemBase {
     private static final double MAX_POSITION = 5.26;
     private static final double MIN_POSITION = 0;
     private static final double MAX_SPEED = 3d;
-    private static final double POSITION_ERROR_THRESHOLD = 0.05;
+    private static final double POSITION_ERROR_THRESHOLD = 0.1;
 
     private static final double L1_POSITION = 0.0d;
     private static final double L2_POSITION = 0.87d;
-    private static final double L3_POSITION = 2.8d;
+    private static final double L3_POSITION = 2.83d;
     private static final double L4_POSITION = 5.1d;
     private static final double CORAL_STATION_POS = 0.03d;
 
@@ -37,15 +40,12 @@ public class Elevator extends SubsystemBase {
     
     @Override
     public void periodic() {
+        SmartDashboard.putBoolean("ElevatorIsAtTarget", isAtTarget());
         elevatorMotor.updateInputs(elevatorInputs);
 
         if (DriverStation.isDisabled()) {
             setPosition(elevatorInputs.positionValue);
         }
-
-        // Logger.recordOutput("Elevator/Calibrating", isCalculatingOffset);
-        // Logger.recordOutput("Elevator/Position", inputs.positionValue);
-        // Logger.recordOutput("Elevator/TargetPosition", targetPosition);
 
         if (isZeroing) {
             if (elevatorMotor.isAtZero()) {
@@ -61,12 +61,14 @@ public class Elevator extends SubsystemBase {
     }
 
     public boolean isAtTarget() {
-        return Math.abs(getPosition() - targetPosition) < POSITION_ERROR_THRESHOLD;
+        double diff = getPosition() - targetPosition;
+        return diff < POSITION_ERROR_THRESHOLD && diff >= -0.1;
     }
 
     public boolean getIsZeroing() {
         return isZeroing;
     }
+
 
     public void setPercentage(double percentValue) {
         if (isZeroing) return;
@@ -88,10 +90,11 @@ public class Elevator extends SubsystemBase {
     public void setPresetPos(int pos) {
         if (isZeroing) return;
 
+        targetPosition = heights[pos];
         if (pos < 0 || pos >= heights.length) {
             DriverStation.reportError("Invalid preset position", false);
         } else {
-            elevatorMotor.applyPosition(command.withPosition(heights[pos]));
+            elevatorMotor.applyPosition(command.withPosition(targetPosition));
         }
     }
 
@@ -112,6 +115,7 @@ public class Elevator extends SubsystemBase {
     public void zero() {
         this.isZeroing = true;
 
+        targetPosition = 0.0;
         this.elevatorMotor.runVelocity(-1);
     }
 
