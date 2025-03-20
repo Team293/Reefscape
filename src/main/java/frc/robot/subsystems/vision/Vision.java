@@ -131,6 +131,8 @@ public class Vision extends SubsystemBase {
             
             estimator.addVisionMeasurement(visionPose, poseEstimate.timestampSeconds);
         }
+
+        Logger.recordOutput("Pose/EstimatedPose", estimator.getEstimatedPosition());
     }
 
     private void driveToPosition(Pose2d position) {
