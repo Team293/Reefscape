@@ -32,6 +32,7 @@ import frc.robot.subsystems.algaePickup.AlgaePickup;
 import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.targeting.Targeting;
+import frc.robot.subsystems.vision.Vision;
 
 public class SubsystemControl {
 
@@ -81,6 +82,7 @@ public class SubsystemControl {
 
   public static Command joystickDrive(
     Drive drive,
+    Vision vision,
     Targeting targeting,
     DoubleSupplier xSupplier,
     DoubleSupplier ySupplier,
@@ -91,6 +93,8 @@ public class SubsystemControl {
     ) {
   return Commands.run(
       () -> {
+        vision.interruptPath(); // allow driver to override control at all times
+
         double strafe = strafeLeft.getAsDouble() - strafeRight.getAsDouble();
 
         double xTranslation = xSupplier.getAsDouble();
@@ -142,7 +146,33 @@ public class SubsystemControl {
       drive);
   }
 
-    public static Command elevatorControl(
+  public static Command visionDrive(
+          Drive drive,
+          Vision vision,
+          SpikeController driverController
+  ) {
+      return Commands.run(() -> {
+          if (driverController.leftStick().getAsBoolean()) {
+              Vision.CoralLineup offset = null;
+
+              if (driverController.leftTrigger().getAsBoolean()) {
+                  offset = Vision.CoralLineup.LEFT;
+              } else if (driverController.rightTrigger().getAsBoolean()) {
+                  offset = Vision.CoralLineup.RIGHT;
+              }
+
+              Vision.AprilTagLineups target = vision.getClosestTag(drive.getPose());
+
+              if (offset == null) {
+                  vision.runPath(target);
+              } else {
+                  vision.runPath(target, offset);
+              }
+          }
+      });
+  }
+
+  public static Command elevatorControl(
       Elevator elevator,
       // DoubleSupplier elevatorPercentage,
       SpikeController controller
