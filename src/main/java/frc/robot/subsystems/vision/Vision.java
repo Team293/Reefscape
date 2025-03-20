@@ -231,6 +231,10 @@ public class Vision extends SubsystemBase {
         return closestTag;
     }
 
+    public boolean isRunningPath() {
+        return isRunningPath;
+    }
+
     @Override
     public void periodic() {
         if (runningCommand != null) {

@@ -153,6 +153,11 @@ public class SubsystemControl {
   ) {
       return Commands.run(() -> {
           if (driverController.leftStick().getAsBoolean()) {
+              if (vision.isRunningPath()) {
+                  vision.interruptPath();
+                  return;
+              }
+
               Vision.CoralLineup offset = null;
 
               if (driverController.leftTrigger().getAsBoolean()) {
