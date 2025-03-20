@@ -164,6 +164,7 @@ public class RobotContainer {
     drive.setDefaultCommand(
         SubsystemControl.joystickDrive(
             drive,
+            vision,
             targeting,
             () -> -driverController.getLeftY(),
             () -> -driverController.getLeftX(),
@@ -171,6 +172,14 @@ public class RobotContainer {
             () -> driverController.getLeftTriggerAxis(),
             () -> driverController.getRightTriggerAxis(),
             () -> driverController.rightBumper().getAsBoolean()));
+
+    vision.setDefaultCommand(
+            SubsystemControl.visionDrive(
+                    drive,
+                    vision,
+                    driverController
+            )
+    );
     /*
      * SubsystemControl.fieldOrientedRotation(
      * drive,

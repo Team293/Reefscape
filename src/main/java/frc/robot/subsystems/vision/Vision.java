@@ -57,6 +57,21 @@ public class Vision extends SubsystemBase {
         }
     }
 
+    public static enum CoralLineup {
+        LEFT(0.0d),
+        RIGHT(0.0d);
+
+        private final double xTranslation;
+
+        CoralLineup(double xTranslation) {
+            this.xTranslation = xTranslation;
+        }
+
+        public double getXTranslation() {
+            return xTranslation;
+        }
+    }
+
     private static final Rotation2d[] LIMELIGHT_YAW_OFFSETS = {
         Rotation2d.fromDegrees(180),
         Rotation2d.fromDegrees(0),
@@ -181,8 +196,18 @@ public class Vision extends SubsystemBase {
         driveToPosition(lineup.getPose());
     }
 
-    private AprilTagLineups getClosestTag(SwerveDrivePoseEstimator estimator) {
-        Pose2d currentPose = estimator.getEstimatedPosition();
+    public void runPath(AprilTagLineups lineup, CoralLineup positionTranslation) {
+        if (isRunningPath) {
+            return;
+        }
+
+        Pose2d position = lineup.getPose();
+        position = new Pose2d(position.getX() + positionTranslation.getXTranslation(), position.getY(), position.getRotation());
+
+        driveToPosition(position);
+    }
+
+    public AprilTagLineups getClosestTag(Pose2d currentPose) {
         double closestDistance = Double.MAX_VALUE;
         AprilTagLineups closestTag = null;
 
