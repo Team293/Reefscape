@@ -224,6 +224,9 @@ public class RobotContainer {
         .a()
         .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
 
+    driverController
+    .b()
+    .onTrue(Commands.runOnce(() -> vision.interruptPath(), vision));
      coralScorer.setDefaultCommand(
        SubsystemControl.coralControl(
          coralScorer, 

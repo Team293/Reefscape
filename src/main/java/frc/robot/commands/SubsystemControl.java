@@ -93,7 +93,7 @@ public class SubsystemControl {
     ) {
   return Commands.run(
       () -> {
-        vision.interruptPath(); // allow driver to override control at all times
+        // vision.interruptPath(); // allow driver to override control at all times
 
         double strafe = strafeLeft.getAsDouble() - strafeRight.getAsDouble();
 
@@ -164,12 +164,12 @@ public class SubsystemControl {
               Vision.AprilTagLineups target = vision.getClosestTag(drive.getPose());
 
               if (offset == null) {
-                  vision.runPath(target);
+                  vision.runPath(target, drive.getPose());
               } else {
-                  vision.runPath(target, offset);
+                  vision.runPath(target, offset, drive.getPose());
               }
           }
-      });
+      }, vision);
   }
 
   public static Command elevatorControl(

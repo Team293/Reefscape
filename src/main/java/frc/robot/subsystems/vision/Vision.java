@@ -25,26 +25,26 @@ import java.util.Map;
 
 public class Vision extends SubsystemBase {
     private static final String[] LIMELIGHT_NAMES = {
-        "limelight-front",
-        "limelight-back"
+        // "limelight-left"
+        "limelight-right"
     };
 
     private boolean isRunningPath= false;
     private Command runningCommand;
 
     public static enum AprilTagLineups {
-        RED_6(new Pose2d()),
-        RED_7(new Pose2d()),
-        RED_8(new Pose2d()),
-        RED_9(new Pose2d()),
-        RED_10(new Pose2d()),
-        RED_11(new Pose2d()),
-        BLUE_16(new Pose2d()),
-        BLUE_17(new Pose2d()),
-        BLUE_19(new Pose2d()),
-        BLUE_20(new Pose2d()),
-        BLUE_21(new Pose2d()),
-        BLUE_22(new Pose2d());
+        // RED_6(new Pose2d()),
+        // RED_7(new Pose2d()),
+        // RED_8(new Pose2d()),
+        // RED_9(new Pose2d()),
+        RED_10(new Pose2d(5.75, 4.00, Rotation2d.fromDegrees(0 + 180))); // reef far
+        // RED_11(new Pose2d()),
+        // BLUE_16(new Pose2d()),
+        // BLUE_17(new Pose2d()),
+        // BLUE_19(new Pose2d()),
+        // BLUE_20(new Pose2d()),
+        // BLUE_21(new Pose2d()),
+        // BLUE_22(new Pose2d());
 
         private final Pose2d pose;
 
@@ -73,27 +73,27 @@ public class Vision extends SubsystemBase {
     }
 
     private static final Rotation2d[] LIMELIGHT_YAW_OFFSETS = {
-        Rotation2d.fromDegrees(180),
-        Rotation2d.fromDegrees(0),
+        // Rotation2d.fromDegrees(22.48),
+        Rotation2d.fromDegrees(26.36),
     };
 
     public Vision() {
-        LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[0],
-            0.34925, // forward
-            0.0, // side
-            0.26035, // up
-            180, // roll
-            0, // pitch
-            0 // yaw
-        );
+        // LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[0],
+        //     0.2477516, // forward
+        //     -0.23495, // side
+        //     0.3302, // up
+        //     180, // roll
+        //     0, // pitch
+        //     -90 + 22.48 // yaw
+        // );
 
-        LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[1],
-            0.05715, // forward
-            0, // side
-            0.88265, // up
-            0, // roll
+        LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[0],
+            0.24765, // forward
+            0.2159, // side
+            0.3302, // up
+            180, // roll
             0.0, // pitch
-            180 // yaw
+            90 - 26.36 // yaw
         );
 
         // force limelights to use roboRIO for gyro
@@ -150,18 +150,25 @@ public class Vision extends SubsystemBase {
         Logger.recordOutput("Pose/EstimatedPose", estimator.getEstimatedPosition());
     }
 
-    private void driveToPosition(Pose2d position) {
-        PathConstraints constraints = PathConstraints.unlimitedConstraints(12); // TODO: lower if needed
+    private void driveToPosition(Pose2d currentPosition, Pose2d targetPosition) {
+        Logger.recordOutput("targetPosition", targetPosition);
+        if (currentPosition.getX() - targetPosition.getX() > 3) {
+            return;
+        }
+
+        // PathConstraints constraints = PathConstraints.unlimitedConstraints(12); // TODO: lower if needed
+        PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI); // The constraints for this path.
 
         List<Waypoint> waypoints = List.of(
-            new Waypoint(position.getTranslation(), position.getTranslation(), position.getTranslation())
+            new Waypoint(currentPosition.getTranslation(), currentPosition.getTranslation(), currentPosition.getTranslation()),
+            new Waypoint(targetPosition.getTranslation(), targetPosition.getTranslation(), targetPosition.getTranslation())
         );
 
         PathPlannerPath path = new PathPlannerPath(
                 waypoints, // waypoints, add more if needed
                 constraints,
                 null, // starting, not needed
-                new GoalEndState(0.0, position.getRotation())
+                new GoalEndState(0.0, targetPosition.getRotation())
         );
 
         path.preventFlipping = true;
@@ -177,6 +184,8 @@ public class Vision extends SubsystemBase {
 
         followPath.schedule();
 
+        runningCommand = followPath;
+
         isRunningPath = true;
     }
 
@@ -188,15 +197,15 @@ public class Vision extends SubsystemBase {
         isRunningPath = false;
     }
 
-    public void runPath(AprilTagLineups lineup) {
+    public void runPath(AprilTagLineups lineup, Pose2d currentPose) {
         if (isRunningPath) {
             return;
         }
 
-        driveToPosition(lineup.getPose());
+        driveToPosition(currentPose, lineup.getPose());
     }
 
-    public void runPath(AprilTagLineups lineup, CoralLineup positionTranslation) {
+    public void runPath(AprilTagLineups lineup, CoralLineup positionTranslation, Pose2d currentPose) {
         if (isRunningPath) {
             return;
         }
@@ -204,7 +213,7 @@ public class Vision extends SubsystemBase {
         Pose2d position = lineup.getPose();
         position = new Pose2d(position.getX() + positionTranslation.getXTranslation(), position.getY(), position.getRotation());
 
-        driveToPosition(position);
+        driveToPosition(position, currentPose);
     }
 
     public AprilTagLineups getClosestTag(Pose2d currentPose) {
@@ -220,5 +229,15 @@ public class Vision extends SubsystemBase {
         }
 
         return closestTag;
+    }
+
+    @Override
+    public void periodic() {
+        if (runningCommand != null) {
+            Logger.recordOutput("isFinished", !runningCommand.isFinished());
+        } else {
+            Logger.recordOutput("isFinished", false);
+        }
+        Logger.recordOutput("isRunningPath", isRunningPath);
     }
 }
