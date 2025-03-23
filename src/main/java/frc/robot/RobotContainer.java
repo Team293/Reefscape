@@ -34,7 +34,7 @@ import frc.robot.commands.ResetElevator;
 import frc.robot.commands.SetElevator;
 import frc.robot.commands.SubsystemControl;
 import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
-//import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.coralScorer.CoralScorer;
 import frc.robot.subsystems.coralScorer.CoralScorer.States;
 import frc.robot.subsystems.drive.Drive;

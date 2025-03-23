@@ -32,7 +32,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         // Set motor PID
-        config.Slot0.kP = 8;
+        config.Slot0.kP = 1.75;
         config.Slot0.kI = 0.0;
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 0.462;
@@ -80,7 +80,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     }
 
     public void setPosition(double position) {
-        this.elevatorMotor.setPosition(encoderUnitsToMeters(position));
+        this.elevatorMotor.setPosition((position));
     }
 
     public void runVelocity(double velocity) {
@@ -91,8 +91,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         return this.limitSwitch.getValue() == ReverseLimitValue.ClosedToGround;
     }
 
-    public double encoderUnitsToMeters(double position){
-        return (position/2048)*(1/m_gearRatio)*(1/(25/24))*(25 * 0.0049);
-    }
+    // public double encoderUnitsToMeters(double position){
+    //      return (position/2048)*(1/m_gearRatio)*(1/(25/24))*(25 * 0.0049);
+    // }
 }
     

@@ -12,15 +12,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Elevator extends SubsystemBase {
-    private static final double MAX_POSITION = 5.26;
+    private static final double MAX_POSITION = 184.22; //meters
     private static final double MIN_POSITION = 0;
     private static final double MAX_SPEED = 3d;
     private static final double POSITION_ERROR_THRESHOLD = 0.1;
 
-    private static final double L1_POSITION = 0.0d;
-    private static final double L2_POSITION = 0.87d;
-    private static final double L3_POSITION = 2.83d;
-    private static final double L4_POSITION = 5.1d;
+    //Encoder units -- check pheonix tuner if belt tension changes for the positions again
+    private static final double L1_POSITION = 0.0d; //0
+    private static final double L2_POSITION = 20.85d; //20.85
+    private static final double L3_POSITION = 92.07d; //92.07
+    private static final double L4_POSITION = 184.22d; //184.22
     private static final double CORAL_STATION_POS = 0.03d;
 
     private static final double heights[] = {L1_POSITION, L2_POSITION, L3_POSITION, L4_POSITION, CORAL_STATION_POS};
