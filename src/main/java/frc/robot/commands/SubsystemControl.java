@@ -151,36 +151,38 @@ public class SubsystemControl {
       drive);
   }
 
-  // public static Command visionDrive(
-  //         Drive drive,
-  //         Vision vision,
-  //         SpikeController driverController
-  // ) {
-  //     return Commands.run(() -> {
-  //         if (driverController.leftStick().getAsBoolean()) {
-  //             if (vision.isRunningPath()) {
-  //                 vision.interruptPath();
-  //                 return;
-  //             }
+  public static Command visionDrive(
+          Drive drive,
+          Vision vision,
+          SpikeController driverController
+  ) {
+      return Commands.run(() -> {
+          if (driverController.b().getAsBoolean()) {
+            System.out.println("Pressed b");
+              if (vision.isRunningPath()) {
+                  vision.interruptPath();
+                  return;
+              }
 
-  //             Vision.CoralLineup offset = null;
+              Vision.CoralLineup offset = null;
 
-  //             if (driverController.leftTrigger().getAsBoolean()) {
-  //                 offset = Vision.CoralLineup.LEFT;
-  //             } else if (driverController.rightTrigger().getAsBoolean()) {
-  //                 offset = Vision.CoralLineup.RIGHT;
-  //             }
+              if (driverController.leftTrigger().getAsBoolean()) {
+                  offset = Vision.CoralLineup.LEFT;
+              } else if (driverController.rightTrigger().getAsBoolean()) {
+                  offset = Vision.CoralLineup.RIGHT;
+              }
 
-  //             Vision.AprilTagLineups target = vision.getClosestTag(drive.getPose());
+              Vision.AprilTagLineups target = vision.getClosestTag(drive.getPose());
 
-  //             if (offset == null) {
-  //                 vision.runPath(target, drive.getPose());
-  //             } else {
-  //                 vision.runPath(target, offset, drive.getPose());
-  //             }
-  //         }
-  //     }, vision);
-  // }
+              if (offset == null) {
+                  vision.runPath(target, drive.getPose());
+              } else {
+                  vision.runPath(target, offset, drive.getPose());
+              }
+          }
+          
+      }, vision);
+  }
 
   public static Command elevatorControl(
       Elevator elevator,

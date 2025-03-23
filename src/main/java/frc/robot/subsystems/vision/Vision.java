@@ -12,6 +12,10 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.units.DistanceUnit;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -22,8 +26,10 @@ import frc.robot.subsystems.drive.GyroIO.GyroIOInputs;
 import frc.robot.util.LimelightHelpers;
 
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class Vision extends SubsystemBase {
     private static final String[] LIMELIGHT_NAMES = {
@@ -31,8 +37,12 @@ public class Vision extends SubsystemBase {
         "limelight-right"
     };
 
+    private static final double MAX_DISTANCE = 2; // in
+
     private boolean isRunningPath = false;
     private Command runningCommand;
+    private Pose2d targetPose;
+    private Supplier<Pose2d> currentPose;
 
     private Pose2d[] poses = new Pose2d[2];
     private boolean[] updated = new boolean[2];
@@ -54,7 +64,6 @@ public class Vision extends SubsystemBase {
         BLUE_19(new Pose2d(5.10, 2.93, Rotation2d.fromDegrees(-60 + 180))),
         BLUE_20(new Pose2d(5.10, 5.13, Rotation2d.fromDegrees(60 + 180))),
         BLUE_21(new Pose2d(5.75, 4.00, Rotation2d.fromDegrees(180)));
-
         private final Pose2d pose;
 
         AprilTagLineups(Pose2d pose) {
@@ -67,8 +76,8 @@ public class Vision extends SubsystemBase {
     }
 
     public enum CoralLineup {
-        LEFT(0.0d),
-        RIGHT(0.0d);
+        LEFT(0.2d),
+        RIGHT(-0.15d);
 
         private final double xTranslation;
 
@@ -85,6 +94,10 @@ public class Vision extends SubsystemBase {
         Rotation2d.fromDegrees(-22.48),
         Rotation2d.fromDegrees(26.36),
     };
+
+    public void setPositionSupplier(Supplier<Pose2d> position) {
+        this.currentPose = position;
+    }
 
     public Vision() {
         LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[0],
@@ -207,12 +220,16 @@ public class Vision extends SubsystemBase {
 
     private void driveToPosition(Pose2d currentPosition, Pose2d targetPosition) {
         Logger.recordOutput("targetPosition", targetPosition);
-        if (currentPosition.getX() - targetPosition.getX() > 3) {
+        System.out.println("driveToPosition");
+
+        if (isRunningPath) {
             return;
         }
+        
+        this.targetPose = targetPosition;
 
         // PathConstraints constraints = PathConstraints.unlimitedConstraints(12); // TODO: lower if needed
-        PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI); // The constraints for this path.
+        PathConstraints constraints = new PathConstraints(1.5, 1.5, 2 * Math.PI, 4 * Math.PI); // The constraints for this path.
 
         List<Waypoint> waypoints = List.of(
             new Waypoint(currentPosition.getTranslation(), currentPosition.getTranslation(), currentPosition.getTranslation()),
@@ -233,6 +250,7 @@ public class Vision extends SubsystemBase {
         Command cleanupCommand = Commands.run(() -> {
            this.isRunningPath = false;
            this.runningCommand = null;
+           this.targetPose = null;
         });
 
         followPath = followPath.andThen(cleanupCommand);
@@ -245,7 +263,7 @@ public class Vision extends SubsystemBase {
     }
 
     public void interruptPath() {
-        if (runningCommand != null) {
+        if (runningCommand != null && isRunningPath) {
             runningCommand.cancel();
             runningCommand = null;
         }
@@ -265,10 +283,13 @@ public class Vision extends SubsystemBase {
             return;
         }
 
-        Pose2d position = lineup.getPose();
-        position = new Pose2d(position.getX() + positionTranslation.getXTranslation(), position.getY(), position.getRotation());
+        double translateX = positionTranslation.xTranslation * Math.sin(-lineup.getPose().getRotation().getRadians());
+        double translateY = positionTranslation.xTranslation * Math.cos(-lineup.getPose().getRotation().getRadians());
 
-        driveToPosition(position, currentPose);
+        Pose2d position = lineup.getPose();
+        position = new Pose2d(position.getX() + translateX, position.getY() + translateY, position.getRotation());
+
+        driveToPosition(currentPose, position);
     }
 
     public AprilTagLineups getClosestTag(Pose2d currentPose) {
@@ -293,10 +314,23 @@ public class Vision extends SubsystemBase {
     @Override
     public void periodic() {
         if (runningCommand != null) {
-            Logger.recordOutput("isFinished", !runningCommand.isFinished());
+            Logger.recordOutput("isFinished", runningCommand.isFinished());
         } else {
             Logger.recordOutput("isFinished", false);
         }
-        Logger.recordOutput("isRunningPath", isRunningPath);
+        
+        if (isRunningPath && targetPose != null) {
+            Pose2d currentPose = this.currentPose.get();
+
+            double distanceX = Math.abs(this.targetPose.getX() - currentPose.getX()) * 39.37;
+            double distanceY = Math.abs(this.targetPose.getY() - currentPose.getY()) * 39.37;
+
+            boolean closeToDeadband = distanceX <= MAX_DISTANCE;
+            boolean closeToNegativeDeadband = distanceY <= MAX_DISTANCE;
+
+            if (closeToDeadband || closeToNegativeDeadband) {
+                interruptPath();
+            }
+        }
     }
 }

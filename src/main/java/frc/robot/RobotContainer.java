@@ -16,6 +16,8 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -61,7 +63,7 @@ public class RobotContainer {
   private final Elevator elevator;
   private final Targeting targeting;
   private final Pneumatics pneumatics;
-  // private final Climber climber;
+  // private final Climber climber
 
   // Controller
   private static final double DEADBAND = 0.05;
@@ -113,6 +115,8 @@ public class RobotContainer {
      }
 
     targeting = new Targeting(drive);
+
+    vision.setPositionSupplier(() -> drive.getPose());
 
     // NamedCommands.registerCommand("enableAlgaePickup", new EnableAlgaePickup(algaePickup));
     // NamedCommands.registerCommand("reverseAlgaePickup", new ReverseAlgaePickup(algaePickup));
@@ -169,18 +173,18 @@ public class RobotContainer {
             () -> -driverController.getLeftY(),
             () -> -driverController.getLeftX(),
             () -> -driverController.getRightX(),
-            () -> driverController.getLeftTriggerAxis(),
-            () -> driverController.getRightTriggerAxis(),
+            () -> 0, // TODO: change back to triggers
+            () -> 0,
             () -> driverController.leftBumper().getAsBoolean(),
             () -> driverController.rightBumper().getAsBoolean()));
 
-    // vision.setDefaultCommand(
-    //         SubsystemControl.visionDrive(
-    //                 drive,
-    //                 vision,
-    //                 driverController
-    //         )
-    // );
+    vision.setDefaultCommand(
+            SubsystemControl.visionDrive(
+                    drive,
+                    vision,
+                    driverController
+            )
+    );
     /*
      * SubsystemControl.fieldOrientedRotation(
      * drive,

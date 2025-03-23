@@ -19,7 +19,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     private StatusSignal<Angle> elevatorPosition;
     private StatusSignal<AngularVelocity> elevatorVelocity;
     private StatusSignal<ReverseLimitValue> limitSwitch;
-    private double m_gearRatio = 36/1; 
+    private double m_gearRatio = 11/10; 
+    private double positionMeters;
 
     public ElevatorIOTalonFX(int canID) {
         this.elevatorMotor = new TalonFX(canID);
@@ -38,7 +39,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         config.Slot0.kS = 0.05;
         config.Slot0.kG = 0.45;
         elevatorMotor.getConfigurator().apply(config);
-
         elevatorPosition = elevatorMotor.getPosition();
         elevatorVelocity = elevatorMotor.getVelocity();
         limitSwitch = elevatorMotor.getReverseLimit();
@@ -80,7 +80,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     }
 
     public void setPosition(double position) {
-        this.elevatorMotor.setPosition(position);
+        this.elevatorMotor.setPosition(encoderUnitsToMeters(position));
     }
 
     public void runVelocity(double velocity) {
@@ -89,6 +89,10 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     public boolean isAtZero() {
         return this.limitSwitch.getValue() == ReverseLimitValue.ClosedToGround;
+    }
+
+    public double encoderUnitsToMeters(double position){
+        return (position/2048)*(1/m_gearRatio)*(1/(25/24))*(25 * 0.0049);
     }
 }
     
