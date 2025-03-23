@@ -32,7 +32,7 @@ import frc.robot.commands.ResetElevator;
 import frc.robot.commands.SetElevator;
 import frc.robot.commands.SubsystemControl;
 import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
-import frc.robot.subsystems.climber.Climber;
+//import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.coralScorer.CoralScorer;
 import frc.robot.subsystems.coralScorer.CoralScorer.States;
 import frc.robot.subsystems.drive.Drive;
@@ -171,15 +171,16 @@ public class RobotContainer {
             () -> -driverController.getRightX(),
             () -> driverController.getLeftTriggerAxis(),
             () -> driverController.getRightTriggerAxis(),
+            () -> driverController.leftBumper().getAsBoolean(),
             () -> driverController.rightBumper().getAsBoolean()));
 
-    vision.setDefaultCommand(
-            SubsystemControl.visionDrive(
-                    drive,
-                    vision,
-                    driverController
-            )
-    );
+    // vision.setDefaultCommand(
+    //         SubsystemControl.visionDrive(
+    //                 drive,
+    //                 vision,
+    //                 driverController
+    //         )
+    // );
     /*
      * SubsystemControl.fieldOrientedRotation(
      * drive,

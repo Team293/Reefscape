@@ -19,6 +19,7 @@ import frc.robot.subsystems.coralScorer.RightSightSensor;
 public class CoralScorer extends SubsystemBase {
     public static enum States {
         INTAKE,
+        HAS_PIECE,
         DROP,
         POINT_DOWN
     }
@@ -69,11 +70,17 @@ public class CoralScorer extends SubsystemBase {
                 coralScorerMotor.setSpeed(-TARGET_VELOCITY);
                 if (inputs.current > 4.5 && stateTimer.hasElapsed(0.2)) {
                     hasPiece = true;
+                    setState(States.HAS_PIECE);
                 }
             } else {
                 coralScorerMotor.setSpeed(0);
             }
-        
+        } else if (state == States.HAS_PIECE) {
+            if (!stateTimer.hasElapsed(0.4)) {
+                coralScorerMotor.setSpeed(-TARGET_VELOCITY);
+            } else {
+                coralScorerMotor.setSpeed(0);
+            }
         } else if (state == States.POINT_DOWN) {
             if (!stateTimer.hasElapsed(0.5)) {
                 coralScorerMotor.setSpeed(-TARGET_VELOCITY);

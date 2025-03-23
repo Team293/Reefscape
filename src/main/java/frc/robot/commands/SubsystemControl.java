@@ -89,7 +89,8 @@ public class SubsystemControl {
     DoubleSupplier omegaSupplier,
     DoubleSupplier strafeLeft,
     DoubleSupplier strafeRight,
-    BooleanSupplier selfDriving
+    BooleanSupplier selfDrivingLeft,
+    BooleanSupplier selfDrivingRight
     ) {
   return Commands.run(
       () -> {
@@ -129,8 +130,12 @@ public class SubsystemControl {
           yTranslation = linearVelocity.getY();
         }
 
-        if (selfDriving.getAsBoolean()) {
-          drive.setTargetPose(targeting.getPositionClosestToRobotPosition());
+        if (selfDrivingLeft.getAsBoolean()) {
+          drive.setTargetPose(targeting.getReefSideClosestToRobot(true));
+          drive.driveToTargetPose();
+          return;
+        } else if (selfDrivingRight.getAsBoolean()) {
+          drive.setTargetPose(targeting.getReefSideClosestToRobot(false));
           drive.driveToTargetPose();
           return;
         }
@@ -146,36 +151,36 @@ public class SubsystemControl {
       drive);
   }
 
-  public static Command visionDrive(
-          Drive drive,
-          Vision vision,
-          SpikeController driverController
-  ) {
-      return Commands.run(() -> {
-          if (driverController.leftStick().getAsBoolean()) {
-              if (vision.isRunningPath()) {
-                  vision.interruptPath();
-                  return;
-              }
+  // public static Command visionDrive(
+  //         Drive drive,
+  //         Vision vision,
+  //         SpikeController driverController
+  // ) {
+  //     return Commands.run(() -> {
+  //         if (driverController.leftStick().getAsBoolean()) {
+  //             if (vision.isRunningPath()) {
+  //                 vision.interruptPath();
+  //                 return;
+  //             }
 
-              Vision.CoralLineup offset = null;
+  //             Vision.CoralLineup offset = null;
 
-              if (driverController.leftTrigger().getAsBoolean()) {
-                  offset = Vision.CoralLineup.LEFT;
-              } else if (driverController.rightTrigger().getAsBoolean()) {
-                  offset = Vision.CoralLineup.RIGHT;
-              }
+  //             if (driverController.leftTrigger().getAsBoolean()) {
+  //                 offset = Vision.CoralLineup.LEFT;
+  //             } else if (driverController.rightTrigger().getAsBoolean()) {
+  //                 offset = Vision.CoralLineup.RIGHT;
+  //             }
 
-              Vision.AprilTagLineups target = vision.getClosestTag(drive.getPose());
+  //             Vision.AprilTagLineups target = vision.getClosestTag(drive.getPose());
 
-              if (offset == null) {
-                  vision.runPath(target, drive.getPose());
-              } else {
-                  vision.runPath(target, offset, drive.getPose());
-              }
-          }
-      }, vision);
-  }
+  //             if (offset == null) {
+  //                 vision.runPath(target, drive.getPose());
+  //             } else {
+  //                 vision.runPath(target, offset, drive.getPose());
+  //             }
+  //         }
+  //     }, vision);
+  // }
 
   public static Command elevatorControl(
       Elevator elevator,
@@ -219,7 +224,9 @@ public class SubsystemControl {
           }
         }
       } else {
-        coralScorer.setState(States.INTAKE);
+        if (coralScorer.getState() != States.HAS_PIECE) {
+          coralScorer.setState(States.INTAKE);
+        }
       }
     }, coralScorer);
   }

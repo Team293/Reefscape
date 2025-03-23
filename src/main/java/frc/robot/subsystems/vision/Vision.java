@@ -21,6 +21,7 @@ import frc.robot.subsystems.drive.GyroIOInputsAutoLogged;
 import frc.robot.subsystems.drive.GyroIO.GyroIOInputs;
 import frc.robot.util.LimelightHelpers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,8 +31,11 @@ public class Vision extends SubsystemBase {
         "limelight-right"
     };
 
-    private boolean isRunningPath= false;
+    private boolean isRunningPath = false;
     private Command runningCommand;
+
+    private Pose2d[] poses = new Pose2d[2];
+    private boolean[] updated = new boolean[2];
 
     public static enum AprilTagLineups {
         // RED_6(new Pose2d()),
@@ -85,7 +89,7 @@ public class Vision extends SubsystemBase {
             0.3302, // up
             180, // roll
             0.0, // pitch
-                -26.36 // yaw
+                -32.36 // yaw
         );
 
         LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[1],
@@ -94,7 +98,7 @@ public class Vision extends SubsystemBase {
             0.3302, // up
             180, // roll
             0, // pitch
-            30.48 // yaw
+            27.48 // yaw
         );
 
         // force limelights to use roboRIO for gyro
@@ -108,15 +112,50 @@ public class Vision extends SubsystemBase {
             return;
         }
         
+        int visibleTags = 0;
         int i = 0;
         for (String name : LIMELIGHT_NAMES) {
-            setVisionPoseEstimation(name, estimator, gyroInputs, LIMELIGHT_YAW_OFFSETS[i]);
+            if(setVisionPoseEstimation(i, name, estimator, gyroInputs, LIMELIGHT_YAW_OFFSETS[i])) {
+                visibleTags++;
+            }
             i++;
+        }
+        
+        ArrayList<Double> degrees = new ArrayList<Double>();
+
+        i = 0;
+        for (Pose2d pose : poses) {
+            if (updated[i]) {
+                degrees.add(pose.getRotation().getDegrees());
+            }
+            i++;
+        }
+        
+        Logger.recordOutput("VisibleTags", visibleTags);
+        if (visibleTags >= 2) {
+            double avgRot = averageAngles(degrees);
+            Logger.recordOutput("AverageRotation", avgRot);
+            drive.resetRotation(avgRot);
         }
     }
 
-    private void setVisionPoseEstimation(String limelightName, SwerveDrivePoseEstimator estimator, GyroIOInputs gyroInputs, Rotation2d yawOffset) {
+    public static double averageAngles(ArrayList<Double> angles) {
+        double sumX = 0.0;
+        double sumY = 0.0;
+
+        for (double angle : angles) {
+            sumX += Math.cos(Math.toRadians(angle));
+            sumY += Math.sin(Math.toRadians(angle));
+        }
+
+        double avgAngle = Math.toDegrees(Math.atan2(sumY, sumX));
+
+        return avgAngle;
+    }
+
+    private boolean setVisionPoseEstimation(int id, String limelightName, SwerveDrivePoseEstimator estimator, GyroIOInputs gyroInputs, Rotation2d yawOffset) {
         boolean rejectOdometry = false;
+        updated[id] = false;
         
         LimelightHelpers.SetRobotOrientation(
             limelightName, 
@@ -133,7 +172,8 @@ public class Vision extends SubsystemBase {
         Pose2d visionPose;
 
         if (poseEstimate == null || poseEstimate.tagCount == 0) {
-            rejectOdometry = true;  
+            rejectOdometry = true;
+            return false;
         }
 
         if (!rejectOdometry) {
@@ -141,16 +181,20 @@ public class Vision extends SubsystemBase {
             Pose2d currentPose = estimator.getEstimatedPosition();
             
             Logger.recordOutput("Limelight/EstimatedPose-" + limelightName, visionPose);
-            Logger.recordOutput("Limelight/RawEstimatedPose-" + limelightName, poseEstimate.pose);
             // reject position greater than 1 meter apart from current
-            if (currentPose.getTranslation().getDistance(visionPose.getTranslation()) > 3) {
-                return;
+            if (currentPose.getTranslation().getDistance(visionPose.getTranslation()) > 100) {
+                return false;
             }
             
             estimator.addVisionMeasurement(visionPose, poseEstimate.timestampSeconds);
+            poses[id] = visionPose;
+            updated[id] = true;
+        } else {
+            return false;
         }
 
         Logger.recordOutput("Pose/EstimatedPose", estimator.getEstimatedPosition());
+        return true;
     }
 
     private void driveToPosition(Pose2d currentPosition, Pose2d targetPosition) {
