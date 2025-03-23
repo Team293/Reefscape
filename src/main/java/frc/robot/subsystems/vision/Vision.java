@@ -33,19 +33,23 @@ public class Vision extends SubsystemBase {
     private boolean isRunningPath= false;
     private Command runningCommand;
 
-    public static enum AprilTagLineups {
-        // RED_6(new Pose2d()),
-        // RED_7(new Pose2d()),
-        // RED_8(new Pose2d()),
-        // RED_9(new Pose2d()),
-        RED_10(new Pose2d(5.75, 4.00, Rotation2d.fromDegrees(0 + 180))); // reef far
-        // RED_11(new Pose2d()),
-        // BLUE_16(new Pose2d()),
-        // BLUE_17(new Pose2d()),
-        // BLUE_19(new Pose2d()),
-        // BLUE_20(new Pose2d()),
-        // BLUE_21(new Pose2d()),
-        // BLUE_22(new Pose2d());
+    public enum AprilTagLineups {
+        CORAL_1(new Pose2d(1.21, 6.95, Rotation2d.fromDegrees(-53 + 180))),
+        CORAL_2(new Pose2d(1.06, 1.11, Rotation2d.fromDegrees(55 + 180))),
+        RED_6(new Pose2d(3.87, 5.13, Rotation2d.fromDegrees(120 + 180))),
+        RED_7(new Pose2d(3.23, 4.00, Rotation2d.fromDegrees(180 + 180))),
+        RED_8(new Pose2d(3.87, 2.93, Rotation2d.fromDegrees(-120 + 180))),
+        RED_9(new Pose2d(5.10, 2.93, Rotation2d.fromDegrees(-60 + 180))),
+        RED_10(new Pose2d(5.75, 4.00, Rotation2d.fromDegrees(180))), // reef far
+        RED_11(new Pose2d(5.10, 5.13, Rotation2d.fromDegrees(60 + 180))),
+        CORAL_12(new Pose2d(1.06, 1.11, Rotation2d.fromDegrees(55 + 180))),
+        CORAL_13(new Pose2d(1.21, 6.95, Rotation2d.fromDegrees(-53 + 180))),
+        BLUE_16(new Pose2d(3.87, 5.13, Rotation2d.fromDegrees(120 + 180))),
+        BLUE_18(new Pose2d(3.23, 4.00, Rotation2d.fromDegrees(180 + 180))),
+        BLUE_17(new Pose2d(3.87, 2.93, Rotation2d.fromDegrees(-120 + 180))),
+        BLUE_19(new Pose2d(5.10, 2.93, Rotation2d.fromDegrees(-60 + 180))),
+        BLUE_20(new Pose2d(5.10, 5.13, Rotation2d.fromDegrees(60 + 180))),
+        BLUE_21(new Pose2d(5.75, 4.00, Rotation2d.fromDegrees(180)));
 
         private final Pose2d pose;
 
@@ -58,7 +62,7 @@ public class Vision extends SubsystemBase {
         }
     }
 
-    public static enum CoralLineup {
+    public enum CoralLineup {
         LEFT(0.0d),
         RIGHT(0.0d);
 
@@ -100,6 +104,10 @@ public class Vision extends SubsystemBase {
         // force limelights to use roboRIO for gyro
         for (String name : LIMELIGHT_NAMES) {
             LimelightHelpers.SetIMUMode(name, 0);
+        }
+
+        for (AprilTagLineups lineup : AprilTagLineups.values()) {
+            Logger.recordOutput("TargetsVision/" + lineup.name(), lineup.getPose());
         }
     }
 
