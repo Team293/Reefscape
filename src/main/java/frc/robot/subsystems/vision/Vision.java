@@ -11,8 +11,10 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
@@ -58,11 +60,11 @@ public class Vision extends SubsystemBase {
         RED_11(new Pose2d(5.10, 5.13, Rotation2d.fromDegrees(60 + 180))),
         CORAL_12(new Pose2d(1.06, 1.11, Rotation2d.fromDegrees(55 + 180))),
         CORAL_13(new Pose2d(1.21, 6.95, Rotation2d.fromDegrees(-53 + 180))),
-        BLUE_16(new Pose2d(3.87, 5.13, Rotation2d.fromDegrees(120 + 180))),
-        BLUE_18(new Pose2d(3.23, 4.00, Rotation2d.fromDegrees(180 + 180))),
-        BLUE_17(new Pose2d(3.87, 2.93, Rotation2d.fromDegrees(-120 + 180))),
-        BLUE_19(new Pose2d(5.10, 2.93, Rotation2d.fromDegrees(-60 + 180))),
-        BLUE_20(new Pose2d(5.10, 5.13, Rotation2d.fromDegrees(60 + 180))),
+        BLUE_16(new Pose2d(3.87, 5.13, Rotation2d.fromDegrees(120))),
+        BLUE_18(new Pose2d(3.23, 4.00, Rotation2d.fromDegrees(180 ))),
+        BLUE_17(new Pose2d(3.87, 2.93, Rotation2d.fromDegrees(-120))),
+        BLUE_19(new Pose2d(5.10, 2.93, Rotation2d.fromDegrees(-60))),
+        BLUE_20(new Pose2d(5.10, 5.13, Rotation2d.fromDegrees(60))),
         BLUE_21(new Pose2d(5.75, 4.00, Rotation2d.fromDegrees(180)));
         private final Pose2d pose;
 
@@ -190,6 +192,10 @@ public class Vision extends SubsystemBase {
 
         LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiRed(limelightName);
 
+        Pose3d pose = LimelightHelpers.getCameraPose3d_TargetSpace(limelightName);
+
+        double dist = pose.getTranslation().getDistance(new Translation3d());
+
         Pose2d visionPose;
 
         if (poseEstimate == null || poseEstimate.tagCount == 0) {
@@ -203,7 +209,7 @@ public class Vision extends SubsystemBase {
             
             Logger.recordOutput("Limelight/EstimatedPose-" + limelightName, visionPose);
             // reject position greater than 1 meter apart from current
-            if (currentPose.getTranslation().getDistance(visionPose.getTranslation()) > 100) {
+            if (dist > 2) {
                 return false;
             }
             

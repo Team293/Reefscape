@@ -15,6 +15,12 @@
           "data": {
             "commands": [
               {
+                "type": "path",
+                "data": {
+                  "pathName": "Start Center to Far Mid - L"
+                }
+              },
+              {
                 "type": "sequential",
                 "data": {
                   "commands": [
@@ -40,12 +46,6 @@
           "type": "named",
           "data": {
             "name": "dropCoral"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "resetElevator2"
           }
         }
       ]
