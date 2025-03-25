@@ -63,7 +63,7 @@ public class RobotContainer {
   private final Elevator elevator;
   private final Targeting targeting;
   private final Pneumatics pneumatics;
-  // private final Climber climber
+  private final Climber climber;
 
   // Controller
   private static final double DEADBAND = 0.05;
@@ -86,7 +86,7 @@ public class RobotContainer {
     // algaePickup = new AlgaePickup();
     coralScorer = new CoralScorer(pneumatics);
     // algaeKnocker = new AlgaeKnocker(pneumatics);
-    // climber = new Climber();
+    climber = new Climber();
 
     switch (Constants.currentMode) {
       case REAL:
@@ -173,18 +173,38 @@ public class RobotContainer {
             () -> -driverController.getLeftY(),
             () -> -driverController.getLeftX(),
             () -> -driverController.getRightX(),
-            () -> 0, // TODO: change back to triggers
-            () -> 0,
-            () -> driverController.leftBumper().getAsBoolean(),
-            () -> driverController.rightBumper().getAsBoolean()));
+            () -> driverController.getLeftTriggerAxis(), // TODO: change back to triggers
+            () -> driverController.getRightTriggerAxis(),
+            () -> false,
+            () -> false));
 
-    vision.setDefaultCommand(
-            SubsystemControl.visionDrive(
-                    drive,
-                    vision,
-                    driverController
-            )
-    );
+    // vision.setDefaultCommand(
+    //         SubsystemControl.visionDrive(
+    //                 drive,
+    //                 vision,
+    //                 driverController
+    //         )
+    // );
+
+
+    driverController.leftBumper()
+    .onTrue(Commands.runOnce(() -> {
+      Vision.CoralLineup offset = Vision.CoralLineup.LEFT;
+      Vision.AprilTagLineups closestStation = vision.getClosestTag(drive.getPose());
+
+      vision.runPath(closestStation, offset, drive.getPose());
+    }, vision))
+    .onFalse(Commands.runOnce(vision::interruptPath, vision));
+
+    driverController.rightBumper()
+    .onTrue(Commands.runOnce(() -> {
+      Vision.CoralLineup offset = Vision.CoralLineup.RIGHT;
+      Vision.AprilTagLineups closestStation = vision.getClosestTag(drive.getPose());
+
+      vision.runPath(closestStation, offset, drive.getPose());
+    }, vision))
+    .onFalse(Commands.runOnce(vision::interruptPath, vision));
+
     /*
      * SubsystemControl.fieldOrientedRotation(
      * drive,
@@ -245,13 +265,13 @@ public class RobotContainer {
       SubsystemControl.elevatorControl(elevator, operatorController)
     );
 
-    // climber.setDefaultCommand(
-    //         SubsystemControl.climb(
-    //                 climber,
-    //                 () -> operatorController.getRightY() < -0.3,
-    //                 () -> operatorController.getRightY() > 0.3
-    //         )
-    // );
+    climber.setDefaultCommand(
+            SubsystemControl.climb(
+                    climber,
+                    () -> operatorController.getRightY() < -0.3,
+                    () -> operatorController.getRightY() > 0.3
+            )
+    );
 
     // algaeKnocker.setDefaultCommand(
     //    SubsystemControl.AlgaeKnocker(

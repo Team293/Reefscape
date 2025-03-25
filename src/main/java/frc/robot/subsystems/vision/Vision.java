@@ -39,7 +39,7 @@ public class Vision extends SubsystemBase {
         "limelight-right"
     };
 
-    private static final double MAX_DISTANCE = 2; // in
+    private static final double MAX_DISTANCE = 1; // in
 
     private boolean isRunningPath = false;
     private Command runningCommand;
@@ -78,8 +78,8 @@ public class Vision extends SubsystemBase {
     }
 
     public enum CoralLineup {
-        LEFT(0.2d),
-        RIGHT(-0.15d);
+        LEFT(0.20d),
+        RIGHT(-0.12d);
 
         private final double xTranslation;
 
@@ -209,7 +209,7 @@ public class Vision extends SubsystemBase {
             
             Logger.recordOutput("Limelight/EstimatedPose-" + limelightName, visionPose);
             // reject position greater than 1 meter apart from current
-            if (dist > 2) {
+            if (dist > 1.5) {
                 return false;
             }
             
