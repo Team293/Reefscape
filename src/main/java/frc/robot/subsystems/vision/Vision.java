@@ -78,8 +78,8 @@ public class Vision extends SubsystemBase {
     }
 
     public enum CoralLineup {
-        LEFT(0.20d),
-        RIGHT(-0.12d);
+        LEFT(0.22d),
+        RIGHT(-0.10d);
 
         private final double xTranslation;
 
@@ -179,22 +179,20 @@ public class Vision extends SubsystemBase {
     private boolean setVisionPoseEstimation(int id, String limelightName, SwerveDrivePoseEstimator estimator, GyroIOInputs gyroInputs, Rotation2d yawOffset) {
         boolean rejectOdometry = false;
         updated[id] = false;
-        
-        LimelightHelpers.SetRobotOrientation(
-            limelightName, 
-            gyroInputs.yawPosition.getDegrees(),
-            gyroInputs.yawVelocityRadPerSec / Math.PI * 180,
-            0,
-            0,
-            0,
-            0
-        );
 
         LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiRed(limelightName);
 
-        Pose3d pose = LimelightHelpers.getCameraPose3d_TargetSpace(limelightName);
+        if (poseEstimate.rawFiducials.length < 1) {
+            return false;
+        }
 
-        double dist = pose.getTranslation().getDistance(new Translation3d());
+        if (poseEstimate.rawFiducials[0].ambiguity > 0.7) {
+            return false;
+        }
+
+        if (poseEstimate.rawFiducials[0].distToCamera > 1.5) {
+            return false;
+        }
 
         Pose2d visionPose;
 
@@ -205,13 +203,8 @@ public class Vision extends SubsystemBase {
 
         if (!rejectOdometry) {
             visionPose = poseEstimate.pose;
-            Pose2d currentPose = estimator.getEstimatedPosition();
             
             Logger.recordOutput("Limelight/EstimatedPose-" + limelightName, visionPose);
-            // reject position greater than 1 meter apart from current
-            if (dist > 1.5) {
-                return false;
-            }
             
             estimator.addVisionMeasurement(visionPose, poseEstimate.timestampSeconds);
             poses[id] = visionPose;
@@ -284,15 +277,16 @@ public class Vision extends SubsystemBase {
         driveToPosition(currentPose, lineup.getPose());
     }
 
-    public void runPath(AprilTagLineups lineup, CoralLineup positionTranslation, Pose2d currentPose) {
+    public void runPath(CoralLineup positionTranslation, Pose2d currentPose) {
         if (isRunningPath) {
             return;
         }
 
-        double translateX = positionTranslation.xTranslation * Math.sin(-lineup.getPose().getRotation().getRadians());
-        double translateY = positionTranslation.xTranslation * Math.cos(-lineup.getPose().getRotation().getRadians());
+        double translateX = positionTranslation.xTranslation * Math.sin(-targetPose.getRotation().getRadians());
+        double translateY = positionTranslation.xTranslation * Math.cos(-targetPose.getRotation().getRadians());
 
-        Pose2d position = lineup.getPose();
+        Pose2d position = targetPose;
+
         position = new Pose2d(position.getX() + translateX, position.getY() + translateY, position.getRotation());
 
         driveToPosition(currentPose, position);
@@ -326,17 +320,29 @@ public class Vision extends SubsystemBase {
         }
         
         if (isRunningPath && targetPose != null) {
-            Pose2d currentPose = this.currentPose.get();
-
-            double distanceX = Math.abs(this.targetPose.getX() - currentPose.getX()) * 39.37;
-            double distanceY = Math.abs(this.targetPose.getY() - currentPose.getY()) * 39.37;
-
-            boolean closeToDeadband = distanceX <= MAX_DISTANCE;
-            boolean closeToNegativeDeadband = distanceY <= MAX_DISTANCE;
-
-            if (closeToDeadband || closeToNegativeDeadband) {
+            if (isFinished()) {
                 interruptPath();
             }
         }
+    }
+
+    public boolean isFinished() {
+        Pose2d currentPose = this.currentPose.get();
+
+        double distanceX = Math.abs(this.targetPose.getX() - currentPose.getX()) * 39.37;
+        double distanceY = Math.abs(this.targetPose.getY() - currentPose.getY()) * 39.37;
+
+        boolean closeToDeadband = distanceX <= MAX_DISTANCE;
+        boolean closeToNegativeDeadband = distanceY <= MAX_DISTANCE;
+
+        return closeToDeadband || closeToNegativeDeadband;
+    }
+
+    public Pose2d getTargetPose() {
+        return targetPose;
+    }
+
+    public void setTargetPose(Pose2d targetPose) {
+        this.targetPose = targetPose;
     }
 }

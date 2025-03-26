@@ -21,7 +21,7 @@ public class Elevator extends SubsystemBase {
     private static final double L1_POSITION = 0.0d; //0
     private static final double L2_POSITION = 20.85d; //20.85
     private static final double L3_POSITION = 92.07d; //92.07
-    private static final double L4_POSITION = 184.22d; //184.22
+    private static final double L4_POSITION = 181.22d; //184.22
     private static final double CORAL_STATION_POS = 0.03d;
 
     private static final double heights[] = {L1_POSITION, L2_POSITION, L3_POSITION, L4_POSITION, CORAL_STATION_POS};

@@ -34,7 +34,7 @@ import frc.robot.commands.ResetElevator;
 import frc.robot.commands.SetElevator;
 import frc.robot.commands.SubsystemControl;
 import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
-import frc.robot.subsystems.climber.Climber;
+//import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.coralScorer.CoralScorer;
 import frc.robot.subsystems.coralScorer.CoralScorer.States;
 import frc.robot.subsystems.drive.Drive;
@@ -63,7 +63,7 @@ public class RobotContainer {
   private final Elevator elevator;
   private final Targeting targeting;
   private final Pneumatics pneumatics;
-  private final Climber climber;
+  //private final Climber climber;
 
   // Controller
   private static final double DEADBAND = 0.05;
@@ -86,7 +86,7 @@ public class RobotContainer {
     // algaePickup = new AlgaePickup();
     coralScorer = new CoralScorer(pneumatics);
     // algaeKnocker = new AlgaeKnocker(pneumatics);
-    climber = new Climber();
+    //climber = new Climber();
 
     switch (Constants.currentMode) {
       case REAL:
@@ -175,8 +175,8 @@ public class RobotContainer {
             () -> -driverController.getRightX(),
             () -> driverController.getLeftTriggerAxis(), // TODO: change back to triggers
             () -> driverController.getRightTriggerAxis(),
-            () -> false,
-            () -> false));
+            () -> driverController.leftBumper().getAsBoolean(),
+            () -> driverController.rightBumper().getAsBoolean()));
 
     // vision.setDefaultCommand(
     //         SubsystemControl.visionDrive(
@@ -192,7 +192,13 @@ public class RobotContainer {
       Vision.CoralLineup offset = Vision.CoralLineup.LEFT;
       Vision.AprilTagLineups closestStation = vision.getClosestTag(drive.getPose());
 
-      vision.runPath(closestStation, offset, drive.getPose());
+      vision.setTargetPose(closestStation.getPose());
+
+      if (vision.isFinished()) {
+        return;
+      }
+
+      vision.runPath(offset, drive.getPose());
     }, vision))
     .onFalse(Commands.runOnce(vision::interruptPath, vision));
 
@@ -201,7 +207,13 @@ public class RobotContainer {
       Vision.CoralLineup offset = Vision.CoralLineup.RIGHT;
       Vision.AprilTagLineups closestStation = vision.getClosestTag(drive.getPose());
 
-      vision.runPath(closestStation, offset, drive.getPose());
+      vision.setTargetPose(closestStation.getPose());
+
+      if (vision.isFinished()) {
+        return;
+      }
+
+      vision.runPath(offset, drive.getPose());
     }, vision))
     .onFalse(Commands.runOnce(vision::interruptPath, vision));
 
@@ -265,13 +277,14 @@ public class RobotContainer {
       SubsystemControl.elevatorControl(elevator, operatorController)
     );
 
-    climber.setDefaultCommand(
+   /*  climber.setDefaultCommand(
             SubsystemControl.climb(
                     climber,
                     () -> operatorController.getRightY() < -0.3,
                     () -> operatorController.getRightY() > 0.3
             )
     );
+    */
 
     // algaeKnocker.setDefaultCommand(
     //    SubsystemControl.AlgaeKnocker(
@@ -284,7 +297,8 @@ public class RobotContainer {
     //     .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
   
 
-  /**
+  /** +
+   * 
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous

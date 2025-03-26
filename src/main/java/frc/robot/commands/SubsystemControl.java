@@ -130,12 +130,8 @@ public class SubsystemControl {
           yTranslation = linearVelocity.getY();
         }
 
-        if (selfDrivingLeft.getAsBoolean()) {
-          drive.setTargetPose(targeting.getReefSideClosestToRobot(true));
-          drive.driveToTargetPose();
-          return;
-        } else if (selfDrivingRight.getAsBoolean()) {
-          drive.setTargetPose(targeting.getReefSideClosestToRobot(false));
+        if ((selfDrivingRight.getAsBoolean() || selfDrivingLeft.getAsBoolean()) && vision.isFinished()) {
+          drive.setTargetPose(vision.getTargetPose());
           drive.driveToTargetPose();
           return;
         }
@@ -177,7 +173,7 @@ public class SubsystemControl {
               if (offset == null) {
                   vision.runPath(target, drive.getPose());
               } else {
-                  vision.runPath(target, offset, drive.getPose());
+                  vision.runPath(offset, drive.getPose());
               }
           }
           

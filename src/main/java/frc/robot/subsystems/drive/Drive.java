@@ -143,7 +143,7 @@ public class Drive extends SubsystemBase {
 
     setPose(defaultPose);
 
-    poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,9999999));
+    poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,0.3));
   }
 
   public void periodic() {
