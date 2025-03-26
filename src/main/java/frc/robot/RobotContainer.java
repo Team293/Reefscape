@@ -26,13 +26,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.SpikeController;
-import frc.robot.commands.ReverseAlgaeKnocker;
-import frc.robot.commands.SetCoralState;
-import frc.robot.commands.EnableAlgaeKnocker;
-import frc.robot.commands.PickupCoral;
-import frc.robot.commands.ResetElevator;
-import frc.robot.commands.SetElevator;
-import frc.robot.commands.SubsystemControl;
+import frc.robot.commands.*;
 import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.coralScorer.CoralScorer;
@@ -86,7 +80,7 @@ public class RobotContainer {
     // algaePickup = new AlgaePickup();
     coralScorer = new CoralScorer(pneumatics);
     // algaeKnocker = new AlgaeKnocker(pneumatics);
-    climber = new Climber();
+    climber = new Climber(pneumatics);
 
     switch (Constants.currentMode) {
       case REAL:
@@ -133,7 +127,7 @@ public class RobotContainer {
     
     NamedCommands.registerCommand("resetElevator", new ResetElevator(elevator));
     NamedCommands.registerCommand("resetElevator2", new ResetElevator(elevator));
-    
+
     // NamedCommands.registerCommand("enableAlgaeKnocker", new EnableAlgaeKnocker(algaeKnocker));
     // NamedCommands.registerCommand("disableAlgaeKnocker", new ReverseAlgaeKnocker(algaeKnocker));
     
@@ -146,6 +140,8 @@ public class RobotContainer {
     // Set up auto routines
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
+
+    SmartDashboard.putData("extendClimber", new ExtendClimber(climber));
 
     // Set up feedforward characterization
     // autoChooser.addOption(
