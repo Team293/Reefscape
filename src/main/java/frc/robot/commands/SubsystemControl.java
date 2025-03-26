@@ -12,6 +12,7 @@
 // GNU General Public License for more details.
 
 package frc.robot.commands;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -267,9 +268,14 @@ public class SubsystemControl {
   public static Command climb(
     Climber climber,
     BooleanSupplier up,
-    BooleanSupplier down
+    BooleanSupplier down,
+    BooleanSupplier extendClimber
   ) {
       return Commands.run(() -> {
+        if (extendClimber.getAsBoolean()) {
+          climber.extendClimber();
+        }
+
           if (up.getAsBoolean()) {
               climber.startClimbingUp();
           } else if (down.getAsBoolean()) {

@@ -1,5 +1,7 @@
 package frc.robot.subsystems.climber;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -49,6 +51,7 @@ public class Climber extends SubsystemBase {
     public void startClimbingUp() {
         isClimbing = true;
         isClimbingUp = true;
+        Logger.recordOutput("Climber/IsClimbingUp", isClimbingUp);
     }
 
     public void startClimbingDown() {

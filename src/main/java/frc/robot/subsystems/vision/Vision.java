@@ -19,7 +19,9 @@ import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -45,6 +47,9 @@ public class Vision extends SubsystemBase {
     private Command runningCommand;
     private Pose2d targetPose;
     private Supplier<Pose2d> currentPose;
+    
+    private final XboxController driveController;
+    private final XboxController operatorController;
 
     private Pose2d[] poses = new Pose2d[2];
     private boolean[] updated = new boolean[2];
@@ -101,7 +106,7 @@ public class Vision extends SubsystemBase {
         this.currentPose = position;
     }
 
-    public Vision() {
+    public Vision(XboxController driveController, XboxController operatorController) {
         LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[0],
             0.24765, // forward
             -0.2159, // side
@@ -128,6 +133,9 @@ public class Vision extends SubsystemBase {
         for (AprilTagLineups lineup : AprilTagLineups.values()) {
             Logger.recordOutput("TargetsVision/" + lineup.name(), lineup.getPose());
         }
+
+        this.driveController = driveController;
+        this.operatorController = operatorController;
     }
 
     public void updateRobotPose(SwerveDrivePoseEstimator estimator, double gyroRate, GyroIOInputsAutoLogged gyroInputs, Drive drive) {
@@ -181,6 +189,8 @@ public class Vision extends SubsystemBase {
         updated[id] = false;
 
         LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiRed(limelightName);
+
+        if (poseEstimate == null) return false;
 
         if (poseEstimate.rawFiducials.length < 1) {
             return false;
@@ -274,7 +284,7 @@ public class Vision extends SubsystemBase {
             return;
         }
 
-        driveToPosition(currentPose, lineup.getPose());
+        driveToPosition(currentPose, lineup.getPose());     
     }
 
     public void runPath(CoralLineup positionTranslation, Pose2d currentPose) {
@@ -282,14 +292,19 @@ public class Vision extends SubsystemBase {
             return;
         }
 
-        double translateX = positionTranslation.xTranslation * Math.sin(-targetPose.getRotation().getRadians());
-        double translateY = positionTranslation.xTranslation * Math.cos(-targetPose.getRotation().getRadians());
-
         Pose2d position = targetPose;
 
-        position = new Pose2d(position.getX() + translateX, position.getY() + translateY, position.getRotation());
 
         driveToPosition(currentPose, position);
+    }
+
+    public Pose2d applyTranslation(CoralLineup side, Pose2d poseToTranslate) {
+        if (poseToTranslate == null) return new Pose2d();
+
+        double translateX = side.xTranslation * Math.sin(-poseToTranslate.getRotation().getRadians());
+        double translateY = side.xTranslation * Math.cos(-poseToTranslate.getRotation().getRadians());
+
+        return new Pose2d(poseToTranslate.getX() + translateX, poseToTranslate.getY() + translateY, poseToTranslate.getRotation());
     }
 
     public AprilTagLineups getClosestTag(Pose2d currentPose) {
@@ -324,13 +339,32 @@ public class Vision extends SubsystemBase {
                 interruptPath();
             }
         }
+
+        Pose2d robotPose = currentPose.get();
+        Pose2d closestTagPose = getClosestTag(robotPose).pose;
+
+        Pose2d closestLeft = applyTranslation(CoralLineup.LEFT, closestTagPose);
+        Pose2d closestRight = applyTranslation(CoralLineup.RIGHT, closestTagPose);
+
+        if (isCloseToPose(robotPose, closestLeft) || isCloseToPose(robotPose, closestRight)) {
+            // close to either poses
+            this.driveController.setRumble(RumbleType.kBothRumble, 1);
+            this.operatorController.setRumble(RumbleType.kBothRumble, 1);
+        } else {
+            this.driveController.setRumble(RumbleType.kBothRumble, 0);
+            this.operatorController.setRumble(RumbleType.kBothRumble, 0);
+        }
     }
 
     public boolean isFinished() {
         Pose2d currentPose = this.currentPose.get();
 
-        double distanceX = Math.abs(this.targetPose.getX() - currentPose.getX()) * 39.37;
-        double distanceY = Math.abs(this.targetPose.getY() - currentPose.getY()) * 39.37;
+        return isCloseToPose(currentPose, targetPose);
+    }
+
+    public boolean isCloseToPose(Pose2d currentPose, Pose2d poseToCheck) {
+        double distanceX = Math.abs(poseToCheck.getX() - currentPose.getX()) * 39.37;
+        double distanceY = Math.abs(poseToCheck.getY() - currentPose.getY()) * 39.37;
 
         boolean closeToDeadband = distanceX <= MAX_DISTANCE;
         boolean closeToNegativeDeadband = distanceY <= MAX_DISTANCE;

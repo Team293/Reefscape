@@ -76,7 +76,7 @@ public class RobotContainer {
 
     pneumatics = new Pneumatics();
     elevator = new Elevator();
-    vision = new Vision();
+    vision = new Vision(this.driverController.getHID(), this.operatorController.getHID());
 
     // algaePickup = new AlgaePickup();
     coralScorer = new CoralScorer(pneumatics);
@@ -141,8 +141,6 @@ public class RobotContainer {
     // Set up auto routines
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
-
-    SmartDashboard.putData("extendClimber", new ExtendClimber(climber));
 
     // Set up feedforward characterization
     // autoChooser.addOption(
@@ -274,14 +272,15 @@ public class RobotContainer {
       SubsystemControl.elevatorControl(elevator, operatorController)
     );
 
-   /*  climber.setDefaultCommand(
+     climber.setDefaultCommand(
             SubsystemControl.climb(
                     climber,
                     () -> operatorController.getRightY() < -0.3,
-                    () -> operatorController.getRightY() > 0.3
+                    () -> operatorController.getRightY() > 0.3,
+                    () -> operatorController.rightStick().getAsBoolean()
             )
     );
-    */
+    
 
     // algaeKnocker.setDefaultCommand(
     //    SubsystemControl.AlgaeKnocker(
