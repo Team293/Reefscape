@@ -11,34 +11,24 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.units.DistanceUnit;
-import edu.wpi.first.units.Units;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOInputsAutoLogged;
 import frc.robot.subsystems.drive.GyroIO.GyroIOInputs;
 import frc.robot.util.LimelightHelpers;
 
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 
 public class Vision extends SubsystemBase {
     private static final String[] LIMELIGHT_NAMES = {
         "limelight-left",
-        "limelight-right"
+        "limelight-right",
+        "limelight-top"
     };
 
     private static final double MAX_DISTANCE = 1; // in
@@ -51,8 +41,8 @@ public class Vision extends SubsystemBase {
     private final XboxController driveController;
     private final XboxController operatorController;
 
-    private Pose2d[] poses = new Pose2d[2];
-    private boolean[] updated = new boolean[2];
+    private Pose2d[] poses = new Pose2d[LIMELIGHT_NAMES.length];
+    private boolean[] updated = new boolean[LIMELIGHT_NAMES.length];
 
     public enum AprilTagLineups {
         CORAL_1(new Pose2d(1.21, 6.95, Rotation2d.fromDegrees(-53 + 180))),
@@ -65,12 +55,12 @@ public class Vision extends SubsystemBase {
         RED_11(new Pose2d(5.10, 5.13, Rotation2d.fromDegrees(60 + 180))),
         CORAL_12(new Pose2d(1.06, 1.11, Rotation2d.fromDegrees(55 + 180))),
         CORAL_13(new Pose2d(1.21, 6.95, Rotation2d.fromDegrees(-53 + 180))),
-        BLUE_16(new Pose2d(3.87, 5.13, Rotation2d.fromDegrees(120))),
-        BLUE_18(new Pose2d(3.23, 4.00, Rotation2d.fromDegrees(180 ))),
-        BLUE_17(new Pose2d(3.87, 2.93, Rotation2d.fromDegrees(-120))),
-        BLUE_19(new Pose2d(5.10, 2.93, Rotation2d.fromDegrees(-60))),
-        BLUE_20(new Pose2d(5.10, 5.13, Rotation2d.fromDegrees(60))),
-        BLUE_21(new Pose2d(5.75, 4.00, Rotation2d.fromDegrees(180)));
+        BLUE_16(new Pose2d(3.87, 5.13, Rotation2d.fromDegrees(120 + 180))),
+        BLUE_18(new Pose2d(3.23, 4.00, Rotation2d.fromDegrees(180 + 180))),
+        BLUE_17(new Pose2d(3.87, 2.93, Rotation2d.fromDegrees(-120 + 180))),
+        BLUE_19(new Pose2d(5.10, 2.93, Rotation2d.fromDegrees(-60 + 180))),
+        BLUE_20(new Pose2d(5.10, 5.13, Rotation2d.fromDegrees(60 + 180))),
+        BLUE_21(new Pose2d(5.75, 4.00, Rotation2d.fromDegrees(180 + 180)));
         private final Pose2d pose;
 
         AprilTagLineups(Pose2d pose) {
@@ -100,6 +90,7 @@ public class Vision extends SubsystemBase {
     private static final Rotation2d[] LIMELIGHT_YAW_OFFSETS = {
         Rotation2d.fromDegrees(-22.48),
         Rotation2d.fromDegrees(26.36),
+        Rotation2d.fromDegrees(0)
     };
 
     public void setPositionSupplier(Supplier<Pose2d> position) {
@@ -123,6 +114,15 @@ public class Vision extends SubsystemBase {
             180, // roll
             0, // pitch
             27.48 // yaw
+        );
+
+        LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[2],
+            0.23, // forward
+            -0.2159, // side
+            1.0, // up
+            90, // roll
+            0, // pitch
+            0 // yaw
         );
 
         // force limelights to use roboRIO for gyro
