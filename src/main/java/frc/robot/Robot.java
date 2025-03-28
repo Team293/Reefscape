@@ -46,12 +46,6 @@ public class Robot extends LoggedRobot {
           : // 100 MB
           1000000000; // 1 GB
 
-  public Robot() {
-    PortForwarder.add(5801, "limelight-left.local", 80);
-    PortForwarder.add(5801, "limelight-right.local", 80);
-    PortForwarder.add(5801, "limelight-top.local", 80);
-  }
-
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.

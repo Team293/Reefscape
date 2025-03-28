@@ -104,7 +104,7 @@ public class Vision extends SubsystemBase {
             0.3302, // up
             180, // roll
             0.0, // pitch
-                -32.36 // yaw
+                -26.5 // yaw
         );
 
         LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[1],
@@ -113,16 +113,16 @@ public class Vision extends SubsystemBase {
             0.3302, // up
             180, // roll
             0, // pitch
-            27.48 // yaw
+            26.5 // yaw
         );
 
         LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[2],
-            0.05, // forward
+            -0, // forward
             -0.2159, // side
             1.0, // up
             90, // roll
             28, // pitch
-            0 // yaw
+            -2 // yaw
         );
 
         // force limelights to use roboRIO for gyro
