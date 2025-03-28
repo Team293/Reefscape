@@ -25,6 +25,7 @@ public class Climber extends SubsystemBase {
         this.climberMotor = new ClimberIOTalonFX(12);
         this.isClimbing = false;
         this.isClimbingUp = true;
+        retractClimber();
     }
 
     @Override

@@ -31,7 +31,7 @@ public class Vision extends SubsystemBase {
         "limelight-top"
     };
 
-    private static final double MAX_DISTANCE = 1; // in
+    private static final double MAX_DISTANCE = 0.5; // in
 
     private boolean isRunningPath = false;
     private Command runningCommand;
@@ -117,11 +117,11 @@ public class Vision extends SubsystemBase {
         );
 
         LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[2],
-            0.23, // forward
+            0.05, // forward
             -0.2159, // side
             1.0, // up
             90, // roll
-            0, // pitch
+            28, // pitch
             0 // yaw
         );
 
@@ -348,8 +348,8 @@ public class Vision extends SubsystemBase {
 
         if (isCloseToPose(robotPose, closestLeft) || isCloseToPose(robotPose, closestRight)) {
             // close to either poses
-            this.driveController.setRumble(RumbleType.kBothRumble, 1);
-            this.operatorController.setRumble(RumbleType.kBothRumble, 1);
+            this.driveController.setRumble(RumbleType.kBothRumble, 0.2);
+            this.operatorController.setRumble(RumbleType.kBothRumble, 0.2);
         } else {
             this.driveController.setRumble(RumbleType.kBothRumble, 0);
             this.operatorController.setRumble(RumbleType.kBothRumble, 0);

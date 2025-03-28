@@ -12,7 +12,6 @@
 // GNU General Public License for more details.
 
 package frc.robot.commands;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -199,8 +198,8 @@ public class SubsystemControl {
         elevator.setPresetPos(2); // L3
       } else if (controller.b().getAsBoolean()) {
         elevator.setPresetPos(3); // L4
-      } else if (controller.y().getAsBoolean()) {
-        elevator.setPresetPos(4); // coral station
+      // } else if (controller.y().getAsBoolean()) {
+      //   elevator.setPresetPos(4); // coral station
       } else if (controller.leftTrigger().getAsBoolean()) {
         elevator.zero();
       }

@@ -10,7 +10,6 @@ public class PickupCoral extends Command {
     public PickupCoral(CoralScorer coralScorer) {
         this.coralScorer = coralScorer;
 
-        this.addRequirements(coralScorer);
     }
 
     @Override

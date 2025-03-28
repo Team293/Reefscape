@@ -68,9 +68,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "pickupCoral"
+            "waitTime": 1.0
           }
         },
         {
@@ -96,7 +96,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.25
+                        "waitTime": 0.2
                       }
                     },
                     {

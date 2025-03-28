@@ -182,35 +182,35 @@ public class RobotContainer {
     // );
 
 
-    driverController.leftBumper()
-    .onTrue(Commands.runOnce(() -> {
-      Vision.CoralLineup offset = Vision.CoralLineup.LEFT;
-      Vision.AprilTagLineups closestStation = vision.getClosestTag(drive.getPose());
+    // driverController.leftBumper()
+    // .onTrue(Commands.runOnce(() -> {
+    //   Vision.CoralLineup offset = Vision.CoralLineup.LEFT;
+    //   Vision.AprilTagLineups closestStation = vision.getClosestTag(drive.getPose());
 
-      vision.setTargetPose(closestStation.getPose());
+    //   vision.setTargetPose(closestStation.getPose());
 
-      if (vision.isFinished()) {
-        return;
-      }
+    //   if (vision.isFinished()) {
+    //     return;
+    //   }
 
-      vision.runPath(offset, drive.getPose());
-    }, vision))
-    .onFalse(Commands.runOnce(vision::interruptPath, vision));
+    //   vision.runPath(offset, drive.getPose());
+    // }, vision))
+    // .onFalse(Commands.runOnce(vision::interruptPath, vision));
 
-    driverController.rightBumper()
-    .onTrue(Commands.runOnce(() -> {
-      Vision.CoralLineup offset = Vision.CoralLineup.RIGHT;
-      Vision.AprilTagLineups closestStation = vision.getClosestTag(drive.getPose());
+    // driverController.rightBumper()
+    // .onTrue(Commands.runOnce(() -> {
+    //   Vision.CoralLineup offset = Vision.CoralLineup.RIGHT;
+    //   Vision.AprilTagLineups closestStation = vision.getClosestTag(drive.getPose());
 
-      vision.setTargetPose(closestStation.getPose());
+    //   vision.setTargetPose(closestStation.getPose());
 
-      if (vision.isFinished()) {
-        return;
-      }
+    //   if (vision.isFinished()) {
+    //     return;
+    //   }
 
-      vision.runPath(offset, drive.getPose());
-    }, vision))
-    .onFalse(Commands.runOnce(vision::interruptPath, vision));
+    //   vision.runPath(offset, drive.getPose());
+    // }, vision))
+    // .onFalse(Commands.runOnce(vision::interruptPath, vision));
 
     /*
      * SubsystemControl.fieldOrientedRotation(
@@ -277,7 +277,7 @@ public class RobotContainer {
                     climber,
                     () -> operatorController.getRightY() < -0.3,
                     () -> operatorController.getRightY() > 0.3,
-                    () -> operatorController.rightStick().getAsBoolean()
+                    operatorController.y()
             )
     );
     
