@@ -12,7 +12,9 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.drive.Drive;
@@ -189,6 +191,7 @@ public class Vision extends SubsystemBase {
         updated[id] = false;
 
         LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiRed(limelightName);
+
 
         if (poseEstimate == null) return false;
 
@@ -378,5 +381,9 @@ public class Vision extends SubsystemBase {
 
     public void setTargetPose(Pose2d targetPose) {
         this.targetPose = targetPose;
+    }
+
+    public Pose2d closestTargetPose(Pose2d currentPose, CoralLineup side) {
+        return applyTranslation(side, getClosestTag(currentPose).pose);
     }
 }

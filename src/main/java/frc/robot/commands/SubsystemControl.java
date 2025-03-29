@@ -33,6 +33,7 @@ import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.targeting.Targeting;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.Vision.CoralLineup;
 
 public class SubsystemControl {
 
@@ -130,8 +131,12 @@ public class SubsystemControl {
           yTranslation = linearVelocity.getY();
         }
 
-        if ((selfDrivingRight.getAsBoolean() || selfDrivingLeft.getAsBoolean()) && vision.isFinished()) {
-          drive.setTargetPose(vision.getTargetPose());
+        if (selfDrivingLeft.getAsBoolean()) {
+          drive.setTargetPose(vision.closestTargetPose(drive.getPose(), CoralLineup.LEFT));
+          drive.driveToTargetPose();
+          return;
+        } else if (selfDrivingRight.getAsBoolean()) {
+          drive.setTargetPose(vision.closestTargetPose(drive.getPose(), CoralLineup.RIGHT));
           drive.driveToTargetPose();
           return;
         }
