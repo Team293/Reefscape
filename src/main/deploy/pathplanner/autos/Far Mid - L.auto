@@ -7,7 +7,7 @@
         {
           "type": "named",
           "data": {
-            "name": "pickupCoral"
+            "name": "pointCoralDown"
           }
         },
         {
@@ -17,13 +17,26 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Start Right to Far Right - R"
+                  "pathName": "Start Center to Far Mid - L"
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "elevatorToL2"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "resetElevator"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "elevatorToL4"
+                      }
+                    }
+                  ]
                 }
               }
             ]

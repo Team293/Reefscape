@@ -16,6 +16,8 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -24,15 +26,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.SpikeController;
-import frc.robot.commands.ReverseAlgaeKnocker;
-import frc.robot.commands.SetCoralState;
-import frc.robot.commands.EnableAlgaeKnocker;
-import frc.robot.commands.PickupCoral;
-import frc.robot.commands.ResetElevator;
-import frc.robot.commands.SetElevator;
-import frc.robot.commands.SubsystemControl;
+import frc.robot.commands.*;
 import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
 import frc.robot.subsystems.climber.Climber;
+//import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.coralScorer.CoralScorer;
 import frc.robot.subsystems.coralScorer.CoralScorer.States;
 import frc.robot.subsystems.drive.Drive;
@@ -61,7 +58,7 @@ public class RobotContainer {
   private final Elevator elevator;
   private final Targeting targeting;
   private final Pneumatics pneumatics;
-  // private final Climber climber;
+  private final Climber climber;
 
   // Controller
   private static final double DEADBAND = 0.05;
@@ -79,12 +76,12 @@ public class RobotContainer {
 
     pneumatics = new Pneumatics();
     elevator = new Elevator();
-    vision = new Vision();
+    vision = new Vision(this.driverController.getHID(), this.operatorController.getHID());
 
     // algaePickup = new AlgaePickup();
     coralScorer = new CoralScorer(pneumatics);
     // algaeKnocker = new AlgaeKnocker(pneumatics);
-    // climber = new Climber();
+    climber = new Climber(pneumatics);
 
     switch (Constants.currentMode) {
       case REAL:
@@ -114,6 +111,8 @@ public class RobotContainer {
 
     targeting = new Targeting(drive);
 
+    vision.setPositionSupplier(() -> drive.getPose());
+
     // NamedCommands.registerCommand("enableAlgaePickup", new EnableAlgaePickup(algaePickup));
     // NamedCommands.registerCommand("reverseAlgaePickup", new ReverseAlgaePickup(algaePickup));
     // NamedCommands.registerCommand("dropCoral", new DropCoral(coralScorer));
@@ -129,7 +128,7 @@ public class RobotContainer {
     
     NamedCommands.registerCommand("resetElevator", new ResetElevator(elevator));
     NamedCommands.registerCommand("resetElevator2", new ResetElevator(elevator));
-    
+
     // NamedCommands.registerCommand("enableAlgaeKnocker", new EnableAlgaeKnocker(algaeKnocker));
     // NamedCommands.registerCommand("disableAlgaeKnocker", new ReverseAlgaeKnocker(algaeKnocker));
     
@@ -164,13 +163,55 @@ public class RobotContainer {
     drive.setDefaultCommand(
         SubsystemControl.joystickDrive(
             drive,
+            vision,
             targeting,
             () -> -driverController.getLeftY(),
             () -> -driverController.getLeftX(),
             () -> -driverController.getRightX(),
-            () -> driverController.getLeftTriggerAxis(),
+            () -> driverController.getLeftTriggerAxis(), // TODO: change back to triggers
             () -> driverController.getRightTriggerAxis(),
+            () -> driverController.leftBumper().getAsBoolean(),
             () -> driverController.rightBumper().getAsBoolean()));
+
+    // vision.setDefaultCommand(
+    //         SubsystemControl.visionDrive(
+    //                 drive,
+    //                 vision,
+    //                 driverController
+    //         )
+    // );
+
+
+    // driverController.leftBumper()
+    // .onTrue(Commands.runOnce(() -> {
+    //   Vision.CoralLineup offset = Vision.CoralLineup.LEFT;
+    //   Vision.AprilTagLineups closestStation = vision.getClosestTag(drive.getPose());
+
+    //   vision.setTargetPose(closestStation.getPose());
+
+    //   if (vision.isFinished()) {
+    //     return;
+    //   }
+
+    //   vision.runPath(offset, drive.getPose());
+    // }, vision))
+    // .onFalse(Commands.runOnce(vision::interruptPath, vision));
+
+    // driverController.rightBumper()
+    // .onTrue(Commands.runOnce(() -> {
+    //   Vision.CoralLineup offset = Vision.CoralLineup.RIGHT;
+    //   Vision.AprilTagLineups closestStation = vision.getClosestTag(drive.getPose());
+
+    //   vision.setTargetPose(closestStation.getPose());
+
+    //   if (vision.isFinished()) {
+    //     return;
+    //   }
+
+    //   vision.runPath(offset, drive.getPose());
+    // }, vision))
+    // .onFalse(Commands.runOnce(vision::interruptPath, vision));
+
     /*
      * SubsystemControl.fieldOrientedRotation(
      * drive,
@@ -215,6 +256,9 @@ public class RobotContainer {
         .a()
         .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
 
+    driverController
+    .b()
+    .onTrue(Commands.runOnce(() -> vision.interruptPath(), vision));
      coralScorer.setDefaultCommand(
        SubsystemControl.coralControl(
          coralScorer, 
@@ -228,13 +272,15 @@ public class RobotContainer {
       SubsystemControl.elevatorControl(elevator, operatorController)
     );
 
-    // climber.setDefaultCommand(
-    //         SubsystemControl.climb(
-    //                 climber,
-    //                 () -> operatorController.getRightY() < -0.3,
-    //                 () -> operatorController.getRightY() > 0.3
-    //         )
-    // );
+     climber.setDefaultCommand(
+            SubsystemControl.climb(
+                    climber,
+                    () -> operatorController.getRightY() < -0.3,
+                    () -> operatorController.getRightY() > 0.3,
+                    operatorController.y()
+            )
+    );
+    
 
     // algaeKnocker.setDefaultCommand(
     //    SubsystemControl.AlgaeKnocker(
@@ -247,7 +293,8 @@ public class RobotContainer {
     //     .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
   
 
-  /**
+  /** +
+   * 
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous

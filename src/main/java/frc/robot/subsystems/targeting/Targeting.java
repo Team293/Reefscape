@@ -48,8 +48,12 @@ public class Targeting extends SubsystemBase {
     @AutoLogOutput(key = "Targets/ClosestTarget")
     public Pose2d getPositionClosestToRobotPosition()
     {
-        Pose2d robotPosition = drive.getPose();
         Pose2d[] targetPositions = {REEF_FAR, REEF_FAR_LEFT, REEF_FAR_RIGHT, REEF_NEAR, REEF_NEAR_LEFT, REEF_NEAR_RIGHT, RIGHT_CORAL_STATION, ALGAE_SCORE, LEFT_CORAL_STATION};
+        return getPositionClosestToRobotPosition(targetPositions);
+    }
+
+    public Pose2d getPositionClosestToRobotPosition(Pose2d[] targetPositions) {
+        Pose2d robotPosition = drive.getPose();
         Pose2d closestPosition = targetPositions[0]; 
         double minDistance = getDistance(robotPosition, closestPosition); 
         for (Pose2d target : targetPositions) {
@@ -60,6 +64,23 @@ public class Targeting extends SubsystemBase {
             }
         }
         return closestPosition;
+    }
+
+    public Pose2d getReefSideClosestToRobot(boolean left) {
+        Pose2d[] targetPositions = {REEF_FAR, REEF_FAR_LEFT, REEF_FAR_RIGHT, REEF_NEAR, REEF_NEAR_LEFT, REEF_NEAR_RIGHT};
+        Pose2d reefSide = getPositionClosestToRobotPosition(targetPositions);
+
+        double distance = 0.15;
+
+        if (!left) {
+            distance *= -1;
+        }
+
+        double translateX = distance * Math.sin(-reefSide.getRotation().getRadians());
+        double translateY = distance * Math.cos(-reefSide.getRotation().getRadians());
+
+        Pose2d translatedPose = new Pose2d(reefSide.getTranslation().plus(new Translation2d(translateX, translateY)), reefSide.getRotation());
+        return translatedPose;
     }
 
     public double getDistance(Pose2d robotPosition, Pose2d target) {

@@ -1,26 +1,37 @@
 package frc.robot.subsystems.climber;
 
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.climber.ClimberIO.ClimberIOInputs;
+import frc.robot.subsystems.pneumatics.Pneumatics;
 
 public class Climber extends SubsystemBase {
-    private static final double CLIMB_VELOCITY = 50;
+    private static final double CLIMB_VELOCITY = 100;
 
     private final ClimberIOInputs inputs = new ClimberIOInputs();
     private final ClimberIOTalonFX climberMotor;
+    private final Pneumatics pneumatics;
+    private final DoubleSolenoid solenoid;
 
     private boolean isClimbing;
     private boolean isClimbingUp;
 
-    public Climber() {
+    public Climber(Pneumatics pneumatics) {
+        this.pneumatics = pneumatics;
+        this.solenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1);
         this.climberMotor = new ClimberIOTalonFX(12);
         this.isClimbing = false;
         this.isClimbingUp = true;
+        retractClimber();
     }
 
     @Override
     public void periodic() {
         climberMotor.updateInputs(inputs);
+        extendClimber();
 
         if (isClimbing) {
             // if (isClimbingUp && isClimberReset())  {
@@ -42,6 +53,7 @@ public class Climber extends SubsystemBase {
     public void startClimbingUp() {
         isClimbing = true;
         isClimbingUp = true;
+        Logger.recordOutput("Climber/IsClimbingUp", isClimbingUp);
     }
 
     public void startClimbingDown() {
@@ -54,11 +66,11 @@ public class Climber extends SubsystemBase {
         climberMotor.setSpeed(0);
     }
 
-    private boolean isClimberReset() {
-        if (isClimbing) {
-            return inputs.supplyVoltage >= 10; //TODO: check the supply voltage
-        } else {
-            return false;
-        }
+    public void extendClimber() {
+        solenoid.set(DoubleSolenoid.Value.kForward);
+    }
+
+    public void retractClimber() {
+        solenoid.set(DoubleSolenoid.Value.kReverse);
     }
 }

@@ -10,7 +10,7 @@ public class Pneumatics extends SubsystemBase {
     private PneumaticHub hub = new PneumaticHub(1);
 
     public Pneumatics() {
-        hub.enableCompressorAnalog(50, 60);
+        hub.enableCompressorAnalog(110, 120);
     // hub.disableCompressor();
     }
 

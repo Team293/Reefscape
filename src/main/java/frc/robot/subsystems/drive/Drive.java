@@ -72,8 +72,10 @@ public class Drive extends SubsystemBase {
   private SwerveDrivePoseEstimator poseEstimator;
   
   // Field oriented direction in degrees
-  private PIDController drivingController = new PIDController(1.0, 0, 0);
+  private PIDController drivingController = new PIDController(2.0, 0, 0);
   private PIDController fieldOrientedDirectionController = new PIDController(5.0, 2.0, 0.0);
+  private static final double MAX_AUTO_SPEED = 2.0;
+  private static final double MAX_AUTO_ACCEL = 0.5;
 
   private final Vision vision;
 
@@ -113,9 +115,7 @@ public class Drive extends SubsystemBase {
           new PIDConstants(5.0, 0, 0, 0)
         ),
         config,
-        () ->
-            DriverStation.getAlliance().isPresent()
-                && DriverStation.getAlliance().get() == Alliance.Blue,
+        () -> false,
         this);
     Pathfinding.setPathfinder(new LocalADStarAK());
     PathPlannerLogging.setLogActivePathCallback(
@@ -140,8 +140,8 @@ public class Drive extends SubsystemBase {
     );
 
     setPose(defaultPose);
-    
-    poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+
+    poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,0.3));
   }
 
   public void periodic() {
@@ -244,8 +244,8 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("Odometry/SelfDriving/OutputY", translationY);
     Logger.recordOutput("Odometry/SelfDriving/RotationRadians", omegaOutput);
 
-    translationX = MathUtil.clamp(translationX, -1, 1);
-    translationY = MathUtil.clamp(translationY, -1, 1);
+    translationX = MathUtil.clamp(translationX, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+    translationY = MathUtil.clamp(translationY, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
 
     runVelocity(
       ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -367,6 +367,6 @@ public class Drive extends SubsystemBase {
 
   public void updateRobotPosition() {
     poseEstimator.update(getRotation(), getWheelPositions());
-    vision.updateRobotPose(poseEstimator, Units.radiansToDegrees(gyroInputs.yawVelocityRadPerSec), gyroInputs);
+    vision.updateRobotPose(poseEstimator, Units.radiansToDegrees(gyroInputs.yawVelocityRadPerSec), gyroInputs, this);
   }
 }

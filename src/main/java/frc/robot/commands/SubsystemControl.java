@@ -32,6 +32,8 @@ import frc.robot.subsystems.algaePickup.AlgaePickup;
 import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.targeting.Targeting;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.Vision.CoralLineup;
 
 public class SubsystemControl {
 
@@ -81,16 +83,20 @@ public class SubsystemControl {
 
   public static Command joystickDrive(
     Drive drive,
+    Vision vision,
     Targeting targeting,
     DoubleSupplier xSupplier,
     DoubleSupplier ySupplier,
     DoubleSupplier omegaSupplier,
     DoubleSupplier strafeLeft,
     DoubleSupplier strafeRight,
-    BooleanSupplier selfDriving
+    BooleanSupplier selfDrivingLeft,
+    BooleanSupplier selfDrivingRight
     ) {
   return Commands.run(
       () -> {
+        // vision.interruptPath(); // allow driver to override control at all times
+
         double strafe = strafeLeft.getAsDouble() - strafeRight.getAsDouble();
 
         double xTranslation = xSupplier.getAsDouble();
@@ -125,8 +131,12 @@ public class SubsystemControl {
           yTranslation = linearVelocity.getY();
         }
 
-        if (selfDriving.getAsBoolean()) {
-          drive.setTargetPose(targeting.getPositionClosestToRobotPosition());
+        if (selfDrivingLeft.getAsBoolean()) {
+          drive.setTargetPose(vision.closestTargetPose(drive.getPose(), CoralLineup.LEFT));
+          drive.driveToTargetPose();
+          return;
+        } else if (selfDrivingRight.getAsBoolean()) {
+          drive.setTargetPose(vision.closestTargetPose(drive.getPose(), CoralLineup.RIGHT));
           drive.driveToTargetPose();
           return;
         }
@@ -142,7 +152,40 @@ public class SubsystemControl {
       drive);
   }
 
-    public static Command elevatorControl(
+  public static Command visionDrive(
+          Drive drive,
+          Vision vision,
+          SpikeController driverController
+  ) {
+      return Commands.run(() -> {
+          if (driverController.b().getAsBoolean()) {
+            System.out.println("Pressed b");
+              if (vision.isRunningPath()) {
+                  vision.interruptPath();
+                  return;
+              }
+
+              Vision.CoralLineup offset = null;
+
+              if (driverController.leftTrigger().getAsBoolean()) {
+                  offset = Vision.CoralLineup.LEFT;
+              } else if (driverController.rightTrigger().getAsBoolean()) {
+                  offset = Vision.CoralLineup.RIGHT;
+              }
+
+              Vision.AprilTagLineups target = vision.getClosestTag(drive.getPose());
+
+              if (offset == null) {
+                  vision.runPath(target, drive.getPose());
+              } else {
+                  vision.runPath(offset, drive.getPose());
+              }
+          }
+          
+      }, vision);
+  }
+
+  public static Command elevatorControl(
       Elevator elevator,
       // DoubleSupplier elevatorPercentage,
       SpikeController controller
@@ -160,8 +203,8 @@ public class SubsystemControl {
         elevator.setPresetPos(2); // L3
       } else if (controller.b().getAsBoolean()) {
         elevator.setPresetPos(3); // L4
-      } else if (controller.y().getAsBoolean()) {
-        elevator.setPresetPos(4); // coral station
+      // } else if (controller.y().getAsBoolean()) {
+      //   elevator.setPresetPos(4); // coral station
       } else if (controller.leftTrigger().getAsBoolean()) {
         elevator.zero();
       }
@@ -184,7 +227,9 @@ public class SubsystemControl {
           }
         }
       } else {
-        coralScorer.setState(States.INTAKE);
+        if (coralScorer.getState() != States.HAS_PIECE) {
+          coralScorer.setState(States.INTAKE);
+        }
       }
     }, coralScorer);
   }
@@ -227,9 +272,14 @@ public class SubsystemControl {
   public static Command climb(
     Climber climber,
     BooleanSupplier up,
-    BooleanSupplier down
+    BooleanSupplier down,
+    BooleanSupplier extendClimber
   ) {
       return Commands.run(() -> {
+        if (extendClimber.getAsBoolean()) {
+          climber.extendClimber();
+        }
+
           if (up.getAsBoolean()) {
               climber.startClimbingUp();
           } else if (down.getAsBoolean()) {
