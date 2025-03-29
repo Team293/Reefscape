@@ -82,7 +82,7 @@ public class CoralScorer extends SubsystemBase {
                 coralScorerMotor.setSpeed(0);
             }
         } else if (state == States.POINT_DOWN) {
-            if (!stateTimer.hasElapsed(0.5)) {
+            if (!stateTimer.hasElapsed(1)) {
                 coralScorerMotor.setSpeed(-TARGET_VELOCITY);
             } else {
                 coralScorerMotor.setSpeed(0.0);
