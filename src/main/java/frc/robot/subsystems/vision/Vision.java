@@ -192,6 +192,9 @@ public class Vision extends SubsystemBase {
 
         LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiRed(limelightName);
 
+        if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Blue) {
+            poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
+        }
 
         if (poseEstimate == null) return false;
 
