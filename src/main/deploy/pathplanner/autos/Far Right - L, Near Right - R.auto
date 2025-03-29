@@ -116,6 +116,25 @@
           "data": {
             "name": "dropCoral2"
           }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "elevatorToCS2"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Near Right to CSR"
+                }
+              }
+            ]
+          }
         }
       ]
     }
