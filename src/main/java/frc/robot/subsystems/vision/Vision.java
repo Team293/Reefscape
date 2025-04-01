@@ -119,11 +119,11 @@ public class Vision extends SubsystemBase {
         );
 
         LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[2],
-            -0, // forward
+            0.1, // forward
             -0.2159, // side
             1.0, // up
             90, // roll
-            28, // pitch
+            24, // pitch
             -2 // yaw
         );
 

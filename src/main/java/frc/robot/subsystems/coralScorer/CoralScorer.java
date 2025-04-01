@@ -82,7 +82,7 @@ public class CoralScorer extends SubsystemBase {
                 coralScorerMotor.setSpeed(0);
             }
         } else if (state == States.POINT_DOWN) {
-            if (!stateTimer.hasElapsed(0.5)) {
+            if (!stateTimer.hasElapsed(1)) {
                 coralScorerMotor.setSpeed(-TARGET_VELOCITY);
             } else {
                 coralScorerMotor.setSpeed(0.0);
@@ -93,8 +93,12 @@ public class CoralScorer extends SubsystemBase {
             if (!stateTimer.hasElapsed(DROP_TIME_SEC)) {
                 coralScorerMotor.setSpeed(TARGET_VELOCITY);
             } else {
-                hasPiece = false;
-                setState(States.INTAKE);
+                if (stateTimer.hasElapsed(DROP_TIME_SEC + 0.4)) {    
+                    hasPiece = false;
+                    setState(States.INTAKE);
+                } else {
+                    pointUp();
+                }
             }
         }
     }

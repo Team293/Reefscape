@@ -9,7 +9,7 @@ import frc.robot.subsystems.climber.ClimberIO.ClimberIOInputs;
 import frc.robot.subsystems.pneumatics.Pneumatics;
 
 public class Climber extends SubsystemBase {
-    private static final double CLIMB_VELOCITY = 100;
+    private static final double CLIMB_VELOCITY = 75;
 
     private final ClimberIOInputs inputs = new ClimberIOInputs();
     private final ClimberIOTalonFX climberMotor;
