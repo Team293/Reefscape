@@ -5,13 +5,12 @@ import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -83,10 +82,6 @@ public class Vision extends SubsystemBase {
         CoralLineup(double xTranslation) {
             this.xTranslation = xTranslation;
         }
-
-        public double getXTranslation() {
-            return xTranslation;
-        }
     }
 
     private static final Rotation2d[] LIMELIGHT_YAW_OFFSETS = {
@@ -148,13 +143,14 @@ public class Vision extends SubsystemBase {
         int visibleTags = 0;
         int i = 0;
         for (String name : LIMELIGHT_NAMES) {
-            if(setVisionPoseEstimation(i, name, estimator, gyroInputs, LIMELIGHT_YAW_OFFSETS[i])) {
+            boolean tV = LimelightHelpers.getTV(name);
+            if (tV) {
                 visibleTags++;
             }
             i++;
         }
-        
-        ArrayList<Double> degrees = new ArrayList<Double>();
+
+        ArrayList<Double> degrees = new ArrayList<>();
 
         i = 0;
         for (Pose2d pose : poses) {
@@ -165,10 +161,26 @@ public class Vision extends SubsystemBase {
         }
         
         Logger.recordOutput("VisibleTags", visibleTags);
+
+        Rotation2d rotation;
+
         if (visibleTags >= 2) {
             double avgRot = averageAngles(degrees);
-            Logger.recordOutput("AverageRotation", avgRot);
-            drive.resetRotation(avgRot);
+            rotation = Rotation2d.fromDegrees(avgRot);
+        } else {
+           rotation = drive.getRotation();
+        }
+
+        drive.resetRotation(rotation.getDegrees());
+
+        if (visibleTags > 0) {
+            for (int j = 0; j < LIMELIGHT_NAMES.length; j++) {
+                setVisionPoseEstimation(j, LIMELIGHT_NAMES[j], estimator, gyroInputs, LIMELIGHT_YAW_OFFSETS[j]);
+            }
+        } else {
+            for (int j = 0; j < LIMELIGHT_NAMES.length; j++) {
+                updated[j] = false;
+            }
         }
     }
 
@@ -186,39 +198,31 @@ public class Vision extends SubsystemBase {
         return avgAngle;
     }
 
-    private boolean setVisionPoseEstimation(int id, String limelightName, SwerveDrivePoseEstimator estimator, GyroIOInputs gyroInputs, Rotation2d yawOffset) {
+    private void setVisionPoseEstimation(int id, String limelightName, SwerveDrivePoseEstimator estimator, GyroIOInputs gyroInputs, Rotation2d yawOffset) {
         boolean rejectOdometry = false;
         updated[id] = false;
 
-        LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiRed(limelightName);
+        LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2(limelightName);
 
         if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Blue) {
-            poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
+            poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
         }
 
-        if (poseEstimate == null) return false;
+        if (poseEstimate == null) return;
 
         if (poseEstimate.rawFiducials.length < 1) {
-            return false;
-        }
-
-        if (poseEstimate.rawFiducials[0].ambiguity > 0.7) {
-            return false;
-        }
-
-        if (poseEstimate.rawFiducials[0].distToCamera > 1.5) {
-            return false;
+            return;
         }
 
         Pose2d visionPose;
 
         if (poseEstimate == null || poseEstimate.tagCount == 0) {
             rejectOdometry = true;
-            return false;
+            return;
         }
 
         if (!rejectOdometry) {
-            visionPose = poseEstimate.pose;
+            visionPose = poseEstimate.pose.toPose2d();
             
             Logger.recordOutput("Limelight/EstimatedPose-" + limelightName, visionPose);
             
@@ -226,16 +230,14 @@ public class Vision extends SubsystemBase {
             poses[id] = visionPose;
             updated[id] = true;
         } else {
-            return false;
+            return;
         }
 
         Logger.recordOutput("Pose/EstimatedPose", estimator.getEstimatedPosition());
-        return true;
     }
 
     private void driveToPosition(Pose2d currentPosition, Pose2d targetPosition) {
         Logger.recordOutput("targetPosition", targetPosition);
-        System.out.println("driveToPosition");
 
         if (isRunningPath) {
             return;
@@ -388,5 +390,22 @@ public class Vision extends SubsystemBase {
 
     public Pose2d closestTargetPose(Pose2d currentPose, CoralLineup side) {
         return applyTranslation(side, getClosestTag(currentPose).pose);
+    }
+
+    public static class Constants {
+        public static final Transform3d LIMELIGHT_LEFT = new Transform3d(
+            new Translation3d(0.24765, -0.2159, 0.3302),
+            new Rotation3d(0, 0, Math.toRadians(-26.5))
+        );
+
+        public static final Transform3d LIMELIGHT_RIGHT = new Transform3d(
+            new Translation3d(0.2477516, 0.25495, 0.3302),
+            new Rotation3d(0, 0, Math.toRadians(26.5))
+        );
+
+        public static final Transform3d LIMELIGHT_TOP = new Transform3d(
+            new Translation3d(0.1, -0.2159, 1.0),
+            new Rotation3d(Math.toRadians(24), 0, Math.toRadians(-2))
+        );
     }
 }

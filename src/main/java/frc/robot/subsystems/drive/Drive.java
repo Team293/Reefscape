@@ -13,6 +13,7 @@
 
 package frc.robot.subsystems.drive;
 
+import com.ctre.phoenix6.Utils;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
@@ -22,27 +23,31 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 // import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 // import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.vision.LimelightWrapper;
+import frc.robot.subsystems.vision.TagCamera;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.LocalADStarAK;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -76,6 +81,8 @@ public class Drive extends SubsystemBase {
   private PIDController fieldOrientedDirectionController = new PIDController(5.0, 2.0, 0.0);
   private static final double MAX_AUTO_SPEED = 2.0;
   private static final double MAX_AUTO_ACCEL = 0.5;
+
+  private static final List<TagCamera> CAMERAS = new ArrayList<>();
 
   private final Vision vision;
 
@@ -142,8 +149,17 @@ public class Drive extends SubsystemBase {
     setPose(defaultPose);
 
     poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,0.3));
+
+    CAMERAS.addAll(
+      List.of(
+        new LimelightWrapper("limelight-right", () -> Vision.Constants.LIMELIGHT_RIGHT, () -> new Rotation3d(getRotation())),
+        new LimelightWrapper("limelight-left", () -> Vision.Constants.LIMELIGHT_LEFT, () -> new Rotation3d(getRotation())),
+        new LimelightWrapper("limelight-top", () -> Vision.Constants.LIMELIGHT_TOP, () -> new Rotation3d(getRotation()))
+      )
+    );
   }
 
+  @Override
   public void periodic() {
     // odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
@@ -178,7 +194,13 @@ public class Drive extends SubsystemBase {
     // }
 
     // Update odometry
-    updateRobotPosition();
+    for (TagCamera c : CAMERAS) {
+      //todo: pass this consumer into the contructor in the future
+      c.refreshEstimate((TagCamera.VisionData data) -> {
+        if(data.pose != null) //last minute safety check!
+          addVisionMeasurement(data.pose.toPose2d(), data.timestamp, data.stdv);
+      });
+    }
   }
 
   public SwerveModulePosition[] getWheelPositions() {
@@ -368,5 +390,9 @@ public class Drive extends SubsystemBase {
   public void updateRobotPosition() {
     poseEstimator.update(getRotation(), getWheelPositions());
     vision.updateRobotPose(poseEstimator, Units.radiansToDegrees(gyroInputs.yawVelocityRadPerSec), gyroInputs, this);
+  }
+
+  public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> stdv) {
+    poseEstimator.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds));
   }
 }
