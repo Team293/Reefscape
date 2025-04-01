@@ -137,6 +137,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("elevatorToL4", new SetElevator(elevator, 3));
     NamedCommands.registerCommand("elevatorToL42", new SetElevator(elevator, 3));
     NamedCommands.registerCommand("elevatorToCS", new SetElevator(elevator, 4));
+    NamedCommands.registerCommand("elevatorToCS2", new SetElevator(elevator, 4));
     
     // Set up auto routines
     autoChooser = AutoBuilder.buildAutoChooser();

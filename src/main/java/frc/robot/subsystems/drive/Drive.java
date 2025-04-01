@@ -51,8 +51,8 @@ import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
   private static final double MAX_LINEAR_SPEED = Units.feetToMeters(14.5);
-  private static final double TRACK_WIDTH_X = Units.inchesToMeters(21.73);
-  private static final double TRACK_WIDTH_Y = Units.inchesToMeters(21.73);
+  private static final double TRACK_WIDTH_X = Units.inchesToMeters(23.25);
+  private static final double TRACK_WIDTH_Y = Units.inchesToMeters(23.25);
   private static final double DRIVE_BASE_RADIUS =
       Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
   private static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
@@ -72,7 +72,7 @@ public class Drive extends SubsystemBase {
   private SwerveDrivePoseEstimator poseEstimator;
   
   // Field oriented direction in degrees
-  private PIDController drivingController = new PIDController(2.0, 0, 0);
+  private PIDController drivingController = new PIDController(2.0, 0, 0.0);
   private PIDController fieldOrientedDirectionController = new PIDController(5.0, 2.0, 0.0);
   private static final double MAX_AUTO_SPEED = 2.0;
   private static final double MAX_AUTO_ACCEL = 0.5;

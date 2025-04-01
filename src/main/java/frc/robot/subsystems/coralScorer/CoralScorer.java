@@ -37,7 +37,7 @@ public class CoralScorer extends SubsystemBase {
     public static final double MAX_VELOCITY = 10.0d;
     public static final double TARGET_VELOCITY = 5.0d;
     public static final double HOLDING_VELOCITY = 1.0d;
-    public static final double DROP_TIME_SEC = 0.4d;
+    public static final double DROP_TIME_SEC = 0.2d;
 
     public static double previousVelocity = 0.0d;
 
@@ -93,7 +93,7 @@ public class CoralScorer extends SubsystemBase {
             if (!stateTimer.hasElapsed(DROP_TIME_SEC)) {
                 coralScorerMotor.setSpeed(TARGET_VELOCITY);
             } else {
-                if (stateTimer.hasElapsed(DROP_TIME_SEC + 0.4)) {    
+                if (stateTimer.hasElapsed(DROP_TIME_SEC + 0.2)) {    
                     hasPiece = false;
                     setState(States.INTAKE);
                 } else {

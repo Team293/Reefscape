@@ -47,26 +47,19 @@ public class Vision extends SubsystemBase {
     private boolean[] updated = new boolean[LIMELIGHT_NAMES.length];
 
     public enum AprilTagLineups {
-        CORAL_1(new Pose2d(1.21, 6.95, Rotation2d.fromDegrees(-53 + 180))),
-        CORAL_2(new Pose2d(1.06, 1.11, Rotation2d.fromDegrees(55 + 180))),
-        RED_6(new Pose2d(3.87, 5.13, Rotation2d.fromDegrees(120 + 180))),
-        RED_7(new Pose2d(3.23, 4.00, Rotation2d.fromDegrees(180 + 180))),
-        RED_8(new Pose2d(3.87, 2.93, Rotation2d.fromDegrees(-120 + 180))),
-        RED_9(new Pose2d(5.10, 2.93, Rotation2d.fromDegrees(-60 + 180))),
-        RED_10(new Pose2d(5.75, 4.00, Rotation2d.fromDegrees(180))), // reef far
-        RED_11(new Pose2d(5.10, 5.13, Rotation2d.fromDegrees(60 + 180))),
-        CORAL_12(new Pose2d(1.06, 1.11, Rotation2d.fromDegrees(55 + 180))),
-        CORAL_13(new Pose2d(1.21, 6.95, Rotation2d.fromDegrees(-53 + 180))),
-        BLUE_16(new Pose2d(3.87, 5.13, Rotation2d.fromDegrees(120 + 180))),
-        BLUE_18(new Pose2d(3.23, 4.00, Rotation2d.fromDegrees(180 + 180))),
-        BLUE_17(new Pose2d(3.87, 2.93, Rotation2d.fromDegrees(-120 + 180))),
-        BLUE_19(new Pose2d(5.10, 2.93, Rotation2d.fromDegrees(-60 + 180))),
-        BLUE_20(new Pose2d(5.10, 5.13, Rotation2d.fromDegrees(60 + 180))),
-        BLUE_21(new Pose2d(5.75, 4.00, Rotation2d.fromDegrees(180 + 180)));
+        CORAL_1(new Pose2d(1.05, 6.96, Rotation2d.fromDegrees(-53 + 180))),
+        CORAL_2(new Pose2d(1.05, 1.04, Rotation2d.fromDegrees(55 + 180))),
+        NEAR_LEFT(new Pose2d(3.87, 5.13, Rotation2d.fromDegrees(120 + 180))),
+        NEAR_MIDDLE(new Pose2d(3.23, 4.00, Rotation2d.fromDegrees(180 + 180))),
+        NEAR_RIGHT(new Pose2d(3.87, 2.90, Rotation2d.fromDegrees(-120 + 180))),
+        FAR_RIGHT(new Pose2d(5.10, 2.90, Rotation2d.fromDegrees(-60 + 180))),
+        FAR_MIDDLE(new Pose2d(5.75, 4.00, Rotation2d.fromDegrees(180))), // reef far
+        FAR_LEFT(new Pose2d(5.10, 5.13, Rotation2d.fromDegrees(60 + 180)));
         private final Pose2d pose;
 
         AprilTagLineups(Pose2d pose) {
             this.pose = pose;
+
         }
 
         public Pose2d getPose() {
@@ -75,8 +68,8 @@ public class Vision extends SubsystemBase {
     }
 
     public enum CoralLineup {
-        LEFT(0.22d),
-        RIGHT(-0.10d);
+        LEFT(0.19d),
+        RIGHT(-0.16d);
 
         private final double xTranslation;
 
@@ -101,18 +94,18 @@ public class Vision extends SubsystemBase {
 
     public Vision(XboxController driveController, XboxController operatorController) {
         LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[0],
-            0.24765, // forward
-            -0.2159, // side
-            0.3302, // up
+        0.2286, // forward
+            -0.2286, // side
+            0.2921, // up
             180, // roll
             0.0, // pitch
                 -26.5 // yaw
         );
 
         LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[1],
-            0.2477516, // forward
-            0.25495, // side
-            0.3302, // up
+        0.2286, // forward
+        0.2286, // side
+            0.2921, // up
             180, // roll
             0, // pitch
             26.5 // yaw
@@ -120,11 +113,11 @@ public class Vision extends SubsystemBase {
 
         LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[2],
             0.1, // forward
-            -0.2159, // side
-            1.0, // up
+            -0.24, // side
+            1.016, // up
             90, // roll
             24, // pitch
-            -2 // yaw
+            -3 // yaw
         );
 
         // force limelights to use roboRIO for gyro
@@ -165,7 +158,7 @@ public class Vision extends SubsystemBase {
         }
         
         Logger.recordOutput("VisibleTags", visibleTags);
-        if (visibleTags >= 2) {
+        if (visibleTags >= 1) {
             double avgRot = averageAngles(degrees);
             Logger.recordOutput("AverageRotation", avgRot);
             drive.resetRotation(avgRot);
@@ -347,15 +340,10 @@ public class Vision extends SubsystemBase {
         }
 
         Pose2d robotPose = currentPose.get();
-        Pose2d closestTagPose = getClosestTag(robotPose).pose;
-
-        Pose2d closestLeft = applyTranslation(CoralLineup.LEFT, closestTagPose);
-        Pose2d closestRight = applyTranslation(CoralLineup.RIGHT, closestTagPose);
-
-        if (isCloseToPose(robotPose, closestLeft) || isCloseToPose(robotPose, closestRight)) {
+        if (isLinedUp(robotPose)) {
             // close to either poses
-            this.driveController.setRumble(RumbleType.kBothRumble, 0.2);
-            this.operatorController.setRumble(RumbleType.kBothRumble, 0.2);
+            this.driveController.setRumble(RumbleType.kBothRumble, 0.1);
+            this.operatorController.setRumble(RumbleType.kBothRumble, 0.1);
         } else {
             this.driveController.setRumble(RumbleType.kBothRumble, 0);
             this.operatorController.setRumble(RumbleType.kBothRumble, 0);
@@ -378,6 +366,13 @@ public class Vision extends SubsystemBase {
         return closeToDeadband || closeToNegativeDeadband;
     }
 
+    public boolean isLinedUp(Pose2d currentPose) {
+        Pose2d left = closestTargetPose(currentPose, CoralLineup.LEFT);
+        Pose2d right = closestTargetPose(currentPose, CoralLineup.RIGHT);
+
+        return (isCloseToPose(currentPose, left) || isCloseToPose(currentPose, right));
+    }
+
     public Pose2d getTargetPose() {
         return targetPose;
     }
@@ -387,6 +382,12 @@ public class Vision extends SubsystemBase {
     }
 
     public Pose2d closestTargetPose(Pose2d currentPose, CoralLineup side) {
-        return applyTranslation(side, getClosestTag(currentPose).pose);
+        AprilTagLineups closest = getClosestTag(currentPose);
+
+        if (closest == AprilTagLineups.CORAL_1 || closest == AprilTagLineups.CORAL_2) {
+            return closest.pose;
+        }
+
+        return applyTranslation(side, closest.pose);
     }
 }
