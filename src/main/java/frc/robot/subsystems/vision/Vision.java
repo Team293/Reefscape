@@ -95,41 +95,41 @@ public class Vision extends SubsystemBase {
     }
 
     public Vision(XboxController driveController, XboxController operatorController) {
-        LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[0],
-            0.24765, // forward
-            -0.2159, // side
-            0.3302, // up
-            180, // roll
-            0.0, // pitch
-                -26.5 // yaw
-        );
-
-        LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[1],
-            0.2477516, // forward
-            0.25495, // side
-            0.3302, // up
-            180, // roll
-            0, // pitch
-            26.5 // yaw
-        );
-
-        LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[2],
-            0.1, // forward
-            -0.2159, // side
-            1.0, // up
-            90, // roll
-            24, // pitch
-            -2 // yaw
-        );
-
-        // force limelights to use roboRIO for gyro
-        for (String name : LIMELIGHT_NAMES) {
-            LimelightHelpers.SetIMUMode(name, 0);
-        }
-
-        for (AprilTagLineups lineup : AprilTagLineups.values()) {
-            Logger.recordOutput("TargetsVision/" + lineup.name(), lineup.getPose());
-        }
+//        LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[0],
+//            0.24765, // forward
+//            -0.2159, // side
+//            0.3302, // up
+//            180, // roll
+//            0.0, // pitch
+//                -26.5 // yaw
+//        );
+//
+//        LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[1],
+//            0.2477516, // forward
+//            0.25495, // side
+//            0.3302, // up
+//            180, // roll
+//            0, // pitch
+//            26.5 // yaw
+//        );
+//
+//        LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NAMES[2],
+//            0.1, // forward
+//            -0.2159, // side
+//            1.0, // up
+//            90, // roll
+//            24, // pitch
+//            -2 // yaw
+//        );
+//
+//        // force limelights to use roboRIO for gyro
+//        for (String name : LIMELIGHT_NAMES) {
+//            LimelightHelpers.SetIMUMode(name, 0);
+//        }
+//
+//        for (AprilTagLineups lineup : AprilTagLineups.values()) {
+//            Logger.recordOutput("TargetsVision/" + lineup.name(), lineup.getPose());
+//        }
 
         this.driveController = driveController;
         this.operatorController = operatorController;
@@ -404,7 +404,7 @@ public class Vision extends SubsystemBase {
         );
 
         public static final Transform3d LIMELIGHT_TOP = new Transform3d(
-            new Translation3d(0.1, -0.2159, 1.0),
+            new Translation3d(1.016, -0.2159, 1.0),
             new Rotation3d(Math.toRadians(24), 0, Math.toRadians(-2))
         );
     }
