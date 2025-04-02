@@ -36,6 +36,7 @@ import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.pneumatics.Pneumatics;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.Vision.CoralLineup;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -130,6 +131,9 @@ public class RobotContainer {
     NamedCommands.registerCommand("elevatorToL42", new SetElevator(elevator, 3));
     NamedCommands.registerCommand("elevatorToCS", new SetElevator(elevator, 4));
     NamedCommands.registerCommand("elevatorToCS2", new SetElevator(elevator, 4));
+    
+    NamedCommands.registerCommand("driveToTargetLeft", new DriveTo(drive, vision, CoralLineup.LEFT));
+    NamedCommands.registerCommand("driveToTargetRight", new DriveTo(drive, vision, CoralLineup.RIGHT));
     
     // Set up auto routines
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -248,11 +252,8 @@ public class RobotContainer {
         .a()
         .onTrue(Commands.runOnce(() -> drive.resetRotation(180.0), drive).ignoringDisable(true));
 
-    driverController
-    .b()
-    .onTrue(Commands.runOnce(() -> vision.interruptPath(), vision));
-     coralScorer.setDefaultCommand(
-       SubsystemControl.coralControl(
+    coralScorer.setDefaultCommand(
+      SubsystemControl.coralControl(
          coralScorer, 
          operatorController::getLeftY,
          () -> operatorController.leftStick().getAsBoolean(),

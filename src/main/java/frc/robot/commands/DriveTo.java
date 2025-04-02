@@ -10,14 +10,22 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.Vision.CoralLineup;
 
 import static edu.wpi.first.units.Units.Meters;
+
+import org.littletonrobotics.junction.Logger;
 
 public class DriveTo extends Command {
     //Variable for local instance of Swerve subsystem
     private Drive m_swerve;
     //Variable for local copy of the pose for the target to pathfind to
     private Pose2d m_target;
+
+    private CoralLineup m_side = CoralLineup.LEFT;
+
+    private Vision m_vision;
     //Variable for local copy of the PID config
     private PPHolonomicDriveController m_driveController;
     //Variable for local copy of Pathplanner state
@@ -31,9 +39,10 @@ public class DriveTo extends Command {
      * @param swerve the swerve subsystem
      * @param target the Pose of where to pathfind to
      */
-    public DriveTo(Drive swerve, Pose2d target) {
+    public DriveTo(Drive swerve, Vision vision, Pose2d target) {
         m_swerve = swerve;
         m_target = target;
+        m_vision = vision;
 
         m_driveController =
                 new PPHolonomicDriveController(
@@ -45,10 +54,31 @@ public class DriveTo extends Command {
         addRequirements(m_swerve);
     }
 
+    public DriveTo(Drive swerve, Vision vision, CoralLineup side) {
+        m_swerve = swerve;
+        m_side = side;
+        m_vision = vision;
+        m_target = new Pose2d();
+
+        m_driveController =
+                new PPHolonomicDriveController(
+                        new PIDConstants(2, 0, 0),
+                        new PIDConstants(4, 0, 0),
+                        0.02); // loop time
+        m_state = new PathPlannerTrajectoryState();
+
+        addRequirements(m_swerve);
+    }
+
     @Override
     public void initialize() {
         //sets the pathplanner ending state to our target
+        m_target = m_vision.closestTargetPose(m_swerve.getPose(), m_side);
         m_state.pose = m_target;
+
+        
+        Logger.recordOutput("RealOutputs/Auto/StartingPose", m_swerve.getPose());
+        Logger.recordOutput("RealOutputs/Auto/TargetPose", m_target);
     }
 
     @Override

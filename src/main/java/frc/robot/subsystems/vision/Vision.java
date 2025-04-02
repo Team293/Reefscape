@@ -36,7 +36,6 @@ public class Vision extends SubsystemBase {
     private static final double MAX_DISTANCE = 0.5; // in
 
     private boolean isRunningPath = false;
-    private Command runningCommand;
     private Pose2d targetPose;
     private Supplier<Pose2d> currentPose;
     
@@ -47,12 +46,12 @@ public class Vision extends SubsystemBase {
     private boolean[] updated = new boolean[LIMELIGHT_NAMES.length];
 
     public enum AprilTagLineups {
-        CORAL_1(new Pose2d(1.03, 6.98, Rotation2d.fromDegrees(-53 + 180))),
-        CORAL_2(new Pose2d(1.03, 1.02, Rotation2d.fromDegrees(55 + 180))),
+        CORAL_1(new Pose2d(1.20, 7.07, Rotation2d.fromDegrees(-53 + 180))),
+        CORAL_2(new Pose2d(0.91, 1.14, Rotation2d.fromDegrees(55 + 180))),
         NEAR_LEFT(new Pose2d(3.87, 5.13, Rotation2d.fromDegrees(120 + 180))),
         NEAR_MIDDLE(new Pose2d(3.23, 4.00, Rotation2d.fromDegrees(180 + 180))),
         NEAR_RIGHT(new Pose2d(3.87, 2.90, Rotation2d.fromDegrees(-120 + 180))),
-        FAR_RIGHT(new Pose2d(5.10, 2.90, Rotation2d.fromDegrees(-60 + 180))),
+        FAR_RIGHT(new Pose2d(5.14, 2.90, Rotation2d.fromDegrees(-60 + 180))),
         FAR_MIDDLE(new Pose2d(5.75, 4.00, Rotation2d.fromDegrees(180))), // reef far
         FAR_LEFT(new Pose2d(5.10, 5.13, Rotation2d.fromDegrees(60 + 180)));
         private final Pose2d pose;
@@ -226,77 +225,6 @@ public class Vision extends SubsystemBase {
         return true;
     }
 
-    private void driveToPosition(Pose2d currentPosition, Pose2d targetPosition) {
-        // Logger.recordOutput("targetPosition", targetPosition);
-        System.out.println("driveToPosition");
-
-        if (isRunningPath) {
-            return;
-        }
-        
-        this.targetPose = targetPosition;
-
-        // PathConstraints constraints = PathConstraints.unlimitedConstraints(12); // TODO: lower if needed
-        PathConstraints constraints = new PathConstraints(1.5, 1.5, 2 * Math.PI, 4 * Math.PI); // The constraints for this path.
-
-        List<Waypoint> waypoints = List.of(
-            new Waypoint(currentPosition.getTranslation(), currentPosition.getTranslation(), currentPosition.getTranslation()),
-            new Waypoint(targetPosition.getTranslation(), targetPosition.getTranslation(), targetPosition.getTranslation())
-        );
-
-        PathPlannerPath path = new PathPlannerPath(
-                waypoints, // waypoints, add more if needed
-                constraints,
-                null, // starting, not needed
-                new GoalEndState(0.0, targetPosition.getRotation())
-        );
-
-        path.preventFlipping = true;
-
-        Command followPath = AutoBuilder.followPath(path);
-
-        Command cleanupCommand = Commands.run(() -> {
-           this.isRunningPath = false;
-           this.runningCommand = null;
-           this.targetPose = null;
-        });
-
-        followPath = followPath.andThen(cleanupCommand);
-
-        followPath.schedule();
-
-        runningCommand = followPath;
-
-        isRunningPath = true;
-    }
-
-    public void interruptPath() {
-        if (runningCommand != null && isRunningPath) {
-            runningCommand.cancel();
-            runningCommand = null;
-        }
-        isRunningPath = false;
-    }
-
-    public void runPath(AprilTagLineups lineup, Pose2d currentPose) {
-        if (isRunningPath) {
-            return;
-        }
-
-        driveToPosition(currentPose, lineup.getPose());     
-    }
-
-    public void runPath(CoralLineup positionTranslation, Pose2d currentPose) {
-        if (isRunningPath) {
-            return;
-        }
-
-        Pose2d position = targetPose;
-
-
-        driveToPosition(currentPose, position);
-    }
-
     public Pose2d applyTranslation(CoralLineup side, Pose2d poseToTranslate) {
         if (poseToTranslate == null) return new Pose2d();
 
@@ -327,12 +255,6 @@ public class Vision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (isRunningPath && targetPose != null) {
-            if (isFinished()) {
-                interruptPath();
-            }
-        }
-
         Pose2d robotPose = currentPose.get();
         if (isLinedUp(robotPose)) {
             // close to either poses
@@ -383,5 +305,15 @@ public class Vision extends SubsystemBase {
         }
 
         return applyTranslation(side, closest.pose);
+    }
+
+    public boolean seesTag() {
+        for (String limelight : LIMELIGHT_NAMES) {
+            if (LimelightHelpers.getTV(limelight)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

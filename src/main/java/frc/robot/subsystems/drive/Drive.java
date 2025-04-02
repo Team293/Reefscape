@@ -249,6 +249,10 @@ public class Drive extends SubsystemBase {
   }
 
   public void driveToTargetPose() {
+    if (!vision.seesTag()) {
+      return;
+    }
+    
     state.pose = targetPose;
     ChassisSpeeds speeds = driveController.calculateRobotRelativeSpeeds(getPose(), state);
 

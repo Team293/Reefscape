@@ -148,39 +148,6 @@ public class SubsystemControl {
       drive);
   }
 
-  public static Command visionDrive(
-          Drive drive,
-          Vision vision,
-          SpikeController driverController
-  ) {
-      return Commands.run(() -> {
-          if (driverController.b().getAsBoolean()) {
-            System.out.println("Pressed b");
-              if (vision.isRunningPath()) {
-                  vision.interruptPath();
-                  return;
-              }
-
-              Vision.CoralLineup offset = null;
-
-              if (driverController.leftTrigger().getAsBoolean()) {
-                  offset = Vision.CoralLineup.LEFT;
-              } else if (driverController.rightTrigger().getAsBoolean()) {
-                  offset = Vision.CoralLineup.RIGHT;
-              }
-
-              Vision.AprilTagLineups target = vision.getClosestTag(drive.getPose());
-
-              if (offset == null) {
-                  vision.runPath(target, drive.getPose());
-              } else {
-                  vision.runPath(offset, drive.getPose());
-              }
-          }
-          
-      }, vision);
-  }
-
   public static Command elevatorControl(
       Elevator elevator,
       // DoubleSupplier elevatorPercentage,
@@ -250,49 +217,4 @@ public class SubsystemControl {
           }
       }, climber);
   }
-
-  // public static Command limelightDrive(
-  //     Drive drive,
-  //     Vision vision,
-  //     DoubleSupplier xSupplier,
-  //     DoubleSupplier ySupplier,
-  //     DoubleSupplier omegaSupplier) {
-
-  //   return Commands.run(
-  //       () -> {
-  //         // Apply deadband
-  //         double linearMagnitude =
-  //             MathUtil.applyDeadband(
-  //                 Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble()), DEADBAND);
-  //         Rotation2d linearDirection =
-  //             new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
-  //         double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
-
-  //         // Square values
-  //         linearMagnitude = linearMagnitude * linearMagnitude;
-  //         omega = Math.copySign(omega * omega, omega);
-
-  //         // Calcaulate new linear velocity
-  //         Translation2d linearVelocity =
-  //             new Pose2d(new Translation2d(), linearDirection)
-  //                 .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
-  //                 .getTranslation();
-
-  //         if (omega != 0.0d) { // Check if the driver isnt trying to turn
-  //           vision.resetError();
-  //         } else if ((omega == 0.0) && (vision.seesTarget())) {
-  //           // Get tX from the vision subsystem. tX is "demand"
-  //           omega = -vision.getDesiredAngle();
-  //         }
-
-  //         drive.runVelocity(
-  //             // Convert to field relative speeds & send command
-  //             ChassisSpeeds.fromFieldRelativeSpeeds(
-  //                 linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-  //                 linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-  //                 omega * drive.getMaxAngularSpeedRadPerSec(),
-  //                 drive.getRotation()));
-  //       },
-  //       drive);
-  // }
 }
