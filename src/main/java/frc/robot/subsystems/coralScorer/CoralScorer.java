@@ -3,17 +3,11 @@ package frc.robot.subsystems.coralScorer;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import java.lang.Thread.State;
-import java.util.Currency;
-
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.pneumatics.Pneumatics;
-import frc.robot.subsystems.algaePickup.ColorSensorIOInputsAutoLogged;
-import frc.robot.subsystems.coralScorer.RightSightSensor;
+import frc.robot.subsystems.coralScorer.CoralScorerIO.CoralScorerIOInputs;
 
 
 public class CoralScorer extends SubsystemBase {
@@ -24,15 +18,10 @@ public class CoralScorer extends SubsystemBase {
         POINT_DOWN
     }
 
-    private final Pneumatics pneumatics;
-
     private final CoralScorerIOTalonFX coralScorerMotor;
-    private final CoralScorerIOInputsAutoLogged inputs = new CoralScorerIOInputsAutoLogged();
-    private final ColorSensorIOInputsAutoLogged rightSightSensorInputs =
-      new ColorSensorIOInputsAutoLogged();
+    private final CoralScorerIOInputs inputs = new CoralScorerIOInputs();
 
     private DoubleSolenoid coralSolenoid;
-    private final RightSightSensor proximitySensorIO;
 
     public static final double MAX_VELOCITY = 10.0d;
     public static final double TARGET_VELOCITY = 5.0d;
@@ -45,20 +34,17 @@ public class CoralScorer extends SubsystemBase {
     private CoralScorer.States state = States.INTAKE;
     private Timer stateTimer = new Timer();
     
-    public CoralScorer(Pneumatics pneumatics) {
-        this.pneumatics = pneumatics;
-        
+    public CoralScorer() {
         coralSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 2, 3);
         coralScorerMotor = new CoralScorerIOTalonFX(0);
-        proximitySensorIO = new RightSightSensor(0);
 
         stateTimer.start();
     }
 
     @Override
     public void periodic() {
+        long start = System.currentTimeMillis();
         coralScorerMotor.updateInputs(inputs);
-        proximitySensorIO.updateInputs(rightSightSensorInputs);
     
         SmartDashboard.putBoolean("HasPiece", hasPiece);
         SmartDashboard.putString("State", state.name());
@@ -101,6 +87,10 @@ public class CoralScorer extends SubsystemBase {
                 }
             }
         }
+
+        long end = System.currentTimeMillis();
+
+        System.out.println("Loop time for Coral Scorer: " + (end - start) + "ms");
     }
 
     public boolean hasCoral() {

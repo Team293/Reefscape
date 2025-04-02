@@ -28,8 +28,6 @@ import frc.robot.subsystems.coralScorer.CoralScorer;
 import frc.robot.subsystems.coralScorer.CoralScorer.States;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.algaePickup.AlgaePickup;
-import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.targeting.Targeting;
 import frc.robot.subsystems.vision.Vision;
@@ -232,41 +230,6 @@ public class SubsystemControl {
         }
       }
     }, coralScorer);
-  }
-
-  public static Command algaePickup(
-    AlgaePickup algaePickup,
-    DoubleSupplier speed,
-    BooleanSupplier output
-  )
-  {
-    return Commands.run(() -> {
-      algaePickup.setVelocity(speed.getAsDouble() * AlgaePickup.MAX_VELOCITY);
-      if (output.getAsBoolean()) {
-        algaePickup.extendAlagePickup();
-       } else {
-        algaePickup.retractAlgaePickup();
-       }
-    }, algaePickup);
-  }
-
-  public static Command AlgaeKnocker(
-    AlgaeKnocker algaeKnocker,
-    BooleanSupplier L3,
-    BooleanSupplier L2
-    )
-    {
-    return Commands.run(() -> {
-      if (L3.getAsBoolean()) {
-        algaeKnocker.extendAlgaeKnocker();
-        algaeKnocker.forwardAlgaeKnockerMotor();
-      } else if (L2.getAsBoolean()) {
-        algaeKnocker.extendAlgaeKnocker();
-        algaeKnocker.reverseAlgaeKnockerMotor();
-      } else {
-        algaeKnocker.retractAlgaeKnocker();
-      }
-    }, algaeKnocker);
   }
 
   public static Command climb(

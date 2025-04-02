@@ -125,9 +125,9 @@ public class Vision extends SubsystemBase {
             LimelightHelpers.SetIMUMode(name, 0);
         }
 
-        for (AprilTagLineups lineup : AprilTagLineups.values()) {
-            Logger.recordOutput("TargetsVision/" + lineup.name(), lineup.getPose());
-        }
+        // for (AprilTagLineups lineup : AprilTagLineups.values()) {
+        //     Logger.recordOutput("TargetsVision/" + lineup.name(), lineup.getPose());
+        // }
 
         this.driveController = driveController;
         this.operatorController = operatorController;
@@ -157,10 +157,10 @@ public class Vision extends SubsystemBase {
             i++;
         }
         
-        Logger.recordOutput("VisibleTags", visibleTags);
+        // Logger.recordOutput("VisibleTags", visibleTags);
         if (visibleTags >= 1) {
             double avgRot = averageAngles(degrees);
-            Logger.recordOutput("AverageRotation", avgRot);
+            // Logger.recordOutput("AverageRotation", avgRot);
             drive.resetRotation(avgRot);
         }
     }
@@ -213,7 +213,7 @@ public class Vision extends SubsystemBase {
         if (!rejectOdometry) {
             visionPose = poseEstimate.pose;
             
-            Logger.recordOutput("Limelight/EstimatedPose-" + limelightName, visionPose);
+            // Logger.recordOutput("Limelight/EstimatedPose-" + limelightName, visionPose);
             
             estimator.addVisionMeasurement(visionPose, poseEstimate.timestampSeconds);
             poses[id] = visionPose;
@@ -222,12 +222,12 @@ public class Vision extends SubsystemBase {
             return false;
         }
 
-        Logger.recordOutput("Pose/EstimatedPose", estimator.getEstimatedPosition());
+        // Logger.recordOutput("Pose/EstimatedPose", estimator.getEstimatedPosition());
         return true;
     }
 
     private void driveToPosition(Pose2d currentPosition, Pose2d targetPosition) {
-        Logger.recordOutput("targetPosition", targetPosition);
+        // Logger.recordOutput("targetPosition", targetPosition);
         System.out.println("driveToPosition");
 
         if (isRunningPath) {
@@ -327,12 +327,7 @@ public class Vision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (runningCommand != null) {
-            Logger.recordOutput("isFinished", runningCommand.isFinished());
-        } else {
-            Logger.recordOutput("isFinished", false);
-        }
-        
+        long start = System.currentTimeMillis();
         if (isRunningPath && targetPose != null) {
             if (isFinished()) {
                 interruptPath();
@@ -348,6 +343,10 @@ public class Vision extends SubsystemBase {
             this.driveController.setRumble(RumbleType.kBothRumble, 0);
             this.operatorController.setRumble(RumbleType.kBothRumble, 0);
         }
+
+        long end = System.currentTimeMillis();
+
+        System.out.println("Loop time for vision: " + (end - start) + " ms");
     }
 
     public boolean isFinished() {

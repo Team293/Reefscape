@@ -45,7 +45,7 @@ public class Targeting extends SubsystemBase {
     }
 
     //Get robot position on field. Use position to get the section of the field
-    @AutoLogOutput(key = "Targets/ClosestTarget")
+    // @AutoLogOutput(key = "Targets/ClosestTarget")
     public Pose2d getPositionClosestToRobotPosition()
     {
         Pose2d[] targetPositions = {REEF_FAR, REEF_FAR_LEFT, REEF_FAR_RIGHT, REEF_NEAR, REEF_NEAR_LEFT, REEF_NEAR_RIGHT, RIGHT_CORAL_STATION, ALGAE_SCORE, LEFT_CORAL_STATION};

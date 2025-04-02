@@ -16,8 +16,6 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -27,7 +25,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.SpikeController;
 import frc.robot.commands.*;
-import frc.robot.subsystems.algaeknocker.AlgaeKnocker;
 import frc.robot.subsystems.climber.Climber;
 //import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.coralScorer.CoralScorer;
@@ -79,7 +76,7 @@ public class RobotContainer {
     vision = new Vision(this.driverController.getHID(), this.operatorController.getHID());
 
     // algaePickup = new AlgaePickup();
-    coralScorer = new CoralScorer(pneumatics);
+    coralScorer = new CoralScorer();
     // algaeKnocker = new AlgaeKnocker(pneumatics);
     climber = new Climber(pneumatics);
 

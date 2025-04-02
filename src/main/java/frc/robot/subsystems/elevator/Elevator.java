@@ -10,6 +10,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.elevator.ElevatorIO.ElevatorIOInputs;
 
 public class Elevator extends SubsystemBase {
     private static final double MAX_POSITION = 184.22; //meters
@@ -26,7 +27,7 @@ public class Elevator extends SubsystemBase {
 
     private static final double heights[] = {L1_POSITION, L2_POSITION, L3_POSITION, L4_POSITION, CORAL_STATION_POS};
 
-    private final ElevatorIOInputsAutoLogged elevatorInputs = new ElevatorIOInputsAutoLogged();
+    private final ElevatorIOInputs elevatorInputs = new ElevatorIOInputs();
     private final ElevatorIOTalonFX elevatorMotor;
     private final PositionVoltage command;
 
@@ -41,7 +42,9 @@ public class Elevator extends SubsystemBase {
     
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("ElevatorIsAtTarget", isAtTarget());
+        long startTime = System.currentTimeMillis();
+
+        // SmartDashboard.putBoolean("ElevatorIsAtTarget", isAtTarget());
         elevatorMotor.updateInputs(elevatorInputs);
 
         if (DriverStation.isDisabled()) {
@@ -59,6 +62,7 @@ public class Elevator extends SubsystemBase {
             // calculate the offsets of the encoders
             elevatorMotor.setPosition(0);
         }
+
     }
 
     public boolean isAtTarget() {

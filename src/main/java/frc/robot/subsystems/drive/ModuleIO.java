@@ -18,7 +18,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ModuleIO {
-  @AutoLog
+  // @AutoLog
   public static class ModuleIOInputs {
     public double drivePositionRotations = 0.0;
     public double driveVelocityRotationsPerSec = 0.0;
