@@ -30,7 +30,6 @@ public class Climber extends SubsystemBase {
 
     @Override
     public void periodic() {
-        long start = System.currentTimeMillis();
         climberMotor.updateInputs(inputs);
         extendClimber();
 
@@ -49,10 +48,6 @@ public class Climber extends SubsystemBase {
         } else {
             climberMotor.setSpeed(0);
         }
-
-        long end = System.currentTimeMillis();
-
-        System.out.println("Loop time for climber: " + (end - start) + "ms");
     }
 
     public void startClimbingUp() {

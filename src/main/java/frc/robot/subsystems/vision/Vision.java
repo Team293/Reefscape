@@ -47,8 +47,8 @@ public class Vision extends SubsystemBase {
     private boolean[] updated = new boolean[LIMELIGHT_NAMES.length];
 
     public enum AprilTagLineups {
-        CORAL_1(new Pose2d(1.05, 6.96, Rotation2d.fromDegrees(-53 + 180))),
-        CORAL_2(new Pose2d(1.05, 1.04, Rotation2d.fromDegrees(55 + 180))),
+        CORAL_1(new Pose2d(1.03, 6.98, Rotation2d.fromDegrees(-53 + 180))),
+        CORAL_2(new Pose2d(1.03, 1.02, Rotation2d.fromDegrees(55 + 180))),
         NEAR_LEFT(new Pose2d(3.87, 5.13, Rotation2d.fromDegrees(120 + 180))),
         NEAR_MIDDLE(new Pose2d(3.23, 4.00, Rotation2d.fromDegrees(180 + 180))),
         NEAR_RIGHT(new Pose2d(3.87, 2.90, Rotation2d.fromDegrees(-120 + 180))),
@@ -327,7 +327,6 @@ public class Vision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        long start = System.currentTimeMillis();
         if (isRunningPath && targetPose != null) {
             if (isFinished()) {
                 interruptPath();
@@ -343,10 +342,6 @@ public class Vision extends SubsystemBase {
             this.driveController.setRumble(RumbleType.kBothRumble, 0);
             this.operatorController.setRumble(RumbleType.kBothRumble, 0);
         }
-
-        long end = System.currentTimeMillis();
-
-        System.out.println("Loop time for vision: " + (end - start) + " ms");
     }
 
     public boolean isFinished() {

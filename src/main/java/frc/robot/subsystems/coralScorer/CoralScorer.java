@@ -43,7 +43,6 @@ public class CoralScorer extends SubsystemBase {
 
     @Override
     public void periodic() {
-        long start = System.currentTimeMillis();
         coralScorerMotor.updateInputs(inputs);
     
         SmartDashboard.putBoolean("HasPiece", hasPiece);
@@ -87,10 +86,6 @@ public class CoralScorer extends SubsystemBase {
                 }
             }
         }
-
-        long end = System.currentTimeMillis();
-
-        System.out.println("Loop time for Coral Scorer: " + (end - start) + "ms");
     }
 
     public boolean hasCoral() {

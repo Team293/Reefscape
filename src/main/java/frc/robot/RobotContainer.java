@@ -26,7 +26,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.SpikeController;
 import frc.robot.commands.*;
 import frc.robot.subsystems.climber.Climber;
-//import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.coralScorer.CoralScorer;
 import frc.robot.subsystems.coralScorer.CoralScorer.States;
 import frc.robot.subsystems.drive.Drive;
@@ -36,7 +35,6 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.pneumatics.Pneumatics;
-import frc.robot.subsystems.targeting.Targeting;
 import frc.robot.subsystems.vision.Vision;
 
 /**
@@ -53,7 +51,6 @@ public class RobotContainer {
   private final Vision vision;
   // private final AlgaeKnocker algaeKnocker;
   private final Elevator elevator;
-  private final Targeting targeting;
   private final Pneumatics pneumatics;
   private final Climber climber;
 
@@ -105,8 +102,6 @@ public class RobotContainer {
                 new ModuleIO() {});
          break;
      }
-
-    targeting = new Targeting(drive);
 
     vision.setPositionSupplier(() -> drive.getPose());
 
@@ -162,7 +157,6 @@ public class RobotContainer {
         SubsystemControl.joystickDrive(
             drive,
             vision,
-            targeting,
             () -> -driverController.getLeftY(),
             () -> -driverController.getLeftX(),
             () -> -driverController.getRightX(),

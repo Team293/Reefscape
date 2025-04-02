@@ -29,7 +29,6 @@ import frc.robot.subsystems.coralScorer.CoralScorer.States;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.climber.Climber;
-import frc.robot.subsystems.targeting.Targeting;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.Vision.CoralLineup;
 
@@ -82,7 +81,6 @@ public class SubsystemControl {
   public static Command joystickDrive(
     Drive drive,
     Vision vision,
-    Targeting targeting,
     DoubleSupplier xSupplier,
     DoubleSupplier ySupplier,
     DoubleSupplier omegaSupplier,

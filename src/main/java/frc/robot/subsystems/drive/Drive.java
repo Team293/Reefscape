@@ -158,7 +158,6 @@ public class Drive extends SubsystemBase {
   }
 
   public void periodic() {
-    long start = System.currentTimeMillis();
     // odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     for (var module : modules) {
@@ -193,9 +192,6 @@ public class Drive extends SubsystemBase {
 
     // Update odometry
     updateRobotPosition();
-    long end = System.currentTimeMillis();
-
-    System.out.println("Scheduler time for drive: " + (end - start)  + "ms");
   }
 
   public SwerveModulePosition[] getWheelPositions() {
