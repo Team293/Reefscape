@@ -19,6 +19,7 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.pathfinding.Pathfinding;
+import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.MathUtil;
@@ -39,7 +40,9 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.commands.DriveTo;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.LocalADStarAK;
 
@@ -64,6 +67,9 @@ public class Drive extends SubsystemBase {
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
   private Pose2d defaultPose = new Pose2d(7.45, 4.11, Rotation2d.fromDegrees(180));
+
+  private final PPHolonomicDriveController driveController;
+  private final PathPlannerTrajectoryState state;
   
   private Pose2d targetPose = defaultPose;
   
@@ -142,6 +148,13 @@ public class Drive extends SubsystemBase {
     setPose(defaultPose);
 
     poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,0.3));
+
+    driveController = 
+                new PPHolonomicDriveController(
+                        new PIDConstants(2, 0, 0),
+                        new PIDConstants(4, 0, 0),
+                        0.02); // loop time
+    state = new PathPlannerTrajectoryState();
   }
 
   public void periodic() {
@@ -236,23 +249,12 @@ public class Drive extends SubsystemBase {
   }
 
   public void driveToTargetPose() {
-    double translationX = drivingController.calculate(getPose().getX(), getTargetPose().getX());
-    double translationY = drivingController.calculate(getPose().getY(), getTargetPose().getY());
-    double omegaOutput = fieldOrientedDirectionController.calculate(getPose().getRotation().getRadians(), targetPose.getRotation().getRadians());
+    state.pose = targetPose;
+    ChassisSpeeds speeds = driveController.calculateRobotRelativeSpeeds(getPose(), state);
 
-    Logger.recordOutput("Odometry/SelfDriving/OutputX", translationX);
-    Logger.recordOutput("Odometry/SelfDriving/OutputY", translationY);
-    Logger.recordOutput("Odometry/SelfDriving/RotationRadians", omegaOutput);
+    Logger.recordOutput("Odometry/SelfDriving/TargetPose", state.pose);
 
-    translationX = MathUtil.clamp(translationX, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-    translationY = MathUtil.clamp(translationY, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-
-    runVelocity(
-      ChassisSpeeds.fromFieldRelativeSpeeds(
-        translationX,
-        translationY,
-        omegaOutput,
-        getRotation()));
+    runVelocity(speeds);
   }
 
   /** Stops the drive. */

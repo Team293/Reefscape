@@ -20,7 +20,7 @@ public class Elevator extends SubsystemBase {
     //Encoder units -- check pheonix tuner if belt tension changes for the positions again
     private static final double L1_POSITION = 0.0d; //0
     private static final double L2_POSITION = 20.85d; //20.85
-    private static final double L3_POSITION = 92.07d; //92.07
+    private static final double L3_POSITION = 86.07d; //92.07
     private static final double L4_POSITION = 181.22d; //184.22
     private static final double CORAL_STATION_POS = 0.0d;
 
