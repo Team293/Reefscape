@@ -46,9 +46,9 @@ public class Vision extends SubsystemBase {
     private boolean[] updated = new boolean[LIMELIGHT_NAMES.length];
 
     public enum AprilTagLineups {
-        CORAL_1(new Pose2d(1.20, 7.07, Rotation2d.fromDegrees(-53 + 180))),
+        CORAL_1(new Pose2d(1.44, 7.11, Rotation2d.fromDegrees(129.3))),
         CORAL_2(new Pose2d(0.91, 1.14, Rotation2d.fromDegrees(55 + 180))),
-        NEAR_LEFT(new Pose2d(3.87, 5.13, Rotation2d.fromDegrees(120 + 180))),
+        NEAR_LEFT(new Pose2d(3.85, 5.13, Rotation2d.fromDegrees(121 + 180))),
         NEAR_MIDDLE(new Pose2d(3.23, 4.00, Rotation2d.fromDegrees(180 + 180))),
         NEAR_RIGHT(new Pose2d(3.87, 2.90, Rotation2d.fromDegrees(-120 + 180))),
         FAR_RIGHT(new Pose2d(5.14, 2.90, Rotation2d.fromDegrees(-60 + 180))),
