@@ -15,9 +15,16 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": "Start Center to Far Mid - R"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Start Left to Far Left - R"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -53,15 +60,15 @@
           "data": {
             "commands": [
               {
-                "type": "path",
-                "data": {
-                  "pathName": "Far Mid to CSL"
-                }
-              },
-              {
                 "type": "named",
                 "data": {
                   "name": "elevatorToCS"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Far Left to CSL"
                 }
               }
             ]
@@ -70,7 +77,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
+            "waitTime": 0.3
           }
         },
         {
@@ -78,15 +85,9 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "elevatorToL42"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
-                  "pathName": null
+                  "pathName": "CSL to Near Left - L"
                 }
               },
               {
@@ -96,13 +97,19 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.2
+                        "waitTime": 0.5
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "pointCoralDown2"
+                        "name": "pointCoralDown"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "elevatorToL42"
                       }
                     }
                   ]
@@ -114,13 +121,26 @@
         {
           "type": "named",
           "data": {
-            "name": "dropCoral2"
+            "name": "dropCoral"
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "resetElevator2"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "elevatorToCS"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Near Left to CSL"
+                }
+              }
+            ]
           }
         }
       ]
