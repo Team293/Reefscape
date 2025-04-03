@@ -92,10 +92,11 @@ public class ModuleIOTalonFX implements ModuleIO {
       case 1: // Front Right
         driveTalon = new TalonFX(29);
         turnTalon = new TalonFX(30);
+        
         cancoder = new CANcoder(31);
         // absoluteEncoderOffset = -0.445d + 0.5d; // 2024
         // absoluteEncoderOffset = -0.7832d + 0.25 + 0.5; // 2025
-        absoluteEncoderOffset = -0.2961;
+        absoluteEncoderOffset = -0.9963 + 0.75;
         break;
       case 2: // Back Left
         driveTalon = new TalonFX(20);
