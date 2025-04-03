@@ -29,6 +29,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Voltage;
 import frc.lib.constants.SDSMK4L1Constants;
 
 /**
@@ -51,8 +53,8 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final StatusSignal<Angle> drivePosition;
   // private final Queue<Double> drivePositionQueue;
   private final StatusSignal<AngularVelocity> driveVelocity;
-  // private final StatusSignal<Double> driveAppliedVolts;
-  // private final StatusSignal<Double> driveCurrent;
+  private final StatusSignal<Voltage> driveAppliedVolts;
+  private final StatusSignal<Current> driveCurrent;
 
   private final StatusSignal<Angle> turnAbsolutePosition;
   private final StatusSignal<Angle> turnPosition;
@@ -132,8 +134,8 @@ public class ModuleIOTalonFX implements ModuleIO {
     // drivePositionQueue =
     //     PhoenixOdometryThread.getInstance().registerSignal(driveTalon, driveTalon.getPosition());
     driveVelocity = driveTalon.getVelocity();
-    // driveAppliedVolts = driveTalon.getMotorVoltage();
-    // driveCurrent = driveTalon.getStatorCurrent();
+    driveAppliedVolts = driveTalon.getMotorVoltage();
+    driveCurrent = driveTalon.getStatorCurrent();
 
     // Turn motor
     turnTalon.getConfigurator().apply(getTurnConfig());
@@ -153,8 +155,8 @@ public class ModuleIOTalonFX implements ModuleIO {
         drivePosition,
         turnPosition,
         driveVelocity,
-        // driveAppliedVolts,
-        // driveCurrent,
+        driveAppliedVolts,
+        driveCurrent,
         // turnAbsolutePosition,
         turnVelocity
         // turnAppliedVolts,
@@ -169,8 +171,8 @@ public class ModuleIOTalonFX implements ModuleIO {
     BaseStatusSignal.refreshAll(
         drivePosition,
         driveVelocity,
-        // driveAppliedVolts,
-        // driveCurrent,
+        driveAppliedVolts,
+        driveCurrent,
         turnAbsolutePosition,
         turnPosition,
         turnVelocity
