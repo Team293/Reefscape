@@ -18,7 +18,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface GyroIO {
-  @AutoLog
+  // @AutoLog
   public static class GyroIOInputs {
     public boolean connected = false;
     public Rotation2d realYawPosition = new Rotation2d();

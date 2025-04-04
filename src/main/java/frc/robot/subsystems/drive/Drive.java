@@ -43,6 +43,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.DriveTo;
+import frc.robot.subsystems.drive.GyroIO.GyroIOInputs;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.LocalADStarAK;
 
@@ -62,7 +63,7 @@ public class Drive extends SubsystemBase {
 
   public static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
-  private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
+  private final GyroIOInputs gyroInputs = new GyroIOInputs();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
