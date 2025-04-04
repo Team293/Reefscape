@@ -49,7 +49,7 @@ public class Vision extends SubsystemBase {
         CORAL_2(new Pose2d(0.95, 1.26, Rotation2d.fromDegrees(55 + 180))),
         NEAR_LEFT(new Pose2d(3.85, 5.13, Rotation2d.fromDegrees(121 + 180))),
         NEAR_MIDDLE(new Pose2d(3.23, 4.0, Rotation2d.fromDegrees(180 + 180))),
-        NEAR_RIGHT(new Pose2d(3.87, 2.90, Rotation2d.fromDegrees(-120 + 180))),
+        NEAR_RIGHT(new Pose2d(3.84, 2.93, Rotation2d.fromDegrees(-120 + 180))),
         FAR_RIGHT(new Pose2d(5.14, 2.90, Rotation2d.fromDegrees(-60 + 180))),
         FAR_MIDDLE(new Pose2d(5.75, 4.02, Rotation2d.fromDegrees(180))), // reef far
         FAR_LEFT(new Pose2d(5.10, 5.13, Rotation2d.fromDegrees(60 + 180)));
