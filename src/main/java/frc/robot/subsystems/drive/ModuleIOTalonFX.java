@@ -246,7 +246,9 @@ public class ModuleIOTalonFX implements ModuleIO {
     /* Drive motor config */
     var driveConfig = new TalonFXConfiguration();
     driveConfig.CurrentLimits.StatorCurrentLimit = 40.0;
+    driveConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
     driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     driveConfig.MotorOutput.Inverted = SDSMK4L1Constants.driveMotorInvert;
 
     driveConfig.Slot0.kP = 0.15;
@@ -263,9 +265,10 @@ public class ModuleIOTalonFX implements ModuleIO {
   private TalonFXConfiguration getTurnConfig() {
     /* Turn motor config */
     var turnConfig = new TalonFXConfiguration();
-    turnConfig.CurrentLimits.StatorCurrentLimit = 30.0;
-
+    turnConfig.CurrentLimits.StatorCurrentLimit = 40.0;
+    turnConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
     turnConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    turnConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     turnConfig.MotorOutput.Inverted = SDSMK4L1Constants.angleMotorInvert;
 
     turnConfig.Slot0.kP = 18.0;
