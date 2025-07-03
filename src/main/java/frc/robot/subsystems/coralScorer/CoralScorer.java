@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.pneumatics.Pneumatics;
+import frc.robot.util.LoggedTracer;
+import frc.robot.util.SubsystemDataProcessor;
 import frc.robot.subsystems.coralScorer.CoralScorerIO.CoralScorerIOInputs;
 
 
@@ -19,7 +21,7 @@ public class CoralScorer extends SubsystemBase {
     }
 
     private final CoralScorerIOTalonFX coralScorerMotor;
-    private final CoralScorerIOInputs inputs = new CoralScorerIOInputs();
+    private final CoralScorerIOInputsAutoLogged inputs = new CoralScorerIOInputsAutoLogged();
 
     private DoubleSolenoid coralSolenoid;
 
@@ -39,14 +41,19 @@ public class CoralScorer extends SubsystemBase {
         coralScorerMotor = new CoralScorerIOTalonFX(0);
 
         stateTimer.start();
+
+        SubsystemDataProcessor.createAndStartSubsystemDataProcessor(
+            () -> {
+                synchronized (inputs) {
+                    coralScorerMotor.updateInputs(inputs);
+                }
+            }, coralScorerMotor);
     }
 
     @Override
     public void periodic() {
-        coralScorerMotor.updateInputs(inputs);
-    
-        SmartDashboard.putBoolean("HasPiece", hasPiece);
-        SmartDashboard.putString("State", state.name());
+            // SmartDashboard.putBoolean("HasPiece", hasPiece);
+        // SmartDashboard.putString("State", state.name());
     
         if (state == States.INTAKE) {
             pointUp();
@@ -86,6 +93,8 @@ public class CoralScorer extends SubsystemBase {
                 }
             }
         }
+
+        LoggedTracer.record("Coral");
     }
 
     public boolean hasCoral() {

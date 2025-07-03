@@ -46,6 +46,8 @@ import frc.robot.commands.DriveTo;
 import frc.robot.subsystems.drive.GyroIO.GyroIOInputs;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.LocalADStarAK;
+import frc.robot.util.LoggedTracer;
+import frc.robot.util.SubsystemDataProcessor;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -63,7 +65,7 @@ public class Drive extends SubsystemBase {
 
   public static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
-  private final GyroIOInputs gyroInputs = new GyroIOInputs();
+  private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
@@ -156,15 +158,18 @@ public class Drive extends SubsystemBase {
                         new PIDConstants(4, 0, 0),
                         0.02); // loop time
     state = new PathPlannerTrajectoryState();
+    
+    SubsystemDataProcessor.createAndStartSubsystemDataProcessor(
+      () -> {
+        synchronized (gyroInputs) {
+          gyroIO.updateInputs(gyroInputs);
+        }
+      }
+    , gyroIO);
   }
 
   public void periodic() {
     // odometryLock.lock(); // Prevents odometry updates while reading data
-    gyroIO.updateInputs(gyroInputs);
-    for (var module : modules) {
-      module.updateInputs();
-    }
-
     // odometryLock.unlock();
     // Logger.processInputs("Drive/Gyro", gyroInputs);
     for (var module : modules) {
@@ -181,18 +186,19 @@ public class Drive extends SubsystemBase {
     }
     // Log empty setpoint states when disabled
     // if (DriverStation.isDisabled()) {
-    // Logger.recordOutput("SwerveStates/Setpoints", getWheelPositions());
+    Logger.recordOutput("SwerveStates/Setpoints", getWheelPositions());
 
     SwerveModuleState[] states = new SwerveModuleState[4];
     for (int i = 0; i < states.length; i++) {
       states[i] = modules[i].getState();
     }
 
-    // Logger.recordOutput("SwerveStates", states);
-    // }
+    Logger.recordOutput("SwerveStates", states);
 
     // Update odometry
     updateRobotPosition();
+
+    LoggedTracer.record("Drive");
   }
 
   public SwerveModulePosition[] getWheelPositions() {
@@ -230,7 +236,7 @@ public class Drive extends SubsystemBase {
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, MAX_LINEAR_SPEED);
 
-    // Logger.recordOutput("Drive/Speeds", speeds);
+    Logger.recordOutput("Drive/Speeds", speeds);
 
     // Send setpoints to modules
     SwerveModuleState[] optimizedSetpointStates = new SwerveModuleState[4];
@@ -240,9 +246,9 @@ public class Drive extends SubsystemBase {
     }
 
     // Log setpoint states
-    // Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
-    // Logger.recordOutput("SwerveStates/SetpointsOptimized",
-    // optimizedSetpointStates);
+    Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
+    Logger.recordOutput("SwerveStates/SetpointsOptimized",
+    optimizedSetpointStates);
   }
 
   public void setTargetPose(Pose2d newTargetPose) {
@@ -307,7 +313,7 @@ public class Drive extends SubsystemBase {
   }
 
   /** Returns the module states (turn angles and drive velocities) for all of the modules. */
-  // @AutoLogOutput(key = "SwerveStates/Measured")
+  @AutoLogOutput(key = "SwerveStates/Measured")
   private SwerveModuleState[] getModuleStates() {
     SwerveModuleState[] states = new SwerveModuleState[4];
     for (int i = 0; i < 4; i++) {
@@ -317,17 +323,17 @@ public class Drive extends SubsystemBase {
   }
 
   /** Returns the current odometry rotation. */
-  // @AutoLogOutput(key = "Odometry/GyroYaw")
+  @AutoLogOutput(key = "Odometry/GyroYaw")
   public Rotation2d getRotation() {
     return gyroInputs.yawPosition;
   }
 
-  // @AutoLogOutput(key = "Odometry/FusedHeading")
+  @AutoLogOutput(key = "Odometry/FusedHeading")
   public Rotation2d getFusedHeading() {
     return gyroInputs.fusedHeading;
   }
 
-  // @AutoLogOutput (key = "Odometry/YawOffset")
+  @AutoLogOutput (key = "Odometry/YawOffset")
   public Rotation2d getYawOffset() {
     return gyroInputs.yawOffset;
   }

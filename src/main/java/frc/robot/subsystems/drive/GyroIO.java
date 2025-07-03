@@ -15,10 +15,13 @@ package frc.robot.subsystems.drive;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import frc.robot.util.SubsystemDataProcessor;
+import frc.robot.util.SubsystemDataProcessor.IODataRefresher;
+
 import org.littletonrobotics.junction.AutoLog;
 
-public interface GyroIO {
-  // @AutoLog
+public interface GyroIO extends IODataRefresher {
+  @AutoLog
   public static class GyroIOInputs {
     public boolean connected = false;
     public Rotation2d realYawPosition = new Rotation2d();
@@ -33,4 +36,9 @@ public interface GyroIO {
   public default void updateInputs(GyroIOInputs inputs) {}
 
   public default void setYaw(Rotation2d targetRotation, GyroIOInputs inputs) {}
+
+  @Override
+  default void refreshData() {
+      
+  }
 }

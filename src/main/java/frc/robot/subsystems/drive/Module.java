@@ -18,6 +18,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.drive.ModuleIO.ModuleIOInputs;
+import frc.robot.util.LoggedTracer;
+import frc.robot.util.SubsystemDataProcessor;
 
 public class Module {
   private static final double WHEEL_RADIUS = Units.inchesToMeters(2.0);
@@ -25,7 +27,7 @@ public class Module {
   public static final double ODOMETRY_FREQUENCY = 250.0;
 
   private final ModuleIO io;
-  private final ModuleIOInputs inputs = new ModuleIOInputs();
+  private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
   private final int index;
 
   private Rotation2d angleSetpoint = null; // Setpoint for closed loop control, null for open loop
@@ -41,14 +43,13 @@ public class Module {
     this.index = index;
 
     setBrakeMode(true);
-  }
 
-  /**
-   * Update inputs without running the rest of the periodic logic. This is useful since these
-   * updates need to be properly thread-locked.
-   */
-  public void updateInputs() {
-    io.updateInputs(inputs);
+    SubsystemDataProcessor.createAndStartSubsystemDataProcessor(
+      () -> {
+        synchronized (inputs) {
+          io.updateInputs(inputs);
+        }
+      }, io);
   }
 
   public void periodic() {
@@ -81,6 +82,8 @@ public class Module {
 
         io.setDriveVelocityRPS(velocityRotationsPerSec);
       }
+
+      LoggedTracer.record("Module " + index);
     }
 
     // Calculate position deltas for odometry

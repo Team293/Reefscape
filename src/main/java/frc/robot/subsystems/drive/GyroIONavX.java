@@ -52,4 +52,9 @@ public class GyroIONavX implements GyroIO {
     inputs.yawVelocityRadPerSec = Units.degreesToRadians(gyro.getRate());
     inputs.pose = gyro.getRotation3d();
   }
+
+  @Override
+  public void refreshData() {
+      
+  }
 }

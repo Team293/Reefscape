@@ -14,11 +14,12 @@
 package frc.robot.subsystems.drive;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.util.SubsystemDataProcessor.IODataRefresher;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface ModuleIO {
-  // @AutoLog
+public interface ModuleIO extends IODataRefresher {
+  @AutoLog
   public static class ModuleIOInputs {
     public double drivePositionRotations = 0.0;
     public double driveVelocityRotationsPerSec = 0.0;
@@ -58,4 +59,9 @@ public interface ModuleIO {
   public default void setTurnBrakeMode(boolean enable) {}
 
   public default void setDrivePosition(double position) {}
+
+  @Override
+ default void refreshData() {
+     
+ }
 }

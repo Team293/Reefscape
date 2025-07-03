@@ -25,7 +25,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.SpikeController;
 import frc.robot.commands.*;
-import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.coralScorer.CoralScorer;
 import frc.robot.subsystems.coralScorer.CoralScorer.States;
 import frc.robot.subsystems.drive.Drive;
@@ -53,7 +52,7 @@ public class RobotContainer {
   // private final AlgaeKnocker algaeKnocker;
   private final Elevator elevator;
   private final Pneumatics pneumatics;
-  private final Climber climber;
+  // private final Climber climber;
 
   // Controller
   private static final double DEADBAND = 0.05;
@@ -76,7 +75,7 @@ public class RobotContainer {
     // algaePickup = new AlgaePickup();
     coralScorer = new CoralScorer();
     // algaeKnocker = new AlgaeKnocker(pneumatics);
-    climber = new Climber(pneumatics);
+    // climber = new Climber(pneumatics);
 
     switch (Constants.currentMode) {
       case REAL:
@@ -265,14 +264,14 @@ public class RobotContainer {
       SubsystemControl.elevatorControl(elevator, operatorController)
     );
 
-     climber.setDefaultCommand(
-            SubsystemControl.climb(
-                    climber,
-                    () -> operatorController.getRightY() < -0.3,
-                    () -> operatorController.getRightY() > 0.3,
-                    operatorController.y()
-            )
-    );
+    //  climber.setDefaultCommand(
+    //         SubsystemControl.climb(
+    //                 climber,
+    //                 () -> operatorController.getRightY() < -0.3,
+    //                 () -> operatorController.getRightY() > 0.3,
+    //                 operatorController.y()
+    //         )
+    // );
     
 
     // algaeKnocker.setDefaultCommand(

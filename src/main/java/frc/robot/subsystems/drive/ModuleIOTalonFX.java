@@ -169,18 +169,6 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-    BaseStatusSignal.refreshAll(
-        drivePosition,
-        driveVelocity,
-        driveAppliedVolts,
-        driveCurrent,
-        turnAbsolutePosition,
-        turnPosition,
-        turnVelocity
-        // turnAppliedVolts,
-        // turnCurrent
-        );
-
     inputs.canCoderRotations = cancoder.getAbsolutePosition().getValueAsDouble();
     inputs.canCoderAngle = Units.rotationsToDegrees(inputs.canCoderRotations);
 
@@ -284,5 +272,20 @@ public class ModuleIOTalonFX implements ModuleIO {
     turnConfig.ClosedLoopGeneral.ContinuousWrap = true;
 
     return turnConfig;
+  }
+
+  @Override
+  public void refreshData() {
+    BaseStatusSignal.refreshAll(
+      drivePosition,
+      driveVelocity,
+      driveAppliedVolts,
+      driveCurrent,
+      turnAbsolutePosition,
+      turnPosition,
+      turnVelocity
+      // turnAppliedVolts,
+      // turnCurrent
+    );
   }
 }

@@ -55,15 +55,18 @@ public class CoralScorerIOTalonFX implements CoralScorerIO {
 
     @Override
     public void updateInputs(CoralScorerIOInputs inputs) {
-        BaseStatusSignal.refreshAll(velocity, current);
         inputs.speed = velocity.getValueAsDouble();
         inputs.current = current.getValueAsDouble();
-        CoralScorerIO.super.updateInputs(inputs);
     }
 
     @Override
     public void setSpeed(double speed) {
         velocityVoltageCommand.withVelocity(speed).withSlot(0); // Convert to motor rotations per second
         CoralScorerMotor.setControl(velocityVoltageCommand);
+    }
+    
+    @Override
+    public void refreshData() {
+        BaseStatusSignal.refreshAll(velocity, current);
     }
 }

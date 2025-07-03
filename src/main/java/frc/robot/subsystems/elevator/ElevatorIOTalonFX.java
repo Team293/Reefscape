@@ -55,12 +55,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     @Override
     public void updateInputs(ElevatorIOInputs inputs) {
-        BaseStatusSignal.refreshAll(
-            elevatorPosition,
-            elevatorVelocity,
-            limitSwitch
-            );
-
         inputs.positionValue = elevatorPosition.getValueAsDouble();
         inputs.velocityValue = elevatorPosition.getValueAsDouble();
     }
@@ -94,5 +88,14 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     // public double encoderUnitsToMeters(double position){
     //      return (position/2048)*(1/m_gearRatio)*(1/(25/24))*(25 * 0.0049);
     // }
+
+    @Override
+    public void refreshData() {
+        BaseStatusSignal.refreshAll(
+            elevatorPosition,
+            elevatorVelocity,
+            limitSwitch
+        );
+    }
 }
     

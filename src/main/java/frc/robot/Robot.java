@@ -14,8 +14,12 @@
 package frc.robot;
 
 import edu.wpi.first.net.PortForwarder;
+import edu.wpi.first.wpilibj.Threads;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.util.LoggedTracer;
 
 import java.io.File;
 import java.io.IOException;
@@ -151,13 +155,23 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically during all modes. */
   @Override
   public void robotPeriodic() {
-    // Runs the Scheduler. This is responsible for polling buttons, adding
-    // newly-scheduled commands, running already-scheduled commands, removing
-    // finished or interrupted commands, and running subsystem periodic() methods.
-    // This must be called from the robot's periodic block in order for anything in
-    // the Command-based framework to work.
-    CommandScheduler.getInstance().run();
-  }
+		LoggedTracer.reset();
+
+		try {
+			Threads.setCurrentThreadPriority(true, 4);
+			double commandSchedulerStart = Timer.getTimestamp();
+			CommandScheduler.getInstance().run();
+			double commandSchedulerEnd = Timer.getTimestamp();
+			LoggedTracer.record("Commands");
+			SmartDashboard.putNumber(
+					"Logged Robot/Loop Cycle Time Milliseconds",
+					(commandSchedulerEnd - commandSchedulerStart) * 1000.0);
+			Threads.setCurrentThreadPriority(false, 0);
+		} catch (Exception e) {
+			SmartDashboard.putString("Logged Robot/Latest Error", e.getMessage());
+		}
+	}
+
 
   /** This function is called once when the robot is disabled. */
   @Override
